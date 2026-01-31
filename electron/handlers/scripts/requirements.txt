@@ -1,0 +1,8 @@
+PyQt6>=6.4.0
+qtawesome>=1.2.0
+pyinstaller>=5.0
+requests
+numpy
+soundfile
+cffi
+scipy

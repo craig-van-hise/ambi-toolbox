@@ -1,0 +1,13 @@
+.DS_Store
+/.build
+/Packages
+.apple
+.swiftpm
+
+# Build artifacts
+Ambix2Opus.app
+*.icns
+Scripts/*.icns
+
+# User settings
+xcuserdata/
