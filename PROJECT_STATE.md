@@ -17,7 +17,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 | **Ambix2Bin** | 🟢 Ready | `electron/handlers/Ambix2Bin.ts` | Wraps legacy `saf_wrapper.py` for binaural rendering. |
 | **Ambix2IAMF** | 🟢 Ready | `electron/handlers/Ambix2IAMF.ts` | Generates textproto config and runs `iamf-enc`. |
 | **AmbiOrder** | 🟢 Ready | `electron/handlers/AmbiOrder.ts` | Uses `channelmap` filter. Dynamic Order Detection. |
-| **AmbiSwap** | 🔴 Pending | *None* | UI implemented. Backend logic needed. |
+| **AmbiSwap** | 🟢 Ready | `electron/handlers/AmbiSwap.ts` | Supports 1st-3rd Order. Enforces 24-bit PCM. |
 | **AmbiRotate** | 🔴 Pending | *None* | UI implemented. Backend logic needed. |
 | **Ambix2CAF** | 🟢 Ready | `electron/handlers/Ambix2CAF.ts` | Supports Discrete & HOA Layouts. |
 

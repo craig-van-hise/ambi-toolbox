@@ -202,7 +202,7 @@ const AmbiOrderTool: React.FC<{ tool: ToolDefinition, files: File[], onRun: (opt
   );
 };
 
-const AmbiSwapTool: React.FC<{ tool: ToolDefinition }> = ({ tool }) => {
+const AmbiSwapTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
   const [inputFormat, setInputFormat] = useState<AmbiFormat>(AmbiFormat.AmbiX);
 
   const isAmbixInput = inputFormat === AmbiFormat.AmbiX;
@@ -255,8 +255,12 @@ const AmbiSwapTool: React.FC<{ tool: ToolDefinition }> = ({ tool }) => {
           </span>
         </div>
 
-        <button className={`w-full py-3 rounded font-medium text-white transition-colors ${tool.btnColorClass}`}>
-          Swap Format
+        <button
+          onClick={() => onRun({ direction: isAmbixInput ? 'AmbixToFuMa' : 'FuMaToAmbix' })}
+          disabled={isProcessing}
+          className={`w-full py-3 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
+        >
+          {isProcessing ? 'Swapping...' : 'Swap Format'}
         </button>
       </div>
     </div>
@@ -519,7 +523,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
         {tool.id === ToolId.Ambix2IAMF && <BitrateConverter tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
         {tool.id === ToolId.Ambix2Bin && <Ambix2BinTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
         {tool.id === ToolId.AmbiOrder && <AmbiOrderTool tool={tool} files={files} onRun={handleRunTask} isProcessing={isProcessing} />}
-        {tool.id === ToolId.AmbiSwap && <AmbiSwapTool tool={tool} />}
+        {tool.id === ToolId.AmbiSwap && <AmbiSwapTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
         {tool.id === ToolId.AmbiRotate && <AmbiRotateTool tool={tool} />}
         {tool.id === ToolId.Ambix2CAF && <Ambix2CafTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
       </div>

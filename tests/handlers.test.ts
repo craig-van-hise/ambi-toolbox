@@ -4,6 +4,7 @@ import { handleAmbix2Bin } from '../electron/handlers/Ambix2Bin';
 import { handleAmbix2IAMF } from '../electron/handlers/Ambix2IAMF';
 import { handleAmbix2CAF } from '../electron/handlers/Ambix2CAF';
 import { handleAmbiOrder } from '../electron/handlers/AmbiOrder';
+import { handleAmbiSwap } from '../electron/handlers/AmbiSwap';
 import { IpcMainInvokeEvent } from 'electron';
 
 // Mock dependencies
@@ -194,6 +195,77 @@ describe('Backend Handlers', () => {
             });
             const call = spawnMock.mock.calls.find((c: any) => c[1].includes('pcm_f32le'));
             expect(call).toBeDefined();
+        });
+    });
+
+    describe('AmbiSwap', () => {
+        it('should apply 0.707 gain to W channel when converting AmbiX -> FuMa (1st Order)', async () => {
+            const common = await import('../electron/handlers/common');
+            vi.mocked(common.probeAudio).mockResolvedValueOnce({
+                duration: 10,
+                channels: 4,
+                sampleRate: 48000
+            });
+
+            const result = await handleAmbiSwap(mockEvent, {
+                inputPath: '/test/input.wav',
+                direction: 'AmbixToFuMa'
+            });
+
+            expect(result.success).toBe(true);
+            const call = spawnMock.mock.calls.find((c: any) => c[1].includes('-filter_complex'));
+
+            // Expect Codec 24-bit
+            expect(call[1]).toContain('pcm_s24le');
+
+            const filter = call[1][call[1].indexOf('-filter_complex') + 1];
+
+            // Expect Gain 0.70710678 for c0
+            expect(filter).toContain('pan=4c|c0=0.70710678*c0');
+            // Expect Mapping: 0, 3, 1, 2
+            // Index 3 (AmbiX X) -> Index 1 (FuMa X)
+            expect(filter).toContain('c1=c3');
+        });
+
+        it('should apply 1.414 gain to W channel when converting FuMa -> AmbiX (1st Order)', async () => {
+            const common = await import('../electron/handlers/common');
+            vi.mocked(common.probeAudio).mockResolvedValueOnce({
+                duration: 10,
+                channels: 4,
+                sampleRate: 48000
+            });
+
+            const result = await handleAmbiSwap(mockEvent, {
+                inputPath: '/test/input.wav',
+                direction: 'FuMaToAmbix'
+            });
+
+            expect(result.success).toBe(true);
+            const call = spawnMock.mock.calls.find((c: any) => c[1].includes('-filter_complex'));
+            const filter = call[1][call[1].indexOf('-filter_complex') + 1];
+
+            // Expect Gain 1.41421356 for c0
+            expect(filter).toContain('pan=4c|c0=1.41421356*c0');
+            // Expect Mapping: 0, 2, 3, 1
+            // FuMa X (1) -> AmbiX X (3) maps to c3=c1
+            expect(filter).toContain('c3=c1');
+        });
+
+        it('should error if converting >16ch file to FuMa', async () => {
+            const common = await import('../electron/handlers/common');
+            vi.mocked(common.probeAudio).mockResolvedValueOnce({
+                duration: 10,
+                channels: 25, // 4th Order
+                sampleRate: 48000
+            });
+
+            const result = await handleAmbiSwap(mockEvent, {
+                inputPath: '/test/input.wav',
+                direction: 'AmbixToFuMa'
+            });
+
+            expect(result.success).toBe(false);
+            expect(result.error).toContain('maximum of 3rd Order');
         });
     });
 });

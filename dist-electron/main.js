@@ -479,12 +479,81 @@ async function handleAmbiOrder(event, options) {
     return { success: false, error: e.message };
   }
 }
+async function handleAmbiSwap(event, options) {
+  const { inputPath, direction } = options;
+  try {
+    const stats = await probeAudio(inputPath);
+    const channels = stats.channels;
+    if (direction === "AmbixToFuMa" && channels > 16) {
+      return {
+        success: false,
+        error: "FuMa format supports a maximum of 3rd Order (16 channels)."
+      };
+    }
+    const gainToFuMa = "0.70710678";
+    const gainToAmbiX = "1.41421356";
+    let filter = "";
+    if (channels === 4) {
+      if (direction === "AmbixToFuMa") {
+        filter = `pan=4c|c0=${gainToFuMa}*c0|c1=c3|c2=c1|c3=c2`;
+      } else {
+        filter = `pan=4c|c0=${gainToAmbiX}*c0|c1=c2|c2=c3|c3=c1`;
+        filter = `pan=4c|c0=${gainToAmbiX}*c0|c1=c2|c2=c3|c3=c1`;
+      }
+    } else if (channels === 9 || channels === 16) {
+      const ambixToFuMaIndices = [0, 3, 1, 2, 6, 7, 5, 8, 4, 12, 13, 11, 14, 10, 15, 9];
+      const fuMaToAmbixIndices = [0, 2, 3, 1, 8, 6, 4, 5, 7, 15, 13, 11, 9, 10, 12, 14];
+      const mapIndices = direction === "AmbixToFuMa" ? ambixToFuMaIndices : fuMaToAmbixIndices;
+      const gain = direction === "AmbixToFuMa" ? gainToFuMa : gainToAmbiX;
+      let parts = [`c0=${gain}*c${mapIndices[0]}`];
+      for (let i = 1; i < channels; i++) {
+        parts.push(`c${i}=c${mapIndices[i]}`);
+      }
+      filter = `pan=${channels}c|${parts.join("|")}`;
+    } else {
+      return { success: false, error: `Unsupported channel count: ${channels}. Only 4, 9, or 16 channels supported for AmbiSwap.` };
+    }
+    const suffix = direction === "AmbixToFuMa" ? "_FuMa" : "_AmbiX";
+    const outputPath = inputPath.replace(/\.[^/.]+$/, "") + `${suffix}.wav`;
+    const ffmpegPath = getFfmpegPath();
+    const args = [
+      "-y",
+      "-i",
+      inputPath,
+      "-c:a",
+      "pcm_s24le",
+      "-filter_complex",
+      filter,
+      outputPath
+    ];
+    console.log(`[AmbiSwap] Spawning: ${ffmpegPath} ${args.join(" ")}`);
+    return new Promise((resolve) => {
+      const child = spawn(ffmpegPath, args);
+      let stderr = "";
+      child.stderr.on("data", (d) => stderr += d.toString());
+      child.on("close", (code) => {
+        if (code === 0) {
+          event.sender.send("task-progress", 1);
+          resolve({ success: true, data: { outputPath } });
+        } else {
+          resolve({ success: false, error: `FFmpeg exited with code ${code}. Log: ${stderr}` });
+        }
+      });
+      child.on("error", (err) => {
+        resolve({ success: false, error: err.message });
+      });
+    });
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
 const handlers = {};
 handlers["ambix2opus"] = handleAmbix2Opus;
 handlers["ambix2bin"] = handleAmbix2Bin;
 handlers["ambix2iamf"] = handleAmbix2IAMF;
 handlers["ambix2caf"] = handleAmbix2CAF;
 handlers["ambiorder"] = handleAmbiOrder;
+handlers["ambiswap"] = handleAmbiSwap;
 async function dispatchTask(event, toolId, options) {
   const handler = handlers[toolId];
   if (!handler) {
