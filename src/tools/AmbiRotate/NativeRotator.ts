@@ -1,0 +1,130 @@
+// NATIVE ARBITRARY-ORDER ROTATOR (Fixed Monitor Path)
+// Supports Infinite Orders (N) via Generalized Sectorial Yaw Rotation.
+
+export class NativeRotator {
+    private ctx: AudioContext;
+    private splitter: ChannelSplitterNode;
+    private merger: ChannelMergerNode;
+    private monitorSplitter: ChannelSplitterNode; // <--- The Missing Link
+    private gains: GainNode[] = [];
+    private channelCount: number;
+
+    // Monitor Output
+    public output: GainNode;
+    private monitorMerger: ChannelMergerNode;
+
+    constructor(ctx: AudioContext, channelCount: number) {
+        this.ctx = ctx;
+        this.channelCount = channelCount;
+
+        // 1. Core Processing Graph
+        this.splitter = ctx.createChannelSplitter(channelCount);
+        this.merger = ctx.createChannelMerger(channelCount);
+
+        // 2. Monitor Setup (Stereo Downmix)
+        // We need to split the ROTATED signal back out to monitor it.
+        this.monitorSplitter = ctx.createChannelSplitter(channelCount);
+        this.monitorMerger = ctx.createChannelMerger(2);
+        this.output = ctx.createGain();
+
+        // 3. Build the Engine
+        this.buildGraph();
+        this.setupMonitor();
+    }
+
+    private buildGraph() {
+        // Iterate through every channel to build the rotation pairs.
+        // Works for N=4, N=16, N=64...
+
+        for (let i = 0; i < this.channelCount; i++) {
+            // ACN descriptor
+            const l = Math.floor(Math.sqrt(i));
+            const m = i - (l * l) - l;
+
+            if (m === 0) {
+                // Zonal Harmonics (Invariant)
+                this.connectDirect(i, i);
+            }
+            else if (m > 0) {
+                // Sectorial Pairs (Rotate with Yaw)
+                const partnerIdx = (l * l) + l - m;
+                this.createRotationGroup(i, partnerIdx, m);
+            }
+        }
+
+        // Connect the Core Result to the Monitor Splitter
+        // All rotated channels flow into this splitter
+        this.merger.connect(this.monitorSplitter);
+    }
+
+    private connectDirect(inIdx: number, outIdx: number) {
+        const g = this.ctx.createGain();
+        g.gain.value = 1.0;
+        this.splitter.connect(g, inIdx);
+        g.connect(this.merger, 0, outIdx);
+    }
+
+    private createRotationGroup(posIdx: number, negIdx: number, orderM: number) {
+        // 2x2 Rotation Matrix
+        const g_pp = this.ctx.createGain();
+        const g_np = this.ctx.createGain();
+        const g_pn = this.ctx.createGain();
+        const g_nn = this.ctx.createGain();
+
+        // Store Metadata
+        (g_pp as any)._type = 'cos'; (g_pp as any)._m = orderM;
+        (g_np as any)._type = 'sin'; (g_np as any)._m = orderM;
+        (g_pn as any)._type = 'nsin'; (g_pn as any)._m = orderM;
+        (g_nn as any)._type = 'cos'; (g_nn as any)._m = orderM;
+
+        // Wiring
+        this.splitter.connect(g_pp, posIdx); g_pp.connect(this.merger, 0, posIdx);
+        this.splitter.connect(g_pn, posIdx); g_pn.connect(this.merger, 0, negIdx);
+        this.splitter.connect(g_np, negIdx); g_np.connect(this.merger, 0, posIdx);
+        this.splitter.connect(g_nn, negIdx); g_nn.connect(this.merger, 0, negIdx);
+
+        this.gains.push(g_pp, g_np, g_pn, g_nn);
+    }
+
+    private setupMonitor() {
+        // FIXED WIRING: Tap the Monitor Splitter, NOT the Merger.
+
+        // 1. Omni (W) -> Left and Right (Center Image)
+        // W is Channel 0
+        this.monitorSplitter.connect(this.monitorMerger, 0, 0); // W -> L
+        this.monitorSplitter.connect(this.monitorMerger, 0, 1); // W -> R
+
+        // 2. Side (Y) -> Left (+), Right (-) (Stereo Width)
+        // Y is Channel 1
+        // Note: Check input file standard. If ACN, Ch1 = Y. 
+
+        // Y -> Left
+        this.monitorSplitter.connect(this.monitorMerger, 1, 0);
+
+        // Y -> Inverter -> Right
+        const inv = this.ctx.createGain();
+        inv.gain.value = -1.0;
+
+        this.monitorSplitter.connect(inv, 1); // Tap Ch1 from splitter
+        inv.connect(this.monitorMerger, 0, 1); // Send Inverted Y to Right
+
+        this.monitorMerger.connect(this.output);
+    }
+
+    get input() { return this.splitter; }
+
+    setRotation(yawDeg: number) {
+        const rad = yawDeg * (Math.PI / 180);
+
+        // Update all Gains
+        for (const g of this.gains) {
+            const m = (g as any)._m;
+            const type = (g as any)._type;
+            const angle = rad * m;
+
+            if (type === 'cos') g.gain.value = Math.cos(angle);
+            else if (type === 'sin') g.gain.value = Math.sin(angle);
+            else if (type === 'nsin') g.gain.value = -Math.sin(angle);
+        }
+    }
+}

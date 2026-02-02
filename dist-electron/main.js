@@ -122,7 +122,7 @@ async function handleAmbix2Opus(event, options) {
     return { success: false, error: e.message };
   }
 }
-function getScriptPath(scriptName) {
+function getScriptPath$1(scriptName) {
   if (app.isPackaged) {
     return path.join(process.resourcesPath, "scripts", scriptName);
   }
@@ -156,7 +156,7 @@ async function handleAmbix2Bin(event, options) {
       throw new Error(`SOFA file not found at: ${sofaPath}`);
     }
     const outputPath = inputPath.replace(/\.[^/.]+$/, "") + "_binaural.wav";
-    const scriptPath = getScriptPath("saf_wrapper.py");
+    const scriptPath = getScriptPath$1("saf_wrapper.py");
     const pythonArgs = [
       scriptPath,
       "--input",
@@ -547,6 +547,56 @@ async function handleAmbiSwap(event, options) {
     return { success: false, error: e.message };
   }
 }
+function getScriptPath(scriptName) {
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, "scripts", scriptName);
+  }
+  return path.join(process.cwd(), "resources", "scripts", scriptName);
+}
+async function handleAmbiRotate(event, options) {
+  const { inputPath, yaw, pitch, roll } = options;
+  try {
+    const scriptName = "rotate_ambisonics.py";
+    const scriptPath = getScriptPath(scriptName);
+    if (!fs.existsSync(scriptPath)) {
+      throw new Error(`Rotation script not found at: ${scriptPath}`);
+    }
+    const outputPath = inputPath.replace(/\.[^/.]+$/, "") + "_Rotated.wav";
+    const pythonArgs = [
+      scriptPath,
+      inputPath,
+      outputPath,
+      "--yaw",
+      yaw.toString(),
+      "--pitch",
+      pitch.toString(),
+      "--roll",
+      roll.toString()
+    ];
+    console.log(`[AmbiRotate] Spawning python3 ${pythonArgs.join(" ")}`);
+    return new Promise((resolve) => {
+      const child = spawn("python3", pythonArgs);
+      let stdout = "";
+      let stderr = "";
+      child.stdout.on("data", (d) => stdout += d.toString());
+      child.stderr.on("data", (d) => stderr += d.toString());
+      child.on("close", (code) => {
+        if (code === 0) {
+          event.sender.send("task-progress", 1);
+          resolve({ success: true, data: { outputPath } });
+        } else {
+          console.error("[AmbiRotate] Error:", stderr);
+          resolve({ success: false, error: `Rotate script failed (code ${code}). ${stderr}` });
+        }
+      });
+      child.on("error", (err) => {
+        resolve({ success: false, error: `Failed to spawn python3: ${err.message}` });
+      });
+    });
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
 const handlers = {};
 handlers["ambix2opus"] = handleAmbix2Opus;
 handlers["ambix2bin"] = handleAmbix2Bin;
@@ -554,6 +604,7 @@ handlers["ambix2iamf"] = handleAmbix2IAMF;
 handlers["ambix2caf"] = handleAmbix2CAF;
 handlers["ambiorder"] = handleAmbiOrder;
 handlers["ambiswap"] = handleAmbiSwap;
+handlers["ambirotate"] = handleAmbiRotate;
 async function dispatchTask(event, toolId, options) {
   const handler = handlers[toolId];
   if (!handler) {
@@ -615,6 +666,39 @@ app.whenReady().then(() => {
       return { success: true, data: info };
     } catch (error) {
       return { success: false, error: error.message };
+    }
+  });
+  ipcMain.handle("read-file", async (event, filePath) => {
+    try {
+      const buffer = await import("node:fs/promises").then((fs2) => fs2.readFile(filePath));
+      return buffer.buffer;
+    } catch (error) {
+      throw error;
+    }
+  });
+  ipcMain.handle("get-file-size", async (event, filePath) => {
+    try {
+      const stats = await import("node:fs/promises").then((fs2) => fs2.stat(filePath));
+      return stats.size;
+    } catch (error) {
+      console.error(`[MAIN] Error getting size for ${filePath}:`, error);
+      throw error;
+    }
+  });
+  ipcMain.handle("read-chunk", async (event, filePath, offset, length) => {
+    try {
+      const fs2 = await import("node:fs/promises");
+      const fileHandle = await fs2.open(filePath, "r");
+      const buffer = Buffer.alloc(length);
+      const { bytesRead } = await fileHandle.read(buffer, 0, length, offset);
+      await fileHandle.close();
+      if (bytesRead < length) {
+        return buffer.subarray(0, bytesRead).buffer;
+      }
+      return buffer.buffer;
+    } catch (error) {
+      console.error(`[MAIN] Error reading chunk from ${filePath}:`, error);
+      throw error;
     }
   });
   createWindow();

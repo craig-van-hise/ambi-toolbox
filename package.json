@@ -11,6 +11,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "ambisonics": "github:polarch/JSAmbisonics",
     "cross-spawn": "^7.0.6",
     "lucide-react": "^0.563.0",
     "react": "^18.2.0",

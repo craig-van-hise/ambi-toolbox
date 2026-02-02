@@ -17,5 +17,8 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.on('task-error', subscription)
     return () => ipcRenderer.removeListener('task-error', subscription)
   },
-  inspectFile: (path: string) => ipcRenderer.invoke('inspect-file', path)
+  inspectFile: (path: string) => ipcRenderer.invoke('inspect-file', path),
+  readFile: (path: string) => ipcRenderer.invoke('read-file', path),
+  getFileSize: (path: string) => ipcRenderer.invoke('get-file-size', path),
+  readChunk: (path: string, offset: number, size: number) => ipcRenderer.invoke('read-chunk', path, offset, size)
 })

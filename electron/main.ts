@@ -72,5 +72,47 @@ app.whenReady().then(() => {
     }
   })
 
+  // Expose File Reading (ArrayBuffer) - Legacy (Full)
+  ipcMain.handle('read-file', async (event, filePath) => {
+    // ... existing implementation ...
+    // Keeping this for backward compatibility or small files if needed
+    try {
+      const buffer = await import('node:fs/promises').then(fs => fs.readFile(filePath));
+      return buffer.buffer;
+    } catch (error: any) {
+      throw error;
+    }
+  })
+
+  // NEW: Chunked Loading Support (PRP #18)
+  ipcMain.handle('get-file-size', async (event, filePath) => {
+    try {
+      const stats = await import('node:fs/promises').then(fs => fs.stat(filePath));
+      return stats.size;
+    } catch (error: any) {
+      console.error(`[MAIN] Error getting size for ${filePath}:`, error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('read-chunk', async (event, filePath, offset, length) => {
+    try {
+      const fs = await import('node:fs/promises');
+      const fileHandle = await fs.open(filePath, 'r');
+      const buffer = Buffer.alloc(length);
+      const { bytesRead } = await fileHandle.read(buffer, 0, length, offset);
+      await fileHandle.close();
+
+      // If bytesRead < length, slice the buffer (EOF case)
+      if (bytesRead < length) {
+        return buffer.subarray(0, bytesRead).buffer;
+      }
+      return buffer.buffer;
+    } catch (error: any) {
+      console.error(`[MAIN] Error reading chunk from ${filePath}:`, error);
+      throw error;
+    }
+  });
+
   createWindow()
 })

@@ -17,5 +17,8 @@ electron.contextBridge.exposeInMainWorld("electron", {
     electron.ipcRenderer.on("task-error", subscription);
     return () => electron.ipcRenderer.removeListener("task-error", subscription);
   },
-  inspectFile: (path) => electron.ipcRenderer.invoke("inspect-file", path)
+  inspectFile: (path) => electron.ipcRenderer.invoke("inspect-file", path),
+  readFile: (path) => electron.ipcRenderer.invoke("read-file", path),
+  getFileSize: (path) => electron.ipcRenderer.invoke("get-file-size", path),
+  readChunk: (path, offset, size) => electron.ipcRenderer.invoke("read-chunk", path, offset, size)
 });

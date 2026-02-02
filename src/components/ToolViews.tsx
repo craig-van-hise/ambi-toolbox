@@ -9,11 +9,8 @@ import {
 } from '../types';
 import { BITRATE_OPTIONS } from '../constants';
 import { DropZone } from './DropZone';
+import { AmbiRotateTool } from '../tools/AmbiRotate';
 import {
-  Play,
-  Pause,
-  Square,
-  RotateCw,
   ArrowRight,
   ArrowLeftRight,
   ChevronDown
@@ -267,88 +264,7 @@ const AmbiSwapTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void,
   );
 };
 
-const AmbiRotateTool: React.FC<{ tool: ToolDefinition }> = ({ tool }) => {
-  const [yaw, setYaw] = useState(0);
-  const [pitch, setPitch] = useState(0);
-  const [roll, setRoll] = useState(0);
 
-  const SliderControl = ({ label, value, min, max, onChange, color }: any) => (
-    <div className="mb-6">
-      <div className="flex justify-between mb-2">
-        <label className="text-xs font-bold uppercase text-gray-400 tracking-wider">{label}</label>
-        <span className="text-xs font-mono text-white bg-[#1E1E1E] px-2 py-0.5 rounded border border-studio-border">
-          {value > 0 ? '+' : ''}{value}°
-        </span>
-      </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full h-1.5 bg-[#1E1E1E] rounded-lg appearance-none cursor-pointer accent-red-500"
-      />
-      <div className="flex justify-between mt-1 text-[10px] text-gray-600 font-mono">
-        <span>{min}°</span>
-        <span>0°</span>
-        <span>+{max}°</span>
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="flex flex-col h-full relative">
-      <div className="flex-1 overflow-y-auto pb-24">
-        <div className="max-w-xl">
-          <div className="bg-[#252526] p-6 rounded-lg border border-studio-border mb-6">
-            <div className="flex items-center justify-between mb-6">
-              <SectionHeader title="Rotation Parameters" />
-              <button
-                onClick={() => { setYaw(0); setPitch(0); setRoll(0); }}
-                className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1"
-              >
-                <RotateCw className="w-3 h-3" /> Reset
-              </button>
-            </div>
-
-            <SliderControl label="Yaw (Z-Axis)" value={yaw} min={-180} max={180} onChange={setYaw} />
-            <SliderControl label="Pitch (Y-Axis)" value={pitch} min={-90} max={90} onChange={setPitch} />
-            <SliderControl label="Roll (X-Axis)" value={roll} min={-180} max={180} onChange={setRoll} />
-          </div>
-
-          <button className={`w-full py-3 rounded font-medium text-white transition-colors shadow-lg ${tool.btnColorClass}`}>
-            Render Rotated File
-          </button>
-        </div>
-      </div>
-
-      {/* Sticky Transport Bar */}
-      <div className="absolute bottom-0 left-0 right-0 bg-[#252526] border-t border-red-500/30 p-4 shadow-2xl">
-        <div className="flex items-center gap-4 max-w-2xl">
-          <div className="flex items-center gap-2">
-            <button className="p-2 rounded-full hover:bg-white/10 text-white"><Square className="w-4 h-4 fill-current" /></button>
-            <button className="p-3 rounded-full bg-red-600 hover:bg-red-500 text-white shadow-lg"><Play className="w-5 h-5 fill-current ml-0.5" /></button>
-          </div>
-
-          <div className="flex-1 flex flex-col justify-center">
-            <div className="flex justify-between text-[10px] text-gray-400 font-mono mb-1">
-              <span>00:00.000</span>
-              <span>00:15.000</span>
-            </div>
-            <div className="h-1.5 bg-[#1E1E1E] rounded-full overflow-hidden relative">
-              <div className="absolute left-0 top-0 bottom-0 w-1/3 bg-red-600 opacity-50"></div>
-              <div className="absolute left-1/3 w-1 h-full bg-white shadow-[0_0_10px_white]"></div>
-            </div>
-          </div>
-
-          <div className="text-xs font-bold text-red-500 uppercase tracking-wider">
-            Preview Active
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const Ambix2CafTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
   const [layout, setLayout] = useState('discrete');
@@ -524,7 +440,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
         {tool.id === ToolId.Ambix2Bin && <Ambix2BinTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
         {tool.id === ToolId.AmbiOrder && <AmbiOrderTool tool={tool} files={files} onRun={handleRunTask} isProcessing={isProcessing} />}
         {tool.id === ToolId.AmbiSwap && <AmbiSwapTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
-        {tool.id === ToolId.AmbiRotate && <AmbiRotateTool tool={tool} />}
+        {tool.id === ToolId.AmbiRotate && <AmbiRotateTool tool={tool} files={files} onRun={handleRunTask} isProcessing={isProcessing} />}
         {tool.id === ToolId.Ambix2CAF && <Ambix2CafTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
       </div>
     </div>

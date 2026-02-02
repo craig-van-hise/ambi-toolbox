@@ -16,11 +16,14 @@ It consolidates multiple audio conversion tools into a single, modular applicati
 4.  **Ambix2CAF**: Convert to Apple CAF format (Discrete or HOA/ACN Layouts).
 5.  **AmbiOrder**: Reduce Ambisonic Order (e.g., 3rd -> 1st) with dynamic input detection.
 
-6.  **AmbiSwap**: Convert between ACN/SN3D (AmbiX) and FuMa (MaxN).
-    -   *Crucial*: Enforced 24-bit PCM output to prevent gain-normalization data loss.
+20: 6.  **AmbiSwap**: Convert between ACN/SN3D (AmbiX) and FuMa (MaxN).
+21:     -   *Crucial*: Enforced 24-bit PCM output to prevent gain-normalization data loss.
+22: 
+23: 7.  **AmbiRotate**: Real-time Rotation Preview.
+24:     -   **Native DSP Engine**: Zero-dependency, infinite-order rotation.
+25:     -   **Monitoring**: Binaural stereo downmix for instant feedback.
 
-### Construction Zone (UI Ready, Backend Pending)
--   **AmbiRotate**: Apply Yaw/Pitch/Roll rotation to the soundfield.
+
 
 ## 🚀 Getting Started
 
