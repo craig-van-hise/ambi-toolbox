@@ -20,8 +20,10 @@ It consolidates multiple audio conversion tools into a single, modular applicati
 21:     -   *Crucial*: Enforced 24-bit PCM output to prevent gain-normalization data loss.
 22: 
 23: 7.  **AmbiRotate**: Real-time Rotation Preview.
-24:     -   **Native DSP Engine**: Zero-dependency, infinite-order rotation.
-25:     -   **Monitoring**: Binaural stereo downmix for instant feedback.
+24:     -   **Hybrid Native Engine**: 
+25:         -   **Order 1 (Ch 1-3)**: Full 3-Axis Matrix (Yaw/Pitch/Roll).
+26:         -   **Order >1 (Ch 4+)**: Infinite-Order Sectorial Yaw (Optimized).
+27:     -   **Monitoring**: Binaural stereo downmix for instant feedback.
 
 
 

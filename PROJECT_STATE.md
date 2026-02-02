@@ -18,7 +18,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 | **Ambix2IAMF** | 🟢 Ready | `electron/handlers/Ambix2IAMF.ts` | Generates textproto config and runs `iamf-enc`. |
 | **AmbiOrder** | 🟢 Ready | `electron/handlers/AmbiOrder.ts` | Uses `channelmap` filter. Dynamic Order Detection. |
 | **AmbiSwap** | 🟢 Ready | `electron/handlers/AmbiSwap.ts` | Supports 1st-3rd Order. Enforces 24-bit PCM. |
-| **AmbiRotate** | 🟢 Ready | `NativeRotator.ts` (Frontend DSP) | Preview Only. Arbitrary Order Support. |
+| **AmbiRotate** | 🟢 Ready | `NativeRotator.ts` (Hybrid DSP) | 3-Axis (Order 1) + Infinite Yaw (Order N). |
 | **Ambix2CAF** | 🟢 Ready | `electron/handlers/Ambix2CAF.ts` | Supports Discrete & HOA Layouts. |
 
 ## 3. Directory Structure (Key Paths)
@@ -39,4 +39,4 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 -   **Tailwind v4**: Updated PostCSS configuration for compatibility.
 -   **AmbiOrder Logic**: Implemented using `channelmap` filter to support arbitrary order reduction (1st-7th Order) without layout strictness.
 -   **File Inspection**: Added `inspect-file` IPC channel for frontend probing of dropped files.
--   **Native DSP Engine**: Implemented `NativeRotator.ts` for infinite-order Ambisonics rotation and binaural monitoring. Replaces unstable external libraries with pure Web Audio API.
+-   **Native DSP Engine**: Implemented `NativeRotator.ts` "Hybrid Engine": Full 3x3 Matrix for 1st Order (Yaw/Pitch/Roll) + Sectorial Logic for Higher Orders (Yaw only). Replaces unstable external libraries.

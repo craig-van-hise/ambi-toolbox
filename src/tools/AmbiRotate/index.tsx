@@ -165,7 +165,7 @@ export const AmbiRotateTool: React.FC<AmbiRotateToolProps> = ({ tool, files, onR
                 logDebug("NativeRotator Initialized.");
 
                 // Initialize Rotation
-                nativeRotatorRef.current.setRotation(yaw);
+                nativeRotatorRef.current.setRotation(yaw, pitch, roll);
 
             } catch (e: any) {
                 console.error("Native Engine Crash:", e);
@@ -188,11 +188,11 @@ export const AmbiRotateTool: React.FC<AmbiRotateToolProps> = ({ tool, files, onR
     // 2. Live Rotation Logic (The "Link")
     // ------------------------------------------------------------------
     useEffect(() => {
+        // NativeRotator uses Degrees directly
         if (nativeRotatorRef.current) {
-            // NativeRotator uses Degrees directly
-            nativeRotatorRef.current.setRotation(yaw);
+            nativeRotatorRef.current.setRotation(yaw, pitch, roll);
         }
-    }, [yaw]); // Pitch/Roll ignored by NativeRotator (Yaw-only)
+    }, [yaw, pitch, roll]);
 
     // ------------------------------------------------------------------
     // 3. Playback Logic (Graph Injection)
