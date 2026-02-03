@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { dispatchTask } from './handlers/index'
 import { probeAudio } from './handlers/common'
+import { spawn } from 'child_process';
 
 const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -112,6 +113,50 @@ app.whenReady().then(() => {
       console.error(`[MAIN] Error reading chunk from ${filePath}:`, error);
       throw error;
     }
+  });
+
+  // ------------------------------------------------------------------
+  // PYTHON INTEGRATION (AmbiRotate)
+  // ------------------------------------------------------------------
+
+  ipcMain.handle('process-ambi-rotate', async (event, filePaths: string[], rotation) => {
+    console.log("MAIN: Starting Rotation Render...", { filePaths, rotation });
+
+    // Locate the Python Script (Adjust path relative to 'dist-electron')
+    const scriptPath = path.join(__dirname, '../py/ambi_rotate.py');
+
+    return new Promise((resolve, reject) => {
+      const python = spawn('python3', [
+        scriptPath,
+        '--files', JSON.stringify(filePaths),
+        '--yaw', rotation.yaw.toString(),
+        '--pitch', rotation.pitch.toString(),
+        '--roll', rotation.roll.toString()
+      ]);
+
+      let output = '';
+      let errorOutput = '';
+
+      python.stdout.on('data', (data) => {
+        console.log(`PYTHON: ${data}`);
+        output += data.toString();
+      });
+
+      python.stderr.on('data', (data) => {
+        console.error(`PYTHON ERR: ${data}`);
+        errorOutput += data.toString();
+      });
+
+      python.on('close', (code) => {
+        if (code === 0) {
+          console.log("MAIN: Rotation Render Success.");
+          resolve({ success: true, log: output });
+        } else {
+          console.error("MAIN: Rotation Render Failed.", code);
+          reject(new Error(`Python script failed with code ${code}: ${errorOutput}`));
+        }
+      });
+    });
   });
 
   createWindow()

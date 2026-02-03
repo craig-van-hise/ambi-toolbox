@@ -1,7 +1,9 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
 contextBridge.exposeInMainWorld('electron', {
-  runTask: (toolId: string, options: any) => ipcRenderer.invoke('run-task', toolId, options),
+  processChunk: (filePath: string, options: any) => ipcRenderer.invoke('process-chunk', filePath, options),
+  processAmbiRotate: (filePaths: string[], rotation: any) => ipcRenderer.invoke('process-ambi-rotate', filePaths, rotation),
+
   onProgress: (callback: (progress: number) => void) => {
     const subscription = (_event: any, progress: number) => callback(progress)
     ipcRenderer.on('task-progress', subscription)

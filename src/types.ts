@@ -44,3 +44,15 @@ export enum AmbiFormat {
   AmbiX = 'AmbiX (ACN/SN3D)',
   FuMa = 'FuMa (Furse-Malham)',
 }
+
+export interface AmbiRotateToolProps {
+  tool: ToolDefinition;
+  files: any[];
+  isProcessing: boolean;
+  onRun: (options: any) => void;
+}
+
+export interface ElectronAPI {
+  readChunk: (filePath: string, offset: number, length: number) => Promise<ArrayBuffer>;
+  processAmbiRotate: (filePaths: string[], rotation: { yaw: number, pitch: number, roll: number }) => Promise<any>;
+}

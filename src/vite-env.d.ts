@@ -2,7 +2,8 @@
 /// <reference types="vite-plugin-electron/electron-env" />
 
 interface ElectronAPI {
-    runTask: (toolId: string, options: any) => Promise<any>
+    processChunk: (filePath: string, options: any) => Promise<any>
+    processAmbiRotate: (filePaths: string[], rotation: { yaw: number, pitch: number, roll: number }) => Promise<any>
     onProgress: (callback: (progress: number) => void) => () => void
     onStatus: (callback: (message: string) => void) => () => void
     onError: (callback: (error: string) => void) => () => void
