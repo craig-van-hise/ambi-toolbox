@@ -57,7 +57,7 @@ The output can be found in `release/` or `dist/`.
 -   **Frontend**: React + TypeScript + TailwindCSS (`src/`)
 -   **Backend**: Electron Main Process (`electron/`)
     -   **Handlers**: `electron/handlers/` (Business logic for each tool)
-    -   **Bridge**: `electron/preload.ts` (API exposed to window.electron)
+    -   **Bridge**: `electron/preload.ts` (Unified Bridge: `window.electron` and `window.electronAPI`)
 -   **Legacy**: Old Python/Swift apps are archived in `legacy_apps/`.
 
 ## 🧪 Testing

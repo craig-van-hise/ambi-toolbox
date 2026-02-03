@@ -1,21 +1,32 @@
 /// <reference types="vite/client" />
 /// <reference types="vite-plugin-electron/electron-env" />
 
+interface ElectronLegacy {
+    runTask: (command: string, args: any[]) => Promise<any>
+    selectFolder: () => Promise<any>
+    selectFile: () => Promise<any>
+    onLog: (callback: (event: any, msg: string) => void) => () => void
+}
+
 interface ElectronAPI {
-    processChunk: (filePath: string, options: any) => Promise<any>
+    selectFiles: () => Promise<string[]>
+    expandPaths: (paths: string[]) => Promise<string[]>
     processAmbiRotate: (filePaths: string[], rotation: { yaw: number, pitch: number, roll: number }) => Promise<any>
+    on: (channel: string, callback: (data: any) => void) => () => void
     onProgress: (callback: (progress: number) => void) => () => void
-    onStatus: (callback: (message: string) => void) => () => void
-    onError: (callback: (error: string) => void) => () => void
-    inspectFile: (path: string) => Promise<{ success: boolean; data?: any; error?: string }>
-    readFile: (path: string) => Promise<ArrayBuffer>
+    // Compatibility Methods
     getFileSize: (path: string) => Promise<number>
     readChunk: (path: string, offset: number, size: number) => Promise<ArrayBuffer>
+    inspectFile: (path: string) => Promise<{ success: boolean; data?: any; error?: string }>
 }
 
 declare interface Window {
-    electron: ElectronAPI
+    electron: ElectronLegacy
+    electronAPI: ElectronAPI
     ambisonics: any
     JSAmbisonics: any
+}
+ambisonics: any
+JSAmbisonics: any
 }
 

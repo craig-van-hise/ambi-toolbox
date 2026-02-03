@@ -41,4 +41,4 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 -   **File Inspection**: Added `inspect-file` IPC channel for frontend probing of dropped files.
 -   **Native DSP Engine**: Implemented `NativeRotator.ts` "Hybrid Engine": Full 3x3 Matrix for 1st Order (Yaw/Pitch/Roll) + Sectorial Logic for Higher Orders (Yaw only). Replaces unstable external libraries.
 -   **AmbiRotate Backend**: Integrated `py/ambi_rotate.py` for offline rendering. Uses NumPy for high-fidelity rotation and SoundFile to preserve bit-depth during export. Wired via Electron IPC.
--   **AmbiRotate Backend**: Integrated `py/ambi_rotate.py` for offline rendering. Uses NumPy for high-fidelity rotation and SoundFile to preserve bit-depth during export. Wired via Electron IPC.
+-   **Architecture Restoration**: Restored Legacy Bridge (`window.electron`) alongside New Bridge (`window.electronAPI`) in `preload.ts` to ensure backward compatibility for all tools (PRP #39/#40).

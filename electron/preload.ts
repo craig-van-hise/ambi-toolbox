@@ -1,26 +1,48 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron';
 
+// --- LEGACY BRIDGE (For EpicsToBin, MixToOpus, etc.) ---
 contextBridge.exposeInMainWorld('electron', {
-  processChunk: (filePath: string, options: any) => ipcRenderer.invoke('process-chunk', filePath, options),
-  processAmbiRotate: (filePaths: string[], rotation: any) => ipcRenderer.invoke('process-ambi-rotate', filePaths, rotation),
+  // The critical function missing for legacy tools:
+  runTask: (command: string, args: any[]) => ipcRenderer.invoke('run-task', command, args),
 
-  onProgress: (callback: (progress: number) => void) => {
-    const subscription = (_event: any, progress: number) => callback(progress)
-    ipcRenderer.on('task-progress', subscription)
-    return () => ipcRenderer.removeListener('task-progress', subscription)
+  // Legacy handlers
+  selectFolder: () => ipcRenderer.invoke('dialog:openDirectory'),
+  selectFile: () => ipcRenderer.invoke('dialog:openFile'),
+  onLog: (callback: (event: any, msg: string) => void) => {
+    const sub = (_: any, msg: string) => callback(_, msg);
+    ipcRenderer.on('backend-log', sub);
+    return () => ipcRenderer.removeListener('backend-log', sub);
   },
-  onStatus: (callback: (message: string) => void) => {
-    const subscription = (_event: any, message: string) => callback(message)
-    ipcRenderer.on('task-status', subscription)
-    return () => ipcRenderer.removeListener('task-status', subscription)
+  // Missing method causing AmbiOrder crash (PRP #40)
+  inspectFile: (path: string) => ipcRenderer.invoke('inspect-file', path)
+});
+
+// --- NEW BRIDGE (For AmbiRotate) ---
+contextBridge.exposeInMainWorld('electronAPI', {
+  // Dialogs
+  selectFiles: () => ipcRenderer.invoke('dialog:openFile'),
+  expandPaths: (paths: string[]) => ipcRenderer.invoke('app:expandPaths', paths),
+
+  // IPC for AmbiRotate
+  processAmbiRotate: (filePaths: string[], rotation: any) =>
+    ipcRenderer.invoke('process-ambi-rotate', filePaths, rotation),
+
+  // Progress Listener
+  on: (channel: string, callback: (data: any) => void) => {
+    const subscription = (_: any, data: any) => callback(data);
+    ipcRenderer.on(channel, subscription);
+    return () => ipcRenderer.removeListener(channel, subscription);
   },
-  onError: (callback: (error: string) => void) => {
-    const subscription = (_event: any, error: string) => callback(error)
-    ipcRenderer.on('task-error', subscription)
-    return () => ipcRenderer.removeListener('task-error', subscription)
+
+  // Audio Processing Listener
+  onProgress: (callback: (percent: number) => void) => {
+    const sub = (_: any, p: number) => callback(p);
+    ipcRenderer.on('task-progress', sub); // Mapped to existing event
+    return () => ipcRenderer.removeListener('task-progress', sub);
   },
-  inspectFile: (path: string) => ipcRenderer.invoke('inspect-file', path),
-  readFile: (path: string) => ipcRenderer.invoke('read-file', path),
+
+  // --- Added by Logic for AmbiRotate Compatibility (PRP #18/36) ---
   getFileSize: (path: string) => ipcRenderer.invoke('get-file-size', path),
-  readChunk: (path: string, offset: number, size: number) => ipcRenderer.invoke('read-chunk', path, offset, size)
-})
+  readChunk: (path: string, offset: number, size: number) => ipcRenderer.invoke('read-chunk', path, offset, size),
+  inspectFile: (path: string) => ipcRenderer.invoke('inspect-file', path),
+});

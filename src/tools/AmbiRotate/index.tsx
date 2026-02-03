@@ -87,7 +87,7 @@ export const AmbiRotateTool: React.FC<AmbiRotateToolProps> = ({
 
         try {
             const filePath = file.path;
-            const totalSize = await window.electron.getFileSize(filePath);
+            const totalSize = await window.electronAPI.getFileSize(filePath);
             const CHUNK_SIZE = 50 * 1024 * 1024;
             let offset = 0;
             const chunks: ArrayBuffer[] = [];
@@ -99,7 +99,7 @@ export const AmbiRotateTool: React.FC<AmbiRotateToolProps> = ({
                 setLoadingProgress(percent);
                 setLoadingMessage(`Loading... ${percent}%`);
 
-                const chunk = await window.electron.readChunk(filePath, offset, sizeToRead);
+                const chunk = await window.electronAPI.readChunk(filePath, offset, sizeToRead);
                 chunks.push(chunk);
                 offset += sizeToRead;
             }
@@ -348,7 +348,7 @@ export const AmbiRotateTool: React.FC<AmbiRotateToolProps> = ({
         try {
             // Call the Backend to process the file with current Yaw/Pitch/Roll
             // We pass the rotation values to the Python backend
-            const result = await window.electron.processAmbiRotate(
+            const result = await window.electronAPI.processAmbiRotate(
                 files.map((f: any) => f.path),
                 { yaw, pitch, roll }
             );
