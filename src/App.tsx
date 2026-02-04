@@ -12,9 +12,9 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased">
       {/* Sidebar Navigation */}
-      <Sidebar 
-        activeTool={activeToolId} 
-        onSelectTool={setActiveToolId} 
+      <Sidebar
+        activeTool={activeToolId}
+        onSelectTool={setActiveToolId}
       />
 
       {/* Main Content Area */}
@@ -22,7 +22,7 @@ const App: React.FC = () => {
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#404040_1px,transparent_1px)] [background-size:16px_16px]"></div>
 
-        <div className="flex-1 overflow-y-auto p-8 z-10">
+        <div className="flex-1 z-10 h-full flex flex-col">
           <ToolView tool={activeTool} />
         </div>
       </main>

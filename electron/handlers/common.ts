@@ -1,5 +1,6 @@
 import { app } from 'electron';
 import path from 'node:path';
+import fs from 'node:fs';
 import { spawn } from 'node:child_process';
 
 // Get Binary Paths
@@ -23,6 +24,15 @@ export interface AudioProbeResult {
 export function probeAudio(filePath: string): Promise<AudioProbeResult> {
     return new Promise((resolve, reject) => {
         const ffprobePath = getFfprobePath();
+
+        // Validation
+        if (!fs.existsSync(ffprobePath)) {
+            return reject(new Error(`FFprobe binary missing at: ${ffprobePath}`));
+        }
+        if (!fs.existsSync(filePath)) {
+            return reject(new Error(`Input file missing at: ${filePath}`));
+        }
+
         // Use JSON output for guaranteed parsing
         const args = [
             '-v', 'quiet',
@@ -44,6 +54,9 @@ export function probeAudio(filePath: string): Promise<AudioProbeResult> {
 
         process.on('close', (code) => {
             if (code !== 0) {
+                console.error(`[Probe] Failed. Code: ${code}`);
+                console.error(`[Probe] Stderr: ${stderr}`);
+                console.error(`[Probe] Args:`, args);
                 return reject(new Error(`FFprobe failed (code ${code}): ${stderr}`));
             }
 

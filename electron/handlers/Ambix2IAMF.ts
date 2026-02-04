@@ -14,23 +14,20 @@ function getIamfEncPath(): string {
 }
 
 export async function handleAmbix2IAMF(event: IpcMainInvokeEvent, options: {
-    inputPath: string;
+    files: string[];
     bitrate?: string;
 }): Promise<{ success: boolean; error?: string; data?: any }> {
-    const { inputPath, bitrate } = options;
+    const { files, bitrate } = options;
 
     try {
+        if (!files || files.length === 0) throw new Error("No files provided");
+
         const iamfEncPath = getIamfEncPath();
         if (!fs.existsSync(iamfEncPath)) {
             throw new Error("iamf-enc binary not found.");
         }
 
-        // 1. Probe Audio for samples/duration
-        // Use probeAudio from common which uses ffmpeg (must be efficient)
-        // We need sample count. probeAudio returns duration in seconds.
-        // We should update probeAudio or calculate manually: samples = duration * rate
-        const info = await probeAudio(inputPath);
-        const durationSamples = Math.floor(info.duration * info.sampleRate);
+        const results = [];
 
         // Match quality
         // Bitrate option string format: "High (96kbps)"
@@ -40,65 +37,101 @@ export async function handleAmbix2IAMF(event: IpcMainInvokeEvent, options: {
             if (match) qualityKbps = parseInt(match[1]);
         }
 
-        // 2. Output Paths
-        const inputDir = path.dirname(inputPath);
-        const inputBasename = path.basename(inputPath);
-        const outputDir = path.dirname(inputPath); // Save in same dir
+        for (let i = 0; i < files.length; i++) {
+            const inputPath = files[i];
+            console.log(`[Ambix2IAMF] Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`);
 
-        // 3. Generate Config
-        const configContent = generateIamfConfig(inputBasename, durationSamples, info.sampleRate, qualityKbps);
+            // 1. Probe Audio for samples/duration
+            const info = await probeAudio(inputPath);
+            const durationSamples = Math.floor(info.duration * info.sampleRate);
 
-        // Write config to temp file
-        const configPath = path.join(os.tmpdir(), `iamf_config_${Date.now()}.textproto`);
-        await fs.promises.writeFile(configPath, configContent);
+            if (isNaN(durationSamples) || durationSamples <= 0) {
+                throw new Error(`Invalid audio duration detected: ${info.duration}s`);
+            }
 
-        // 4. Run iamf-enc
-        const args = [
-            `--user_metadata_filename=${configPath}`,
-            `--input_wav_directory=${inputDir}`,
-            `--output_iamf_directory=${outputDir}`
-        ];
+            // 2. Output Paths
+            const inputDir = path.dirname(inputPath);
+            const inputBasename = path.basename(inputPath);
+            const outputDir = path.dirname(inputPath); // Save in same dir
 
-        console.log(`[Ambix2IAMF] Spawning: ${iamfEncPath} ${args.join(' ')}`);
+            // 3. Generate Config
+            // Use a specific temporary name that is clearly temporary
+            const tempPrefix = `_tmp_processing_${i}`;
+            const configContent = generateIamfConfig(inputBasename, durationSamples, info.sampleRate, qualityKbps, tempPrefix);
 
-        return new Promise((resolve) => {
-            const child = spawn(iamfEncPath, args);
-            let stdout = '';
-            let stderr = '';
+            // Write config to temp file
+            const configPath = path.join(os.tmpdir(), `iamf_config_${Date.now()}_${i}.textproto`);
+            await fs.promises.writeFile(configPath, configContent);
 
-            child.stdout.on('data', d => stdout += d.toString());
-            child.stderr.on('data', d => stderr += d.toString());
+            // Pre-cleanup: Ensure temp output file doesn't exist
+            const generatedFile = path.join(outputDir, `${tempPrefix}.iamf`);
+            if (fs.existsSync(generatedFile)) {
+                try { await fs.promises.unlink(generatedFile); } catch { }
+            }
 
-            child.on('close', async (code) => {
-                // Cleanup config
-                try { await fs.promises.unlink(configPath); } catch { }
+            // 4. Run iamf-enc
+            const args = [
+                `--user_metadata_filename=${configPath}`,
+                `--input_wav_directory=${inputDir}`,
+                `--output_iamf_directory=${outputDir}`
+            ];
 
-                if (code === 0) {
-                    // Success.
-                    // The IAMF tool creates a file based on 'file_name_prefix' in config.
-                    // Config says "output", so it creates "output.iamf" in outputDir.
-                    // We should rename it to match input filename.
-                    const generatedFile = path.join(outputDir, 'output.iamf');
-                    const targetFile = inputPath.replace(/\.[^/.]+$/, "") + ".iamf";
+            console.log(`[Ambix2IAMF] Spawning: ${iamfEncPath} ${args.join(' ')}`);
 
-                    if (fs.existsSync(generatedFile)) {
-                        await fs.promises.rename(generatedFile, targetFile);
-                        event.sender.send('task-progress', 1.0);
-                        resolve({ success: true, data: { outputPath: targetFile } });
+            await new Promise<void>((resolve, reject) => {
+                const child = spawn(iamfEncPath, args, { stdio: ['ignore', 'pipe', 'pipe'] });
+                let stdout = '';
+                let stderr = '';
+
+                // TIMEOUT SAFETY: Kill process if it takes too long (e.g. 60s per file)
+                const timer = setTimeout(() => {
+                    child.kill();
+                    reject(new Error(`Process timed out after 60s. Log: ${stderr}`));
+                }, 60000);
+
+                child.stdout.on('data', d => stdout += d.toString());
+                child.stderr.on('data', d => stderr += d.toString());
+
+                child.on('close', async (code) => {
+                    clearTimeout(timer);
+
+                    // Cleanup config
+                    try { await fs.promises.unlink(configPath); } catch { }
+
+                    if (code === 0 || code === null) { // code null if killed, but we handle timeout above
+                        if (code === null) return; // handled by timeout
+
+                        // Success.
+                        const targetFile = inputPath.replace(/\.[^/.]+$/, "") + ".iamf";
+
+                        if (fs.existsSync(generatedFile)) {
+                            try {
+                                await fs.promises.rename(generatedFile, targetFile);
+                                resolve();
+                            } catch (e: any) {
+                                reject(new Error(`Failed to rename output to ${path.basename(targetFile)}: ${e.message}`));
+                            }
+                        } else {
+                            reject(new Error(`IAMF tool finished but output file missing: ${generatedFile}`));
+                        }
                     } else {
-                        // Maybe success but different name? Or failed silently?
-                        resolve({ success: false, error: "IAMF file was not created at expected location." });
+                        console.error("[Ambix2IAMF] Error:", stderr);
+                        reject(new Error(`iamf-enc failed (code ${code}). Log: ${stderr}`));
                     }
-                } else {
-                    console.error("[Ambix2IAMF] Error:", stderr);
-                    resolve({ success: false, error: `iamf-enc failed (code ${code}). Log: ${stderr}` });
-                }
+                });
+
+                child.on('error', (err) => {
+                    clearTimeout(timer);
+                    reject(new Error(`Failed to spawn iamf-enc: ${err.message}`));
+                });
             });
 
-            child.on('error', (err) => {
-                resolve({ success: false, error: `Failed to spawn iamf-enc: ${err.message}` });
-            });
-        });
+            const targetFile = inputPath.replace(/\.[^/.]+$/, "") + ".iamf";
+            results.push(targetFile);
+            event.sender.send('task-progress', (i + 1) / files.length);
+        }
+
+        return { success: true, data: { outputPaths: results } };
 
     } catch (e: any) {
         return { success: false, error: e.message };

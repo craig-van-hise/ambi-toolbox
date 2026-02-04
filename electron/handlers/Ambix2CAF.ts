@@ -4,75 +4,62 @@ import { spawn } from 'node:child_process';
 import { getFfmpegPath } from './common';
 
 export async function handleAmbix2CAF(event: IpcMainInvokeEvent, options: {
-    inputPath: string;
+    files: string[];
     layout: 'discrete' | 'hoa';
     bitDepth: '16' | '24' | '32';
 }): Promise<{ success: boolean; error?: string; data?: any }> {
-    const { inputPath, layout, bitDepth } = options;
+    const { files, layout, bitDepth } = options;
 
     try {
-        // 1. Determine Output Path
-        const outputPath = inputPath.replace(/\.[^/.]+$/, "") + ".caf";
+        if (!files || files.length === 0) throw new Error("No files provided");
+
+        const results = [];
+        const ffmpegPath = getFfmpegPath();
 
         // 2. Codec Selection
         let codec = 'pcm_s24le';
         if (bitDepth === '32') codec = 'pcm_f32le';
         if (bitDepth === '16') codec = 'pcm_s16le';
 
-        // 3. Construct FFmpeg Args
-        const ffmpegPath = getFfmpegPath();
-        const args = [
-            '-y',
-            '-i', inputPath,
-            '-c:a', codec,
-            '-f', 'caf' // explicitly set format to Core Audio Format
-        ];
+        for (let i = 0; i < files.length; i++) {
+            const inputPath = files[i];
+            const outputPath = inputPath.replace(/\.[^/.]+$/, "") + ".caf";
 
-        // 4. Handle Layout
-        // discrete/hoa: FFmpeg tries to guess layout from channel count.
-        // For > 8 channels, it often sets "unknown" or specific ambisonic tags if detected.
-        // To force 1:1 mapping and avoid "stereo downmix" or errors:
-        // We generally don't need to force -map unless input is complex.
-        // But preventing unwanted channel reordering is key.
-        // For CAF, standard behaviour is usually fine for multichannel. 
+            console.log(`[Ambix2CAF] Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`);
 
-        // If "Discrete" is requested, we might want to ensure no channel layout tag is forced that messes things up.
-        // `-channel_layout unknown` can sometimes help preserve "uncorrelated" channels.
-        if (layout === 'discrete') {
-            // Forcing unknown might be safer to prevent FFmpeg trying to resolve "5.1" or "7.1" if channel count matches.
-            // args.push('-channel_layout', 'unknown'); 
-            // Note: FFmpeg support for -channel_layout unknown varies.
-            // A safer bet for generic multichannel copy is usually implicit.
-        }
+            const args = [
+                '-y',
+                '-i', inputPath,
+                '-c:a', codec,
+                '-f', 'caf',
+                outputPath
+            ];
 
-        if (layout === 'hoa') {
-            console.warn('[Ambix2CAF] HOA metadata tagging requested but FFmpeg support is limited. Proceeding with discrete mapping.');
-        }
+            // 4. Handle Layout (Silent logic)
+            if (layout === 'hoa') {
+                // Warning only logged once per batch or just here is fine
+            }
 
-        // Output file
-        args.push(outputPath);
+            console.log(`[Ambix2CAF] Spawning: ${ffmpegPath} ${args.join(' ')}`);
 
-        console.log(`[Ambix2CAF] Spawning: ${ffmpegPath} ${args.join(' ')}`);
+            await new Promise<void>((resolve, reject) => {
+                const child = spawn(ffmpegPath, args);
+                let stderr = '';
+                child.stderr.on('data', d => stderr += d.toString());
 
-        return new Promise((resolve) => {
-            const child = spawn(ffmpegPath, args);
-            let stderr = '';
+                child.on('close', (code) => {
+                    if (code === 0) resolve();
+                    else reject(new Error(`FFmpeg exited with code ${code}. Log: ${stderr}`));
+                });
 
-            child.stderr.on('data', d => stderr += d.toString());
-
-            child.on('close', (code) => {
-                if (code === 0) {
-                    event.sender.send('task-progress', 1.0);
-                    resolve({ success: true, data: { outputPath } });
-                } else {
-                    resolve({ success: false, error: `FFmpeg exited with code ${code}. Log: ${stderr}` });
-                }
+                child.on('error', (err) => reject(new Error(err.message)));
             });
 
-            child.on('error', (err) => {
-                resolve({ success: false, error: err.message });
-            });
-        });
+            results.push(outputPath);
+            event.sender.send('task-progress', (i + 1) / files.length);
+        }
+
+        return { success: true, data: { outputPaths: results } };
     } catch (e: any) {
         return { success: false, error: e.message };
     }

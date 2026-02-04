@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
@@ -113,6 +113,49 @@ app.whenReady().then(() => {
       console.error(`[MAIN] Error reading chunk from ${filePath}:`, error);
       throw error;
     }
+  });
+
+  // NEW: Native File Dialog (PRP #42-1)
+  ipcMain.handle('dialog:openFile', async () => {
+    const result = await dialog.showOpenDialog({
+      properties: ['openFile', 'multiSelections']
+    });
+    return result.canceled ? null : result.filePaths;
+  });
+
+  // NEW: Recursive Path Expansion (PRP #42-1)
+  ipcMain.handle('app:expandPaths', async (_event, paths: string[]) => {
+    const fs = await import('node:fs/promises');
+    const path = await import('node:path');
+
+    async function getFilesRecursively(dir: string): Promise<string[]> {
+      const entries = await fs.readdir(dir, { withFileTypes: true });
+      const files: string[] = [];
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          files.push(...await getFilesRecursively(fullPath));
+        } else {
+          files.push(fullPath);
+        }
+      }
+      return files;
+    }
+
+    const allFiles: string[] = [];
+    for (const p of paths) {
+      try {
+        const stats = await fs.stat(p);
+        if (stats.isDirectory()) {
+          allFiles.push(...await getFilesRecursively(p));
+        } else {
+          allFiles.push(p);
+        }
+      } catch (err) {
+        console.warn(`[MAIN] Failed to expand path: ${p}`, err);
+      }
+    }
+    return allFiles;
   });
 
   // ------------------------------------------------------------------

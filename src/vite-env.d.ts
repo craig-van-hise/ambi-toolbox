@@ -6,6 +6,7 @@ interface ElectronLegacy {
     selectFolder: () => Promise<any>
     selectFile: () => Promise<any>
     onLog: (callback: (event: any, msg: string) => void) => () => void
+    inspectFile: (path: string) => Promise<any>
 }
 
 interface ElectronAPI {
@@ -18,6 +19,13 @@ interface ElectronAPI {
     getFileSize: (path: string) => Promise<number>
     readChunk: (path: string, offset: number, size: number) => Promise<ArrayBuffer>
     inspectFile: (path: string) => Promise<{ success: boolean; data?: any; error?: string }>
+
+    // New Conversion Methods
+    convertBitrate: (filePaths: string[], bitrate: string, format: 'opus' | 'iamf') => Promise<any>
+    convertAmbix2Bin: (filePaths: string[], hrtfProfile: string) => Promise<any>
+    convertAmbiSwap: (filePaths: string[], direction: string) => Promise<any>
+    convertAmbix2Caf: (filePaths: string[], layout?: string, bitDepth?: string) => Promise<any>
+    convertAmbiOrder: (filePaths: string[], targetOrder: string) => Promise<any>
 }
 
 declare interface Window {
@@ -26,7 +34,5 @@ declare interface Window {
     ambisonics: any
     JSAmbisonics: any
 }
-ambisonics: any
-JSAmbisonics: any
-}
+
 

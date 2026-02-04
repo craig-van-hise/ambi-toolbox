@@ -45,4 +45,20 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getFileSize: (path: string) => ipcRenderer.invoke('get-file-size', path),
   readChunk: (path: string, offset: number, size: number) => ipcRenderer.invoke('read-chunk', path, offset, size),
   inspectFile: (path: string) => ipcRenderer.invoke('inspect-file', path),
+
+  // Conversion Methods (Mapped to 'run-task')
+  convertBitrate: (filePaths: string[], bitrate: string, format: 'opus' | 'iamf') =>
+    ipcRenderer.invoke('run-task', format === 'iamf' ? 'ambix2iamf' : 'ambix2opus', { files: filePaths, bitrate }),
+
+  convertAmbix2Bin: (filePaths: string[], hrtfProfile: string) =>
+    ipcRenderer.invoke('run-task', 'ambix2bin', { files: filePaths, hrtfProfile }),
+
+  convertAmbiSwap: (filePaths: string[], direction: string) =>
+    ipcRenderer.invoke('run-task', 'ambiswap', { files: filePaths, direction }),
+
+  convertAmbix2Caf: (filePaths: string[], layout?: string, bitDepth?: string) =>
+    ipcRenderer.invoke('run-task', 'ambix2caf', { files: filePaths, layout, bitDepth }),
+
+  convertAmbiOrder: (filePaths: string[], targetOrder: string) =>
+    ipcRenderer.invoke('run-task', 'ambiorder', { files: filePaths, targetOrder }),
 });

@@ -1,33 +1,34 @@
 export function generateIamfConfig(
-    wavFilename: string,
-    durationSamples: number,
-    sampleRate: number = 48000,
-    qualityKbps: number = 96
+  wavFilename: string,
+  durationSamples: number,
+  sampleRate: number = 48000,
+  qualityKbps: number = 96,
+  outputPrefix: string = "output"
 ): string {
-    // Constants for Opus
-    const frameSize = 960;
-    const preSkip = 312;
-    const targetBitratePerChannel = qualityKbps * 1000;
+  // Constants for Opus
+  const frameSize = 960;
+  const preSkip = 312;
+  const targetBitratePerChannel = qualityKbps * 1000;
 
-    // Calculate padded duration (multiple of frameSize)
-    const numFrames = Math.ceil((durationSamples) / frameSize);
-    const paddedDuration = numFrames * frameSize;
-    const samplesToTrimAtEnd = paddedDuration - durationSamples;
+  // Calculate padded duration (multiple of frameSize)
+  const numFrames = Math.ceil((durationSamples) / frameSize);
+  const paddedDuration = numFrames * frameSize;
+  const samplesToTrimAtEnd = paddedDuration - durationSamples;
 
-    // Ambisonic Order 3 (16 channels)
-    const numChannels = 16;
-    const substreamIds = Array.from({ length: numChannels }, (_, i) => i);
-    const channelMapping = Array.from({ length: numChannels }, (_, i) => i);
+  // Ambisonic Order 3 (16 channels)
+  const numChannels = 16;
+  const substreamIds = Array.from({ length: numChannels }, (_, i) => i);
+  const channelMapping = Array.from({ length: numChannels }, (_, i) => i);
 
-    // Channel labels: A_0 to A_15 (ACN order)
-    const channelMetadatas = substreamIds.map(id =>
-        `{ channel_id: ${id} channel_label: CHANNEL_LABEL_A_${id} }`
-    ).join(',\n    ');
+  // Channel labels: A_0 to A_15 (ACN order)
+  const channelMetadatas = substreamIds.map(id =>
+    `{ channel_id: ${id} channel_label: CHANNEL_LABEL_A_${id} }`
+  ).join(',\n    ');
 
-    return `
+  return `
 test_vector_metadata {
   human_readable_description: "3rd Order Ambisonics IAMF (16 ch)"
-  file_name_prefix: "output"
+  file_name_prefix: "${outputPrefix}"
   is_valid: true
   is_valid_to_decode: true
 }

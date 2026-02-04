@@ -20,14 +20,16 @@ function getSofaPath(filename: string): string {
 }
 
 export async function handleAmbix2Bin(event: IpcMainInvokeEvent, options: {
-    inputPath: string;
+    files: string[];
     hrtfProfile: string; // "Neumann", "Kemar", "Custom"
     customSofaPath?: string;
 }): Promise<{ success: boolean; error?: string; data?: any }> {
-    const { inputPath, hrtfProfile, customSofaPath } = options;
+    const { files, hrtfProfile, customSofaPath } = options;
 
     try {
-        // 1. Determine SOFA Path
+        if (!files || files.length === 0) throw new Error("No files provided");
+
+        // 1. Determine SOFA Path (Once for all files)
         let sofaPath = '';
         console.log(`[Ambix2Bin] Profile requested: ${hrtfProfile}`);
 
@@ -39,15 +41,9 @@ export async function handleAmbix2Bin(event: IpcMainInvokeEvent, options: {
             if (customSofaPath && fs.existsSync(customSofaPath)) {
                 sofaPath = customSofaPath;
             } else {
-                // If no custom path provided (e.g. from UI file picker which is not yet in types),
-                // we might need to ask frontend or fail. 
-                // Currently UI in ToolViews.tsx doesn't have file picker for custom SOFA implemented fully
-                // (it just sends 'Custom' enum). 
-                // We'll throw for now if missing.
                 throw new Error("Custom SOFA path not provided.");
             }
         } else {
-            // Default
             sofaPath = getSofaPath('HRIR_L2702.sofa');
         }
 
@@ -55,48 +51,44 @@ export async function handleAmbix2Bin(event: IpcMainInvokeEvent, options: {
             throw new Error(`SOFA file not found at: ${sofaPath}`);
         }
 
-        // 2. Output Path (replace with .bin.wav)
-        const outputPath = inputPath.replace(/\.[^/.]+$/, "") + "_binaural.wav";
-
-        // 3. Spawn Python Script
-        // We assume 'python3' is available in env or .venv
-        // If packaged, we might need a bundled python or expect sys python.
-        // For now, assume 'python3'.
-
         const scriptPath = getScriptPath('saf_wrapper.py');
-        const pythonArgs = [
-            scriptPath,
-            '--input', inputPath,
-            '--output', outputPath,
-            '--sofa', sofaPath
-        ];
+        const results = [];
 
-        console.log(`[Ambix2Bin] Spawning python3 ${pythonArgs.join(' ')}`);
+        for (let i = 0; i < files.length; i++) {
+            const inputPath = files[i];
+            const outputPath = inputPath.replace(/\.[^/.]+$/, "") + "_binaural.wav";
 
-        return new Promise((resolve) => {
-            const child = spawn('python3', pythonArgs);
-            let stdout = '';
-            let stderr = '';
+            console.log(`[Ambix2Bin] Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`);
 
-            child.stdout.on('data', d => stdout += d.toString());
-            child.stderr.on('data', d => stderr += d.toString());
+            const pythonArgs = [
+                scriptPath,
+                '--input', inputPath,
+                '--output', outputPath,
+                '--sofa', sofaPath
+            ];
 
-            child.on('close', (code) => {
-                if (code === 0) {
-                    event.sender.send('task-progress', 1.0);
-                    resolve({ success: true, data: { outputPath } });
-                } else {
-                    console.error("[Ambix2Bin] Python Error:", stderr);
-                    resolve({ success: false, error: `Python script failed (code ${code}). Error: ${stderr}` });
-                }
+            await new Promise<void>((resolve, reject) => {
+                const child = spawn('python3', pythonArgs);
+                let stderr = '';
+
+                child.stderr.on('data', d => stderr += d.toString());
+
+                child.on('close', (code) => {
+                    if (code === 0) resolve();
+                    else reject(new Error(`Python script failed (code ${code}). Error: ${stderr}`));
+                });
+
+                child.on('error', (err) => reject(new Error(`Failed to spawn python3: ${err.message}`)));
             });
 
-            child.on('error', (err) => {
-                resolve({ success: false, error: `Failed to spawn python3: ${err.message}` });
-            });
-        });
+            results.push(outputPath);
+            event.sender.send('task-progress', (i + 1) / files.length); // Simple progress
+        }
+
+        return { success: true, data: { outputPaths: results } };
 
     } catch (e: any) {
+        console.error("[Ambix2Bin] Error:", e);
         return { success: false, error: e.message };
     }
 }
