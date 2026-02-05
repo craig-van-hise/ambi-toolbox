@@ -1,6 +1,6 @@
 # AmbiToolbox - Project State Report
 
-**Date:** February 1, 2026
+**Date:** February 5, 2026
 **Architecture:** Electron Modular Monolith (Transitioned from Python/PyQt)
 
 ## 1. Executive Summary
@@ -12,7 +12,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 
 | Component | Status | Backend Implementation | Notes |
 | :--- | :--- | :--- | :--- |
-| **Frontend UI** | 🟢 Ready | React + Tailwind | Supports Drag & Drop, Tool Switching. |
+| **Frontend UI** | 🟢 Ready | React + Tailwind | Scoped Progress, Auto-Scroll, Drag & Drop. |
 | **Ambix2Opus** | 🟢 Ready | `electron/handlers/Ambix2Opus.ts` | Uses `ffprobe` for robust channel detection. |
 | **Ambix2Bin** | 🟢 Ready | `electron/handlers/Ambix2Bin.ts` | Wraps legacy `saf_wrapper.py` for binaural rendering. |
 | **Ambix2IAMF** | 🟢 Ready | `electron/handlers/Ambix2IAMF.ts` | Generates textproto config and runs `iamf-enc`. |
@@ -34,6 +34,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 -   **`legacy_apps/`**: Archived Python/Swift implementations.
 
 ## 4. Recent Logic Changes
+-   **UI Refinement (PRP #45)**: Implemented scoped progress bars to prevent cross-tool ghosting. Added auto-scroll behavior for Queue and Progress visibility.
 -   **Robust Probing**: Switched from regex-based FFmpeg parsing to JSON-based `ffprobe` output to handle diverse channel layouts (e.g. "4.0", "16ch").
 -   **IAMF Config**: Ported TypeScript config generator from legacy to `electron/handlers/iamf-config-generator.ts`.
 -   **Tailwind v4**: Updated PostCSS configuration for compatibility.

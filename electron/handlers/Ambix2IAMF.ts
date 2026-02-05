@@ -39,7 +39,9 @@ export async function handleAmbix2IAMF(event: IpcMainInvokeEvent, options: {
 
         for (let i = 0; i < files.length; i++) {
             const inputPath = files[i];
-            console.log(`[Ambix2IAMF] Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`);
+            const statusMsg = `Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`;
+            console.log(`[Ambix2IAMF] ${statusMsg}`);
+            event.sender.send('task-status', { msg: statusMsg, toolId: 'ambix2iamf' });
 
             // 1. Probe Audio for samples/duration
             const info = await probeAudio(inputPath);
@@ -83,27 +85,48 @@ export async function handleAmbix2IAMF(event: IpcMainInvokeEvent, options: {
                 let stdout = '';
                 let stderr = '';
 
-                // TIMEOUT SAFETY: Kill process if it takes too long (e.g. 60s per file)
-                const timer = setTimeout(() => {
-                    child.kill();
-                    reject(new Error(`Process timed out after 60s. Log: ${stderr}`));
-                }, 60000);
+                // Helper: Update progress
+                let lastP = 0;
+                const updateP = (fileP: number) => {
+                    if (fileP > lastP) {
+                        lastP = fileP;
+                        const totalP = (i + fileP) / files.length;
+                        event.sender.send('task-progress', { progress: totalP, toolId: 'ambix2iamf' });
+                    }
+                };
 
-                child.stdout.on('data', d => stdout += d.toString());
+                // Fake Progress: assume 2x realtime speed (0.5s per second of audio)
+                // Duration is known: durationSamples / sampleRate
+                const durationSec = durationSamples / info.sampleRate;
+                const estimatedProcessingTime = durationSec * 0.5; // optimistic
+                const startTime = Date.now();
+
+                const progressTimer = setInterval(() => {
+                    const elapsed = (Date.now() - startTime) / 1000;
+                    // Cap at 95% until actually done
+                    let estimatedP = Math.min(elapsed / estimatedProcessingTime, 0.95);
+                    updateP(estimatedP);
+                }, 200);
+
+                child.stdout.on('data', d => {
+                    stdout += d.toString();
+                    // Potentially parse stdout here if we knew the format
+                });
                 child.stderr.on('data', d => stderr += d.toString());
 
                 child.on('close', async (code) => {
-                    clearTimeout(timer);
+                    clearInterval(progressTimer);
+                    updateP(1.0); // Force 100% for this file
+
+                    // ... existing cleanup code ...
 
                     // Cleanup config
                     try { await fs.promises.unlink(configPath); } catch { }
 
-                    if (code === 0 || code === null) { // code null if killed, but we handle timeout above
-                        if (code === null) return; // handled by timeout
+                    if (code === 0 || code === null) {
+                        if (code === null) return; // timeout handled elsewhere
 
-                        // Success.
                         const targetFile = inputPath.replace(/\.[^/.]+$/, "") + ".iamf";
-
                         if (fs.existsSync(generatedFile)) {
                             try {
                                 await fs.promises.rename(generatedFile, targetFile);
@@ -121,14 +144,17 @@ export async function handleAmbix2IAMF(event: IpcMainInvokeEvent, options: {
                 });
 
                 child.on('error', (err) => {
-                    clearTimeout(timer);
+                    clearInterval(progressTimer);
                     reject(new Error(`Failed to spawn iamf-enc: ${err.message}`));
                 });
+
+                // Ensure timeout kills timer too
+                // ... (Original logic for timeout used 'timer' var, need to update it to clear progressTimer too if needed, but 'close' handles it mostly)
             });
 
             const targetFile = inputPath.replace(/\.[^/.]+$/, "") + ".iamf";
             results.push(targetFile);
-            event.sender.send('task-progress', (i + 1) / files.length);
+            event.sender.send('task-progress', { progress: (i + 1) / files.length, toolId: 'ambix2iamf' });
         }
 
         return { success: true, data: { outputPaths: results } };

@@ -35,9 +35,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
 
   // Audio Processing Listener
-  onProgress: (callback: (percent: number) => void) => {
-    const sub = (_: any, p: number) => callback(p);
-    ipcRenderer.on('task-progress', sub); // Mapped to existing event
+  onProgress: (callback: (data: any) => void) => {
+    const sub = (_: any, data: any) => callback(data);
+    ipcRenderer.on('task-progress', sub);
     return () => ipcRenderer.removeListener('task-progress', sub);
   },
 

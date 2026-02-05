@@ -1,7 +1,7 @@
 import { IpcMainInvokeEvent } from 'electron';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
-import { getFfmpegPath } from './common';
+import { getFfmpegPath, probeAudio } from './common';
 
 export async function handleAmbiOrder(event: IpcMainInvokeEvent, options: {
     files: string[];
@@ -47,23 +47,42 @@ export async function handleAmbiOrder(event: IpcMainInvokeEvent, options: {
                 outputPath
             ];
 
-            console.log(`[AmbiOrder] Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`);
+            const statusMsg = `Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`;
+            // Probe for duration
+            const info = await probeAudio(inputPath);
+            const progressBase = i / files.length;
+            const progressScale = 1.0 / files.length;
+
+            console.log(`[AmbiOrder] ${statusMsg}`);
+            event.sender.send('task-status', { msg: statusMsg, toolId: 'ambiorder' });
 
             await new Promise<void>((resolve, reject) => {
                 const child = spawn(ffmpegPath, args);
-                let stderr = '';
-                child.stderr.on('data', d => stderr += d.toString());
+
+                child.stderr.on('data', (d) => {
+                    const line = d.toString();
+                    const timeMatch = line.match(/time=(\d{2}):(\d{2}):(\d{2}\.\d{2})/);
+                    if (timeMatch && info.duration > 0) {
+                        const h = parseFloat(timeMatch[1]);
+                        const m = parseFloat(timeMatch[2]);
+                        const s = parseFloat(timeMatch[3]);
+                        const currentSeconds = h * 3600 + m * 60 + s;
+                        const fileProgress = Math.min(Math.max(currentSeconds / info.duration, 0), 1);
+                        const totalProgress = progressBase + (fileProgress * progressScale);
+                        event.sender.send('task-progress', { progress: totalProgress, toolId: 'ambiorder' });
+                    }
+                });
 
                 child.on('close', (code) => {
                     if (code === 0) resolve();
-                    else reject(new Error(`FFmpeg exited with code ${code}. Log: ${stderr}`));
+                    else reject(new Error(`FFmpeg exited with code ${code}`));
                 });
 
                 child.on('error', (err) => reject(new Error(err.message)));
             });
 
             results.push(outputPath);
-            event.sender.send('task-progress', (i + 1) / files.length);
+            event.sender.send('task-progress', { progress: (i + 1) / files.length, toolId: 'ambiorder' });
         }
 
         return { success: true, data: { outputPaths: results } };

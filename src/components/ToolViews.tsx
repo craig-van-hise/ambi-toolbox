@@ -305,6 +305,77 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
   const [files, setFiles] = useState<File[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
+
+  // Refs for scrolling
+  const queueRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to Queue when files are added
+  useEffect(() => {
+    if (files.length > 0 && queueRef.current) {
+      // Short delay to ensure rendering
+      setTimeout(() => {
+        queueRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+  }, [files.length]);
+
+  // Auto-scroll to Progress when processing starts
+  useEffect(() => {
+    if ((isProcessing || statusMsg) && progressRef.current) {
+      setTimeout(() => {
+        progressRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }, 100);
+    }
+  }, [isProcessing, statusMsg]);
+
+  useEffect(() => {
+    const unsubProgress = window.electronAPI.onProgress((data: any) => {
+      // PRO: Scope progress to tool
+      // If scalar (legacy/AmbiRotate?), assume global or ignore? 
+      // All our updated handlers send object { progress, toolId }
+      // If we receive a number, it might be from a legacy path or AmbiRotate if it used this.
+      // But AmbiRotate uses separate IPC.
+
+      let p = 0;
+      if (typeof data === 'number') {
+        // Fallback for any missed handler or legacy behavior:
+        // If we mistakenly get a number, we can't filter it. 
+        // But we updated all. 
+        p = data;
+      } else if (data && typeof data === 'object') {
+        if (data.toolId && data.toolId !== tool.id) return; // Ignore other tools
+        p = data.progress;
+      }
+
+      console.log(`[ToolView:${tool.id}] Received Progress:`, p);
+      setProgress(p);
+    });
+
+    // Listen for status updates from backend (e.g. "Processing 1/5: file.wav")
+    const unsubStatus = window.electronAPI.on('task-status', (data: any) => {
+      // Scope status msg
+      let msg = '';
+      if (typeof data === 'string') {
+        // Fallback
+        msg = data;
+      } else if (data && typeof data === 'object') {
+        if (data.toolId && data.toolId !== tool.id) return;
+        msg = data.msg;
+      }
+      if (msg) {
+        setStatusMsg(msg);
+        // Also ensure processing state is true if we get a status
+        setIsProcessing(true);
+      }
+    });
+
+    return () => {
+      unsubProgress();
+      unsubStatus();
+    };
+  }, [tool.id]);
 
   // standard "active file" selection (lifted for AmbiRotate)
   const [activeFileIndex, setActiveFileIndex] = useState(0);
@@ -462,7 +533,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
 
             {/* Queue */}
             {files.length > 0 && (
-              <div className="max-h-48 overflow-y-auto bg-[#1E1E1E] rounded-lg border border-studio-border flex flex-col shadow-lg p-2">
+              <div ref={queueRef} className="max-h-48 overflow-y-auto bg-[#1E1E1E] rounded-lg border border-studio-border flex flex-col shadow-lg p-2">
                 <div className="flex justify-between items-center mb-2 px-2 pt-1 flex-none">
                   <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Queue</h3>
                   <button onClick={handleClearFiles} className="text-[10px] text-red-500 hover:text-red-400">CLEAR</button>
@@ -487,12 +558,29 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
           </div>
         </div>
 
-        {/* MESSAGES */}
-        {statusMsg && (
-          <div className="px-8 mt-4">
-            <div className={`p-3 rounded text-sm font-mono border ${statusMsg.includes("Error") ? "bg-red-900/20 border-red-900/50 text-red-300" : "bg-blue-900/20 border-blue-900/50 text-blue-300"}`}>
-              {statusMsg}
-            </div>
+        {/* MESSAGES & PROGRESS */}
+        {(statusMsg || isProcessing) && (
+          <div ref={progressRef} className="px-8 mt-4 flex flex-col gap-2">
+            {statusMsg && (
+              <div className={`p-3 rounded text-sm font-mono border ${statusMsg.includes("Error") ? "bg-red-900/20 border-red-900/50 text-red-300" : "bg-blue-900/20 border-blue-900/50 text-blue-300"}`}>
+                {statusMsg}
+              </div>
+            )}
+
+            {/* PROGRESS BAR */}
+            {isProcessing && (
+              <div className="w-full bg-gray-800 rounded-full h-2.5 overflow-hidden border border-gray-700">
+                <div
+                  className="bg-blue-500 h-2.5 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${Math.round(progress * 100)}%` }}
+                />
+              </div>
+            )}
+            {isProcessing && (
+              <div className="text-right text-[10px] text-gray-500 font-mono">
+                {Math.round(progress * 100)}%
+              </div>
+            )}
           </div>
         )}
 
@@ -502,6 +590,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
           <div className={`flex-1 min-h-0 p-8 flex flex-col ${tool.id === ToolId.AmbiRotate ? '' : 'hidden'}`}>
             <AmbiRotateTool
               ref={rotatorRef}
+              tool={tool}
               files={files}
               activeIndex={activeFileIndex}
               onIndexChange={setActiveFileIndex}

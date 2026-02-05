@@ -53,15 +53,19 @@ export async function handleAmbix2Opus(event: IpcMainInvokeEvent, options: {
                 outputPath
             ];
 
-            console.log(`[Ambix2Opus] Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`);
+            const statusMsg = `Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`;
+            console.log(`[Ambix2Opus] ${statusMsg}`);
+            event.sender.send('task-status', statusMsg);
 
             await new Promise<void>((resolve, reject) => {
                 const child = spawn(ffmpegPath, args);
 
                 child.stderr.on('data', (d) => {
-                    const line = d.toString();
-
                     // Parse progress (time=...)
+                    const line = d.toString();
+                    if (line.includes("time=")) {
+                        console.log(`[Ambix2Opus] FFmpeg Line: ${line.trim()}`);
+                    }
                     const timeMatch = line.match(/time=(\d{2}):(\d{2}):(\d{2}\.\d{2})/);
                     if (timeMatch && info.duration > 0) {
                         const h = parseFloat(timeMatch[1]);

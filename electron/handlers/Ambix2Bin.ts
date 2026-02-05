@@ -58,7 +58,9 @@ export async function handleAmbix2Bin(event: IpcMainInvokeEvent, options: {
             const inputPath = files[i];
             const outputPath = inputPath.replace(/\.[^/.]+$/, "") + "_binaural.wav";
 
-            console.log(`[Ambix2Bin] Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`);
+            const statusMsg = `Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`;
+            console.log(`[Ambix2Bin] ${statusMsg}`);
+            event.sender.send('task-status', { msg: statusMsg, toolId: 'ambix2bin' });
 
             const pythonArgs = [
                 scriptPath,
@@ -71,6 +73,21 @@ export async function handleAmbix2Bin(event: IpcMainInvokeEvent, options: {
                 const child = spawn('python3', pythonArgs);
                 let stderr = '';
 
+                child.stdout.on('data', (d) => {
+                    const lines = d.toString().split('\n');
+                    for (const line of lines) {
+                        if (line.startsWith('PROGRESS:')) {
+                            const p = parseFloat(line.split(':')[1]);
+                            if (!isNaN(p)) {
+                                const totalProgress = (i + p) / files.length;
+                                event.sender.send('task-progress', { progress: totalProgress, toolId: 'ambix2bin' });
+                            }
+                        } else if (line.trim()) {
+                            console.log(`[Ambix2Bin] Py: ${line.trim()}`);
+                        }
+                    }
+                });
+
                 child.stderr.on('data', d => stderr += d.toString());
 
                 child.on('close', (code) => {
@@ -82,7 +99,7 @@ export async function handleAmbix2Bin(event: IpcMainInvokeEvent, options: {
             });
 
             results.push(outputPath);
-            event.sender.send('task-progress', (i + 1) / files.length); // Simple progress
+            event.sender.send('task-progress', { progress: (i + 1) / files.length, toolId: 'ambix2bin' });
         }
 
         return { success: true, data: { outputPaths: results } };

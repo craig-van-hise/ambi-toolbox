@@ -25,11 +25,15 @@ export async function handleAmbiSwap(event: IpcMainInvokeEvent, options: {
 
         for (let i = 0; i < files.length; i++) {
             const inputPath = files[i];
-            console.log(`[AmbiSwap] Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`);
+            const statusMsg = `Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`;
+            console.log(`[AmbiSwap] ${statusMsg}`);
+            event.sender.send('task-status', { msg: statusMsg, toolId: 'ambiswap' });
 
             // 1. Probe File
             const stats = await probeAudio(inputPath);
             const channels = stats.channels;
+            const progressBase = i / files.length;
+            const progressScale = 1.0 / files.length;
 
             // 2. Validate FuMa Limits
             if (direction === "AmbixToFuMa" && channels > 16) {
@@ -67,17 +71,30 @@ export async function handleAmbiSwap(event: IpcMainInvokeEvent, options: {
 
             await new Promise<void>((resolve, reject) => {
                 const child = spawn(ffmpegPath, args);
-                let stderr = '';
-                child.stderr.on('data', d => stderr += d.toString());
+
+                child.stderr.on('data', (d) => {
+                    const line = d.toString();
+                    const timeMatch = line.match(/time=(\d{2}):(\d{2}):(\d{2}\.\d{2})/);
+                    if (timeMatch && stats.duration > 0) {
+                        const h = parseFloat(timeMatch[1]);
+                        const m = parseFloat(timeMatch[2]);
+                        const s = parseFloat(timeMatch[3]);
+                        const currentSeconds = h * 3600 + m * 60 + s;
+                        const fileProgress = Math.min(Math.max(currentSeconds / stats.duration, 0), 1);
+                        const totalProgress = progressBase + (fileProgress * progressScale);
+                        event.sender.send('task-progress', { progress: totalProgress, toolId: 'ambiswap' });
+                    }
+                });
+
                 child.on('close', (code) => {
                     if (code === 0) resolve();
-                    else reject(new Error(`FFmpeg exited with code ${code}. Log: ${stderr}`));
+                    else reject(new Error(`FFmpeg exited with code ${code}`));
                 });
                 child.on('error', (err) => reject(new Error(err.message)));
             });
 
             results.push(outputPath);
-            event.sender.send('task-progress', (i + 1) / files.length);
+            event.sender.send('task-progress', { progress: (i + 1) / files.length, toolId: 'ambiswap' });
         }
 
         return { success: true, data: { outputPaths: results } };
