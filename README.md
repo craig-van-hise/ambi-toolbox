@@ -14,16 +14,16 @@ It consolidates multiple audio conversion tools into a single, modular applicati
 3.  **Ambix2IAMF**: Encode Ambisonics to IAMF (Immersive Audio Model and Formats).
     -   Generates Type 2 (Ombisonic) IAMF streams.
 4.  **Ambix2CAF**: Convert to Apple CAF format (Discrete or HOA/ACN Layouts).
-5.  **AmbiOrder**: Reduce Ambisonic Order (e.g., 3rd -> 1st) with dynamic input detection.
-
-20: 6.  **AmbiSwap**: Convert between ACN/SN3D (AmbiX) and FuMa (MaxN).
-21:     -   *Crucial*: Enforced 24-bit PCM output to prevent gain-normalization data loss.
-22: 
-23: 7.  **AmbiRotate**: Real-time Rotation Preview.
-24:     -   **Hybrid Native Engine**: 
-25:         -   **Order 1 (Ch 1-3)**: Full 3-Axis Matrix (Yaw/Pitch/Roll).
-26:         -   **Order >1 (Ch 4+)**: Infinite-Order Sectorial Yaw (Optimized).
-27:     -   **Monitoring**: Binaural stereo downmix for instant feedback.
+5.  **Ambix2APAC**: Encode Ambisonics to Apple Spatial Audio Codec (APAC) for visionOS.
+    -   Native macOS 14+ encoder.
+6.  **AmbiOrder**: Reduce Ambisonic Order (e.g., 3rd -> 1st) with dynamic input detection.
+7.  **AmbiSwap**: Convert between ACN/SN3D (AmbiX) and FuMa (MaxN).
+    -   *Crucial*: Enforced 24-bit PCM output to prevent gain-normalization data loss.
+8.  **AmbiRotate**: Real-time Rotation Preview.
+    -   **Hybrid Native Engine**: 
+        -   **Order 1 (Ch 1-3)**: Full 3-Axis Matrix (Yaw/Pitch/Roll).
+        -   **Order >1 (Ch 4+)**: Infinite-Order Sectorial Yaw (Optimized).
+    -   **Monitoring**: Binaural stereo downmix for instant feedback.
 
 
 
