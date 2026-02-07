@@ -41,7 +41,7 @@ const BitrateConverter: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => v
     <div className="w-full">
       <div className="flex flex-col gap-4 mb-4">
         <div className="w-full">
-          <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Target Bitrate</label>
+          <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Target Bitrate (per channel)</label>
           <div className="relative">
             <select
               value={bitrate}
@@ -62,6 +62,47 @@ const BitrateConverter: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => v
           className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
         >
           {isProcessing ? 'Converting...' : 'Convert'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const Ambix2ApacTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
+  const [bitrate, setBitrate] = useState<string>('Medium (96 kbps)');
+
+  const options = [
+    'Low (64 kbps)',
+    'Medium (96 kbps)',
+    'High (128 kbps)',
+    'Pro (192 kbps)'
+  ];
+
+  return (
+    <div className="w-full">
+      <div className="flex flex-col gap-4 mb-4">
+        <div className="w-full">
+          <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Target Bitrate (per channel)</label>
+          <div className="relative">
+            <select
+              value={bitrate}
+              onChange={(e) => setBitrate(e.target.value)}
+              className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-cyan-500 appearance-none text-white"
+            >
+              {options.map((opt) => (
+                <option key={opt} value={opt}>{opt}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-gray-500 pointer-events-none" />
+          </div>
+        </div>
+
+        <button
+          onClick={() => onRun({ bitrate })}
+          disabled={isProcessing}
+          className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
+        >
+          {isProcessing ? 'Encoding...' : 'Encode to APAC'}
         </button>
       </div>
     </div>
@@ -428,6 +469,9 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
         case ToolId.Ambix2IAMF:
           result = await window.electronAPI.convertBitrate(filePaths, options.bitrate, tool.id === ToolId.Ambix2IAMF ? 'iamf' : 'opus');
           break;
+        case ToolId.Ambix2APAC:
+          result = await window.electronAPI.convertAmbix2Apac(filePaths, options.bitrate);
+          break;
         case ToolId.Ambix2Bin:
           result = await window.electronAPI.convertAmbix2Bin(filePaths, options.hrtfProfile);
           break;
@@ -608,6 +652,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
         <div className="max-w-4xl mx-auto">
           {tool.id === ToolId.Ambix2Opus && <BitrateConverter tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
           {tool.id === ToolId.Ambix2IAMF && <BitrateConverter tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
+          {tool.id === ToolId.Ambix2APAC && <Ambix2ApacTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
           {tool.id === ToolId.Ambix2Bin && <Ambix2BinTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
           {tool.id === ToolId.AmbiOrder && <AmbiOrderTool tool={tool} files={files} onRun={handleRunTask} isProcessing={isProcessing} />}
           {tool.id === ToolId.AmbiSwap && <AmbiSwapTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}

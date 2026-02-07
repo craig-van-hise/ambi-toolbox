@@ -30,6 +30,13 @@ export const TOOLS: ToolDefinition[] = [
     btnColorClass: 'bg-gray-600 hover:bg-gray-700',
   },
   {
+    id: ToolId.Ambix2APAC,
+    label: 'Ambix2APAC',
+    description: 'Encodes Ambisonics to Apple Spatial Audio Codec (APAC) for visionOS.',
+    colorClass: 'text-cyan-500',
+    btnColorClass: 'bg-cyan-600 hover:bg-cyan-700',
+  },
+  {
     id: ToolId.AmbiOrder,
     label: 'AmbiOrder',
     description: 'Reduces spatial resolution (e.g., 3rd Order → 1st Order).',
@@ -49,7 +56,7 @@ export const TOOLS: ToolDefinition[] = [
     description: 'Fixes orientation issues (Yaw/Pitch/Roll) with real-time preview.',
     colorClass: 'text-red-500',
     btnColorClass: 'bg-red-600 hover:bg-red-700',
-  },
+  }
 ];
 
 export const BITRATE_OPTIONS = [

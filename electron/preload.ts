@@ -61,4 +61,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   convertAmbiOrder: (filePaths: string[], targetOrder: string) =>
     ipcRenderer.invoke('run-task', 'ambiorder', { files: filePaths, targetOrder }),
+
+  convertAmbix2Apac: (filePaths: string[], bitrate: string) =>
+    ipcRenderer.invoke('run-task', 'ambix2apac', { files: filePaths, bitrate }),
 });

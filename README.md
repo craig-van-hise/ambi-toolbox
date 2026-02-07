@@ -67,3 +67,41 @@ Run integration tests for the backend logic:
 ```bash
 npm run test
 ```
+
+---
+
+##  Ambix2APAC: Apple Dependencies & Requirements
+
+The **Ambix2APAC** tool utilizes the native Apple Positional Audio Codec (APAC) to provide high-fidelity spatial audio compression optimized for the Apple Vision Pro and visionOS ecosystem. Because this tool relies on proprietary Apple frameworks, the following requirements must be met:
+
+### 1. Operating System Requirements
+
+* **Encoding (macOS):** Requires **macOS 14.0 (Sonoma)** or later. The system-level APAC encoder was officially introduced to support visionOS development workflows.
+* **Playback (Target Devices):**
+* **Apple Vision Pro:** Supported natively on all versions of visionOS.
+* **iOS/iPadOS:** Requires **iOS 17.0+** or **iPadOS 17.0+** for native APAC decoding.
+* **macOS:** Requires **macOS 14.0+** for playback via AVFoundation-based applications.
+
+
+
+### 2. Technical Capabilities
+
+* **Ambisonic Orders:** The native system encoder currently supports **1st (4ch), 2nd (9ch), and 3rd (16ch)** order Ambisonics. Support for up to **5th order (36ch)** is available in specific profiles.
+* **Channel Layout:** This tool strictly enforces the **HOA_ACN_SN3D** (High-Order Ambisonics, ACN ordering, SN3D normalization) layout tag, which is the mandatory metadata standard for Apple's spatial audio rendering.
+* **Recommended Bitrates:** * **1st Order:** ~384 kbps (total).
+* **3rd Order:** ~768 kbps (total).
+* *Note: Our implementation uses a "Per-Channel" logic (e.g., 96kbps/ch) to maintain consistent quality across all orders.*
+
+
+
+### 3. Build & Development Requirements
+
+* **Swift Environment:** Compilation of the `apac-enc` sidecar requires **Xcode 15.0+** or the **Command Line Tools for Xcode 15.0+** to access the necessary Core Audio headers.
+* **Frameworks Used:** * `AVFoundation`: For high-level media writing (`AVAssetWriter`).
+* `AudioToolbox`: For low-level codec identifiers and channel layout tagging.
+
+
+
+### 4. Hardware Support
+
+* **Apple Silicon Recommended:** While Intel Macs running macOS 14+ can technically encode APAC, **Apple Silicon (M1/M2/M3/M5)** is highly recommended for optimal performance when processing high-order (3rd+) spatial audio files.

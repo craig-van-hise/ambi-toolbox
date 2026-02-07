@@ -6,6 +6,7 @@ export enum ToolId {
   AmbiRotate = 'ambirotate',
   Ambix2Bin = 'ambix2bin',
   Ambix2IAMF = 'ambix2iamf',
+  Ambix2APAC = 'ambix2apac',
 }
 
 export interface ToolDefinition {
@@ -55,4 +56,12 @@ export interface AmbiRotateToolProps {
 export interface ElectronAPI {
   readChunk: (filePath: string, offset: number, length: number) => Promise<ArrayBuffer>;
   processAmbiRotate: (filePaths: string[], rotation: { yaw: number, pitch: number, roll: number }) => Promise<any>;
+  convertBitrate: (filePaths: string[], bitrate: string, format: 'opus' | 'iamf') => Promise<any>;
+  convertAmbix2Bin: (filePaths: string[], hrtfProfile: string) => Promise<any>;
+  convertAmbiSwap: (filePaths: string[], direction: string) => Promise<any>;
+  convertAmbix2Caf: (filePaths: string[], layout?: string, bitDepth?: string) => Promise<any>;
+  convertAmbiOrder: (filePaths: string[], targetOrder: string) => Promise<any>;
+  convertAmbix2Apac: (filePaths: string[], bitrate: string) => Promise<any>;
+  on: (channel: string, callback: (data: any) => void) => () => void;
+  onProgress: (callback: (data: any) => void) => () => void;
 }
