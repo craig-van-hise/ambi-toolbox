@@ -58,7 +58,8 @@ The output can be found in `release/` or `dist/`.
 -   **Backend**: Electron Main Process (`electron/`)
     -   **Handlers**: `electron/handlers/` (Business logic for each tool)
     -   **Bridge**: `electron/preload.ts` (Unified Bridge: `window.electron` and `window.electronAPI`)
--   **Legacy**: Old Python/Swift apps are archived in `legacy_apps/`.
+    -   **Python Extension**: `py/ambi_rotate.py` (Active backend for AmbiRotate)
+-   **Cleanup**: Legacy/Vestigial files moved to `xCleanup/` (Gitignored).
 
 ## 🧪 Testing
 

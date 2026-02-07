@@ -28,12 +28,12 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 -   **`electron/`**: Main Process Source.
     -   `handlers/`: Individual tool backend logic (Modular Handler Pattern).
     -   `main.ts`: Application entry point and IPC router.
--   **`assets/`**: Static Resources.
-    -   `bin/`: Bundled binaries (`ffmpeg`, `ffprobe`, `iamf-enc`).
-    -   `sofa/`: HRTF files for binaural rendering.
--   **`legacy_apps/`**: Archived Python/Swift implementations.
+-   **`py/`**: Active Python backend (`ambi_rotate.py`).
+-   **`assets/`**: Static Resources (`bin/`, `sofa/`).
+-   **`xCleanup/`**: Quantined legacy files (Gitignored).
 
 ## 4. Recent Logic Changes
+-   **Cleanup (Active)**: Moved `legacy_apps`, `legacy_libs`, and unused resources to `xCleanup/` to sanitize the repository.
 -   **UI Refinement (PRP #45)**: Implemented scoped progress bars to prevent cross-tool ghosting. Added auto-scroll behavior for Queue and Progress visibility.
 -   **Robust Probing**: Switched from regex-based FFmpeg parsing to JSON-based `ffprobe` output to handle diverse channel layouts (e.g. "4.0", "16ch").
 -   **IAMF Config**: Ported TypeScript config generator from legacy to `electron/handlers/iamf-config-generator.ts`.
