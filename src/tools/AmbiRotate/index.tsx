@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
+import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { AmbiRotateToolProps } from '../../types';
 import { NativeRotator } from './NativeRotator';
 import { WavDecoder } from '../../utils/WavDecoder';
 import { Timeline } from './components/Timeline';
 import {
     Play, Pause, Square, Repeat,
-    RotateCw, Disc, MoveHorizontal,
+    Disc, MoveHorizontal,
     Trash2,
     SkipBack, SkipForward
 } from 'lucide-react';
@@ -47,10 +47,47 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
         }
     };
 
+    const { settings, updateSettings } = useSettings();
+
     // Rotation Attributes (Core)
-    const [yaw, setYaw] = useState(0);
-    const [pitch, setPitch] = useState(0);
-    const [roll, setRoll] = useState(0);
+    const [yaw, setYaw] = useState(() => {
+        return settings.toolSettings['ambirotate']?.yaw || 0;
+    });
+    const [pitch, setPitch] = useState(() => {
+        return settings.toolSettings['ambirotate']?.pitch || 0;
+    });
+    const [roll, setRoll] = useState(() => {
+        return settings.toolSettings['ambirotate']?.roll || 0;
+    });
+
+    const updateRotationSettings = (y: number, p: number, r: number) => {
+        updateSettings({
+            toolSettings: {
+                ...settings.toolSettings,
+                ['ambirotate']: {
+                    ...settings.toolSettings?.['ambirotate'],
+                    yaw: y,
+                    pitch: p,
+                    roll: r
+                }
+            }
+        });
+    };
+
+    const handleYawChange = (val: number) => {
+        setYaw(val);
+        updateRotationSettings(val, pitch, roll);
+    };
+
+    const handlePitchChange = (val: number) => {
+        setPitch(val);
+        updateRotationSettings(yaw, val, roll);
+    };
+
+    const handleRollChange = (val: number) => {
+        setRoll(val);
+        updateRotationSettings(yaw, pitch, val);
+    };
 
     // Playback State
     const [isReady, setIsReady] = useState(false); // File Loaded & Decoded
@@ -69,7 +106,7 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
     const [isLoading, setIsLoading] = useState(false);
     const [loadingProgress, setLoadingProgress] = useState(0);
     const [loadingMessage, setLoadingMessage] = useState("");
-    const [isProcessing, setIsProcessing] = useState(false);
+    // const [isProcessing, setIsProcessing] = useState(false); // Used in parent now
 
     // Refs
     const audioContextRef = useRef<AudioContext | null>(null);
@@ -82,12 +119,13 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
     const startTimeRef = useRef(0);
     const pauseTimeRef = useRef(0); // Holds the offset when paused/stopped
 
-    const { settings } = useSettings();
-
     // RENDER LOGIC (Backend Wiring)
     const handleRender = async () => {
         if (files.length === 0) return;
-        setIsProcessing(true);
+        // setIsProcessing(true); // Managed by parent via isProcessing prop? No, this component manages its own render logic but `isProcessing` prop is passed down. 
+        // Wait, the AmbiRotateTool receives `isProcessing` as prop. It shouldn't have its own local state for it if it's controlled.
+        // But `handleRender` is imperative.
+        // Let's just comment it out as requested by linter.
         try {
             // Prepare Settings Object for Backend
             const backendSettings = {
@@ -114,7 +152,7 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
             console.error("Render Failed:", error);
             throw error; // RETHROW so parent can display it
         } finally {
-            setIsProcessing(false);
+            // setIsProcessing(false);
         }
     };
 
@@ -415,10 +453,10 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
         return `${m}:${s.toString().padStart(2, '0')}.${ms}`;
     };
 
-    const doUpsideDown = () => setRoll(Math.abs(roll - 180) < 1 ? 0 : 180);
-    const doRotate180 = () => setYaw(Math.abs(yaw - 180) < 1 ? 0 : 180);
-    const doLayFlat = () => setPitch(Math.abs(pitch - 90) < 1 ? 0 : 90);
-    const doReset = () => { setYaw(0); setPitch(0); setRoll(0); };
+    const doUpsideDown = () => handleRollChange(Math.abs(roll - 180) < 1 ? 0 : 180);
+    const doRotate180 = () => handleYawChange(Math.abs(yaw - 180) < 1 ? 0 : 180);
+    const doLayFlat = () => handlePitchChange(Math.abs(pitch - 90) < 1 ? 0 : 90);
+    const doReset = () => { handleYawChange(0); handlePitchChange(0); handleRollChange(0); };
 
     const getBtnClass = (isActive: boolean) =>
         `px-3 py-1.5 rounded text-xs font-bold transition-all border ${isActive
@@ -475,7 +513,7 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
                                 <label className="text-xs font-bold text-gray-400">YAW (Z)</label>
                                 <span className="text-xs text-blue-400 font-mono">{yaw}°</span>
                             </div>
-                            <input type="range" min="-180" max="180" value={yaw} onChange={(e) => setYaw(Number(e.target.value))} className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500" />
+                            <input type="range" min="-180" max="180" value={yaw} onChange={(e) => handleYawChange(Number(e.target.value))} className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500" />
                         </div>
                         {/* PITCH */}
                         <div className="bg-[#252526] p-4 rounded border border-studio-border">
@@ -483,7 +521,7 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
                                 <label className="text-xs font-bold text-gray-400">PITCH (Y)</label>
                                 <span className="text-xs text-green-400 font-mono">{pitch}°</span>
                             </div>
-                            <input type="range" min="-90" max="90" value={pitch} onChange={(e) => setPitch(Number(e.target.value))} className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-green-500" />
+                            <input type="range" min="-90" max="90" value={pitch} onChange={(e) => handlePitchChange(Number(e.target.value))} className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-green-500" />
                         </div>
                         {/* ROLL */}
                         <div className="bg-[#252526] p-4 rounded border border-studio-border">
@@ -491,7 +529,7 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
                                 <label className="text-xs font-bold text-gray-400">ROLL (X)</label>
                                 <span className="text-xs text-red-400 font-mono">{roll}°</span>
                             </div>
-                            <input type="range" min="-180" max="180" value={roll} onChange={(e) => setRoll(Number(e.target.value))} className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-red-500" />
+                            <input type="range" min="-180" max="180" value={roll} onChange={(e) => handleRollChange(Number(e.target.value))} className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-red-500" />
                         </div>
                     </div>
 

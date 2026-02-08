@@ -11,6 +11,7 @@
 *   **AmbiSwap**: Convert between AmbiX (ACN/SN3D) and FuMa conventions.
 *   **AmbiRotate**: Rotate the soundfield (Yaw/Pitch/Roll) with real-time progress tracking.
 *   **Ambix2CAF**: Convert to Apple's Core Audio Format (CAF) with support for spatially aware channel layouts.
+*   **Smart Persistence**: Remembers your last active tool and tool-specific settings (bitrate, HRTF, rotation) between sessions.
 
 ## Tech Stack
 

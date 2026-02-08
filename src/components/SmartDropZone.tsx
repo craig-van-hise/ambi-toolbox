@@ -40,7 +40,7 @@ export const SmartDropZone: React.FC<SmartDropZoneProps> = ({
         setIsDragOver(false);
     }, []);
 
-    const handleDrop = useCallback(async (e: React.DragEvent) => {
+    const handleDrop = useCallback(async (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         setIsDragOver(false);
 

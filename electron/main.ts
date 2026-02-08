@@ -1,12 +1,12 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
-import { createRequire } from 'node:module'
+// import { createRequire } from 'node:module' // Unused
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { dispatchTask } from './handlers/index'
 import { probeAudio } from './handlers/common'
 import { spawn } from 'child_process';
 
-const require = createRequire(import.meta.url)
+// const require = createRequire(import.meta.url) // Unused
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // The built directory structure
@@ -64,7 +64,7 @@ app.whenReady().then(() => {
   })
 
   // Expose File Inspection
-  ipcMain.handle('inspect-file', async (event, path) => {
+  ipcMain.handle('inspect-file', async (_event, path) => {
     try {
       const info = await probeAudio(path);
       return { success: true, data: info };
@@ -74,7 +74,7 @@ app.whenReady().then(() => {
   })
 
   // Expose File Reading (ArrayBuffer) - Legacy (Full)
-  ipcMain.handle('read-file', async (event, filePath) => {
+  ipcMain.handle('read-file', async (_event, filePath) => {
     // ... existing implementation ...
     // Keeping this for backward compatibility or small files if needed
     try {
@@ -86,7 +86,7 @@ app.whenReady().then(() => {
   })
 
   // NEW: Chunked Loading Support (PRP #18)
-  ipcMain.handle('get-file-size', async (event, filePath) => {
+  ipcMain.handle('get-file-size', async (_event, filePath) => {
     try {
       const stats = await import('node:fs/promises').then(fs => fs.stat(filePath));
       return stats.size;
@@ -96,7 +96,7 @@ app.whenReady().then(() => {
     }
   });
 
-  ipcMain.handle('read-chunk', async (event, filePath, offset, length) => {
+  ipcMain.handle('read-chunk', async (_event, filePath, offset, length) => {
     try {
       const fs = await import('node:fs/promises');
       const fileHandle = await fs.open(filePath, 'r');
@@ -170,7 +170,7 @@ app.whenReady().then(() => {
   // PYTHON INTEGRATION (AmbiRotate)
   // ------------------------------------------------------------------
 
-  ipcMain.handle('process-ambi-rotate', async (event, filePaths: string[], rotation) => {
+  ipcMain.handle('process-ambi-rotate', async (_event, filePaths: string[], rotation) => {
     console.log("MAIN: Starting Rotation Render...", { filePaths, rotation });
 
     // Locate the Python Script (Adjust path relative to 'dist-electron')

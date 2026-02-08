@@ -12,10 +12,8 @@ import { SmartDropZone } from './SmartDropZone';
 import { AmbiRotateTool, AmbiRotateHandle } from '../tools/AmbiRotate';
 import {
   ArrowRight,
-  ArrowLeftRight,
   ChevronDown,
-  ChevronRight,
-  ChevronUp
+  ChevronRight
 } from 'lucide-react';
 
 interface ToolViewProps {
@@ -28,16 +26,29 @@ import { useSettings } from '../contexts/SettingsContext';
 // SHARED COMPONENTS
 // ----------------------------------------------------------------------
 
-const SectionHeader = ({ title }: { title: string }) => (
-  <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-4">{title}</h3>
-);
+// ----------------------------------------------------------------------
+// TOOL SPECIFIC IMPLEMENTATIONS
+// ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
 // TOOL SPECIFIC IMPLEMENTATIONS
 // ----------------------------------------------------------------------
 
 const BitrateConverter: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
-  const [bitrate, setBitrate] = useState<BitrateOption>(BitrateOption.High);
+  const { settings, updateSettings } = useSettings();
+  const [bitrate, setBitrate] = useState<BitrateOption>(() => {
+    return settings.toolSettings?.[tool.id]?.bitrate || BitrateOption.High;
+  });
+
+  const handleBitrateChange = (val: BitrateOption) => {
+    setBitrate(val);
+    updateSettings({
+      toolSettings: {
+        ...settings.toolSettings,
+        [tool.id]: { ...settings.toolSettings?.[tool.id], bitrate: val }
+      }
+    });
+  };
 
   return (
     <div className="w-full">
@@ -47,7 +58,7 @@ const BitrateConverter: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => v
           <div className="relative">
             <select
               value={bitrate}
-              onChange={(e) => setBitrate(e.target.value as BitrateOption)}
+              onChange={(e) => handleBitrateChange(e.target.value as BitrateOption)}
               className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-blue-500 appearance-none text-white"
             >
               {BITRATE_OPTIONS.map((opt) => (
@@ -71,7 +82,20 @@ const BitrateConverter: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => v
 };
 
 const Ambix2ApacTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
-  const [bitrate, setBitrate] = useState<string>('Medium (96 kbps)');
+  const { settings, updateSettings } = useSettings();
+  const [bitrate, setBitrate] = useState<string>(() => {
+    return settings.toolSettings[tool.id]?.bitrate || 'Medium (96 kbps)';
+  });
+
+  const handleBitrateChange = (val: string) => {
+    setBitrate(val);
+    updateSettings({
+      toolSettings: {
+        ...settings.toolSettings,
+        [tool.id]: { ...settings.toolSettings[tool.id], bitrate: val }
+      }
+    });
+  };
 
   const options = [
     'Low (64 kbps)',
@@ -88,7 +112,7 @@ const Ambix2ApacTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => voi
           <div className="relative">
             <select
               value={bitrate}
-              onChange={(e) => setBitrate(e.target.value)}
+              onChange={(e) => handleBitrateChange(e.target.value)}
               className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-cyan-500 appearance-none text-white"
             >
               {options.map((opt) => (
@@ -112,7 +136,20 @@ const Ambix2ApacTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => voi
 };
 
 const Ambix2BinTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
-  const [profile, setProfile] = useState<HrtfProfile>(HrtfProfile.Neumann);
+  const { settings, updateSettings } = useSettings();
+  const [profile, setProfile] = useState<HrtfProfile>(() => {
+    return settings.toolSettings?.[tool.id]?.hrtfProfile || HrtfProfile.Neumann;
+  });
+
+  const handleProfileChange = (val: HrtfProfile) => {
+    setProfile(val);
+    updateSettings({
+      toolSettings: {
+        ...settings.toolSettings,
+        [tool.id]: { ...settings.toolSettings?.[tool.id], hrtfProfile: val }
+      }
+    });
+  };
 
   return (
     <div className="w-full">
@@ -122,7 +159,7 @@ const Ambix2BinTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void
           <div className="relative">
             <select
               value={profile}
-              onChange={(e) => setProfile(e.target.value as HrtfProfile)}
+              onChange={(e) => handleProfileChange(e.target.value as HrtfProfile)}
               className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-green-500 appearance-none text-white"
             >
               <option value={HrtfProfile.Neumann}>{HrtfProfile.Neumann}</option>
@@ -146,9 +183,21 @@ const Ambix2BinTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void
 };
 
 const AmbiOrderTool: React.FC<{ tool: ToolDefinition, files: File[], onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, files, onRun, isProcessing }) => {
-  const [targetOrder, setTargetOrder] = useState<string>(AmbisonicOrder.Second);
+  const { settings, updateSettings } = useSettings();
+  const [targetOrder, setTargetOrder] = useState<string>(() => {
+    return settings.toolSettings?.[tool.id]?.targetOrder || AmbisonicOrder.Second;
+  });
   const [detectedOrder, setDetectedOrder] = useState<string>('Unknown');
-  const [detectedChannels, setDetectedChannels] = useState<number>(0);
+
+  const handleOrderChange = (val: string) => {
+    setTargetOrder(val);
+    updateSettings({
+      toolSettings: {
+        ...settings.toolSettings,
+        [tool.id]: { ...settings.toolSettings?.[tool.id], targetOrder: val }
+      }
+    });
+  };
 
   React.useEffect(() => {
     if (files.length > 0) {
@@ -156,7 +205,6 @@ const AmbiOrderTool: React.FC<{ tool: ToolDefinition, files: File[], onRun: (opt
       window.electron.inspectFile(path).then((result) => {
         if (result.success && result.data) {
           const ch = result.data.channels;
-          setDetectedChannels(ch);
           if (ch === 4) setDetectedOrder(AmbisonicOrder.First);
           else if (ch === 9) setDetectedOrder(AmbisonicOrder.Second);
           else if (ch === 16) setDetectedOrder(AmbisonicOrder.Third);
@@ -209,7 +257,7 @@ const AmbiOrderTool: React.FC<{ tool: ToolDefinition, files: File[], onRun: (opt
         <div className="relative">
           <select
             value={targetOrder}
-            onChange={(e) => setTargetOrder(e.target.value)}
+            onChange={(e) => handleOrderChange(e.target.value)}
             className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-blue-500 appearance-none text-white"
           >
             {options.length > 0 ? options.map(opt => (
@@ -232,7 +280,20 @@ const AmbiOrderTool: React.FC<{ tool: ToolDefinition, files: File[], onRun: (opt
 };
 
 const AmbiSwapTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
-  const [inputFormat, setInputFormat] = useState<AmbiFormat>(AmbiFormat.AmbiX);
+  const { settings, updateSettings } = useSettings();
+  const [inputFormat, setInputFormat] = useState<AmbiFormat>(() => {
+    return settings.toolSettings?.[tool.id]?.inputFormat || AmbiFormat.AmbiX;
+  });
+
+  const handleFormatChange = (val: AmbiFormat) => {
+    setInputFormat(val);
+    updateSettings({
+      toolSettings: {
+        ...settings.toolSettings,
+        [tool.id]: { ...settings.toolSettings?.[tool.id], inputFormat: val }
+      }
+    });
+  };
 
   const isAmbixInput = inputFormat === AmbiFormat.AmbiX;
 
@@ -242,13 +303,13 @@ const AmbiSwapTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void,
       {/* Format Toggle */}
       <div className="flex bg-[#1E1E1E] rounded-md border border-studio-border p-1 w-full justify-center">
         <button
-          onClick={() => setInputFormat(AmbiFormat.AmbiX)}
+          onClick={() => handleFormatChange(AmbiFormat.AmbiX)}
           className={`flex-1 px-3 py-1.5 rounded text-xs font-bold transition-all ${isAmbixInput ? 'bg-orange-500 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'}`}
         >
           AmbiX
         </button>
         <button
-          onClick={() => setInputFormat(AmbiFormat.FuMa)}
+          onClick={() => handleFormatChange(AmbiFormat.FuMa)}
           className={`flex-1 px-3 py-1.5 rounded text-xs font-bold transition-all ${!isAmbixInput ? 'bg-orange-500 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'}`}
         >
           FuMa
@@ -275,8 +336,33 @@ const AmbiSwapTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void,
 
 
 const Ambix2CafTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
-  const [layout, setLayout] = useState('discrete');
-  const [bitDepth, setBitDepth] = useState('24');
+  const { settings, updateSettings } = useSettings();
+  const [layout, setLayout] = useState(() => {
+    return settings.toolSettings?.[tool.id]?.layout || 'discrete';
+  });
+  const [bitDepth, setBitDepth] = useState(() => {
+    return settings.toolSettings?.[tool.id]?.bitDepth || '24';
+  });
+
+  const handleLayoutChange = (val: string) => {
+    setLayout(val);
+    updateSettings({
+      toolSettings: {
+        ...settings.toolSettings,
+        [tool.id]: { ...settings.toolSettings?.[tool.id], layout: val }
+      }
+    });
+  };
+
+  const handleBitDepthChange = (val: string) => {
+    setBitDepth(val);
+    updateSettings({
+      toolSettings: {
+        ...settings.toolSettings,
+        [tool.id]: { ...settings.toolSettings?.[tool.id], bitDepth: val }
+      }
+    });
+  };
 
 
   return (
@@ -286,7 +372,7 @@ const Ambix2CafTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void
         <div className="relative">
           <select
             value={layout}
-            onChange={(e) => setLayout(e.target.value)}
+            onChange={(e) => handleLayoutChange(e.target.value)}
             className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-gray-500 appearance-none text-white"
           >
             <option value="discrete">Discrete (Default)</option>
@@ -301,7 +387,7 @@ const Ambix2CafTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void
         <div className="relative">
           <select
             value={bitDepth}
-            onChange={(e) => setBitDepth(e.target.value)}
+            onChange={(e) => handleBitDepthChange(e.target.value)}
             className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-gray-500 appearance-none text-white"
           >
             <option value="24">24-bit</option>
@@ -323,18 +409,7 @@ const Ambix2CafTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void
   );
 };
 
-const GenericTool: React.FC<{ tool: ToolDefinition }> = ({ tool }) => (
-  <div className="max-w-xl">
-    <div className="bg-[#252526] p-6 rounded-lg border border-studio-border text-center py-12">
-      <ArrowLeftRight className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-      <h3 className="text-white font-medium mb-2">Standard Converter</h3>
-      <p className="text-gray-500 text-sm mb-6">Convert your files to {tool.label} format using standard settings.</p>
-      <button className={`w-full py-3 rounded font-medium text-white transition-colors ${tool.btnColorClass}`}>
-        Convert
-      </button>
-    </div>
-  </div>
-);
+
 
 // ----------------------------------------------------------------------
 // MAIN SWITCHER
