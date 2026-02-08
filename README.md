@@ -24,7 +24,9 @@ It consolidates multiple audio conversion tools into a single, modular applicati
         -   **Order 1 (Ch 1-3)**: Full 3-Axis Matrix (Yaw/Pitch/Roll).
         -   **Order >1 (Ch 4+)**: Infinite-Order Sectorial Yaw (Optimized).
     -   **Monitoring**: Binaural stereo downmix for instant feedback.
-9.  **Smart Persistence**: Remembers your last active tool and tool-specific settings (bitrate, HRTF, rotation) between sessions.
+
+### Core Features
+-   **Smart Persistence**: Remembers your last active tool and tool-specific settings (bitrate, HRTF, rotation) between sessions.
     -   **Crash-Safe**: Robust legacy settings handling.
     -   **Queue Safety**: File queue is explicitly cleared on relaunch.
 
