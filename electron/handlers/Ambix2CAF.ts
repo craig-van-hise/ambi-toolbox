@@ -1,14 +1,15 @@
 import { IpcMainInvokeEvent } from 'electron';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
-import { getFfmpegPath, probeAudio } from './common';
+import { getFfmpegPath, probeAudio, determineOutputPath } from './common';
 
 export async function handleAmbix2CAF(event: IpcMainInvokeEvent, options: {
     files: string[];
-    layout: 'discrete' | 'hoa';
-    bitDepth: '16' | '24' | '32';
+    layout?: string; // "Discrete" or "Ambisonics" (default)
+    bitDepth?: string; // "24", "16", "32"
+    settings?: { outputDir?: string; autoCreateFolder?: boolean };
 }): Promise<{ success: boolean; error?: string; data?: any }> {
-    const { files, layout, bitDepth } = options;
+    const { files, layout, bitDepth, settings } = options;
 
     try {
         if (!files || files.length === 0) throw new Error("No files provided");
@@ -23,7 +24,7 @@ export async function handleAmbix2CAF(event: IpcMainInvokeEvent, options: {
 
         for (let i = 0; i < files.length; i++) {
             const inputPath = files[i];
-            const outputPath = inputPath.replace(/\.[^/.]+$/, "") + ".caf";
+            const outputPath = determineOutputPath(inputPath, settings, 'CAF', '.caf');
 
             // 1. Probe (Added for Progress)
             const info = await probeAudio(inputPath);

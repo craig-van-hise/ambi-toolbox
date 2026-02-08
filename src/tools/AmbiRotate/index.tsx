@@ -9,6 +9,7 @@ import {
     Trash2,
     SkipBack, SkipForward
 } from 'lucide-react';
+import { useSettings } from '../../contexts/SettingsContext';
 
 export interface AmbiRotateHandle {
     handleRender: () => void;
@@ -29,6 +30,11 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
     // ------------------------------------------------------------------
     // STATE
     // ------------------------------------------------------------------
+
+    if (!files) {
+        return null;
+    }
+
     // Use props for index control if available, else local state (fallback)
     const [localIndex, setLocalIndex] = useState(0);
     const currentFileIndex = onIndexChange ? activeIndex : localIndex;
@@ -76,21 +82,31 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
     const startTimeRef = useRef(0);
     const pauseTimeRef = useRef(0); // Holds the offset when paused/stopped
 
-    // ------------------------------------------------------------------
-    // EXPOSE METHODS
-    // ------------------------------------------------------------------
-    // RENDER LOGIC (Backend Wiring)
+    const { settings } = useSettings();
+
     // RENDER LOGIC (Backend Wiring)
     const handleRender = async () => {
         if (files.length === 0) return;
         setIsProcessing(true);
         try {
+            // Prepare Settings Object for Backend
+            const backendSettings = {
+                outputDir: settings.outputMode === 'custom' ? settings.customOutputDir : undefined,
+                autoCreateFolder: settings.autoCreateFolder
+            };
+
             // Call the Backend to process the file with current Yaw/Pitch/Roll
             // We pass the rotation values to the Python backend
-            const result = await window.electronAPI.processAmbiRotate(
+            const result = await window.electronAPI.convertAmbiRotate(
                 files.map((f: any) => f.path),
-                { yaw, pitch, roll }
+                { yaw, pitch, roll },
+                backendSettings
             );
+
+            if (result && !result.success) {
+                throw new Error(result.error || "Unknown backend error");
+            }
+
             console.log("Render Complete:", result);
             // Optionally could show a success notification here
             console.log("Render Success");

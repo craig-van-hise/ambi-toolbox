@@ -123,6 +123,14 @@ app.whenReady().then(() => {
     return result.canceled ? null : result.filePaths;
   });
 
+  // NEW: Directory Selection (Settings Menu)
+  ipcMain.handle('dialog:openDirectory', async () => {
+    const result = await dialog.showOpenDialog({
+      properties: ['openDirectory', 'createDirectory']
+    });
+    return result.canceled ? null : result.filePaths;
+  });
+
   // NEW: Recursive Path Expansion (PRP #42-1)
   ipcMain.handle('app:expandPaths', async (_event, paths: string[]) => {
     const fs = await import('node:fs/promises');

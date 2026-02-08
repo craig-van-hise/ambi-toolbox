@@ -47,21 +47,24 @@ contextBridge.exposeInMainWorld('electronAPI', {
   inspectFile: (path: string) => ipcRenderer.invoke('inspect-file', path),
 
   // Conversion Methods (Mapped to 'run-task')
-  convertBitrate: (filePaths: string[], bitrate: string, format: 'opus' | 'iamf') =>
-    ipcRenderer.invoke('run-task', format === 'iamf' ? 'ambix2iamf' : 'ambix2opus', { files: filePaths, bitrate }),
+  convertBitrate: (filePaths: string[], bitrate: string, format: 'opus' | 'iamf', settings?: any) =>
+    ipcRenderer.invoke('run-task', format === 'iamf' ? 'ambix2iamf' : 'ambix2opus', { files: filePaths, bitrate, settings }),
 
-  convertAmbix2Bin: (filePaths: string[], hrtfProfile: string) =>
-    ipcRenderer.invoke('run-task', 'ambix2bin', { files: filePaths, hrtfProfile }),
+  convertAmbix2Bin: (filePaths: string[], hrtfProfile: string, settings?: any) =>
+    ipcRenderer.invoke('run-task', 'ambix2bin', { files: filePaths, hrtfProfile, settings }),
 
-  convertAmbiSwap: (filePaths: string[], direction: string) =>
-    ipcRenderer.invoke('run-task', 'ambiswap', { files: filePaths, direction }),
+  convertAmbiSwap: (filePaths: string[], direction: string, settings?: any) =>
+    ipcRenderer.invoke('run-task', 'ambiswap', { files: filePaths, direction, settings }),
 
-  convertAmbix2Caf: (filePaths: string[], layout?: string, bitDepth?: string) =>
-    ipcRenderer.invoke('run-task', 'ambix2caf', { files: filePaths, layout, bitDepth }),
+  convertAmbix2Caf: (filePaths: string[], layout?: string, bitDepth?: string, settings?: any) =>
+    ipcRenderer.invoke('run-task', 'ambix2caf', { files: filePaths, layout, bitDepth, settings }),
 
-  convertAmbiOrder: (filePaths: string[], targetOrder: string) =>
-    ipcRenderer.invoke('run-task', 'ambiorder', { files: filePaths, targetOrder }),
+  convertAmbiOrder: (filePaths: string[], targetOrder: string, settings?: any) =>
+    ipcRenderer.invoke('run-task', 'ambiorder', { files: filePaths, targetOrder, settings }),
 
-  convertAmbix2Apac: (filePaths: string[], bitrate: string) =>
-    ipcRenderer.invoke('run-task', 'ambix2apac', { files: filePaths, bitrate }),
+  convertAmbix2Apac: (filePaths: string[], bitrate: string, settings?: any) =>
+    ipcRenderer.invoke('run-task', 'ambix2apac', { files: filePaths, bitrate, settings }),
+
+  convertAmbiRotate: (filePaths: string[], rotation: { yaw: number, pitch: number, roll: number }, settings?: any) =>
+    ipcRenderer.invoke('run-task', 'ambirotate', { files: filePaths, ...rotation, settings }),
 });

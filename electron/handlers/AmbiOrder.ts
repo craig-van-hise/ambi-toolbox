@@ -1,13 +1,14 @@
 import { IpcMainInvokeEvent } from 'electron';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
-import { getFfmpegPath, probeAudio } from './common';
+import { getFfmpegPath, probeAudio, determineOutputPath } from './common';
 
 export async function handleAmbiOrder(event: IpcMainInvokeEvent, options: {
     files: string[];
-    targetOrder: string; // "1st", "2nd", "3rd"
+    targetOrder: string; // "1st Order", "2nd Order", "3rd Order"
+    settings?: { outputDir?: string; autoCreateFolder?: boolean };
 }): Promise<{ success: boolean; error?: string; data?: any }> {
-    const { files, targetOrder } = options;
+    const { files, targetOrder, settings } = options;
 
     try {
         if (!files || files.length === 0) throw new Error("No files provided");
@@ -15,41 +16,51 @@ export async function handleAmbiOrder(event: IpcMainInvokeEvent, options: {
         const results = [];
         const ffmpegPath = getFfmpegPath();
 
+        // Map target order to channel count
+        // 1st -> 4ch, 2nd -> 9ch, 3rd -> 16ch
+        const orderMap: Record<string, number> = {
+            "1st Order": 4,
+            "2nd Order": 9,
+            "3rd Order": 16,
+            "0th Order": 1,
+            "Zero Order": 1,
+            "4th Order": 25,
+            "5th Order": 36,
+            "6th Order": 49,
+            "7th Order": 64,
+        };
+        const targetChannels = orderMap[targetOrder];
+        if (!targetChannels) throw new Error(`Invalid target order: ${targetOrder} `);
+
         for (let i = 0; i < files.length; i++) {
             const inputPath = files[i];
 
-            // Clean suffix: "2nd Order" -> "2nd_Order"
-            const cleanOrder = targetOrder.replace(/\s+/g, "_").replace(/_Order$/, "");
-            const outputPath = inputPath.replace(/\.[^/.]+$/, "") + `_${cleanOrder}_Order.wav`;
-
-            let targetChannels = 4;
-            if (targetOrder.includes('1st')) targetChannels = 4;
-            else if (targetOrder.includes('2nd')) targetChannels = 9;
-            else if (targetOrder.includes('3rd')) targetChannels = 16;
-            else if (targetOrder.includes('0th') || targetOrder.includes('Zero')) targetChannels = 1;
-            else if (targetOrder.includes('4th')) targetChannels = 25;
-            else if (targetOrder.includes('5th')) targetChannels = 36;
-            else if (targetOrder.includes('6th')) targetChannels = 49;
-            else if (targetOrder.includes('7th')) targetChannels = 64;
+            // Output suffix
+            const suffix = `_${targetOrder.replace(" ", "_")}.wav`;
+            const outputPath = determineOutputPath(inputPath, settings, 'Order_Converter', suffix);
 
             // Use channelmap filter to truncate channels without downmixing
-            let mapStr = '';
-            const limit = targetChannels;
-            for (let j = 0; j < limit; j++) {
-                mapStr += `${j}`;
-                if (j < limit - 1) mapStr += '|';
-            }
+            // Syntax: channelmap=map=0|1|2|3...
+            const indices = Array.from({ length: targetChannels }, (_, k) => k).join('|');
+            const filterStr = `channelmap=map=${indices}`;
 
             const args = [
                 '-y',
                 '-i', inputPath,
-                '-filter_complex', `channelmap=${mapStr}`,
+                '-filter_complex', filterStr,
                 outputPath
             ];
 
             const statusMsg = `Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`;
             // Probe for duration
-            const info = await probeAudio(inputPath);
+            let info;
+            try {
+                info = await probeAudio(inputPath);
+            } catch (e) {
+                console.warn(`Could not probe ${inputPath}, progress may be inaccurate.`);
+                info = { duration: 0 };
+            }
+
             const progressBase = i / files.length;
             const progressScale = 1.0 / files.length;
 

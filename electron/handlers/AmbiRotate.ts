@@ -1,7 +1,8 @@
 import { IpcMainInvokeEvent, app } from 'electron';
 import path from 'node:path';
-import { spawn } from 'node:child_process';
 import fs from 'node:fs';
+import { spawn } from 'node:child_process';
+import { determineOutputPath } from './common';
 
 // Helper to get script path
 function getScriptPath(scriptName: string): string {
@@ -12,61 +13,88 @@ function getScriptPath(scriptName: string): string {
 }
 
 export async function handleAmbiRotate(event: IpcMainInvokeEvent, options: {
-    inputPath: string;
+    files: string[];
     yaw: number;
     pitch: number;
     roll: number;
+    settings?: { outputDir?: string; autoCreateFolder?: boolean };
 }): Promise<{ success: boolean; error?: string; data?: any }> {
-    const { inputPath, yaw, pitch, roll } = options;
+    const { files, yaw, pitch, roll, settings } = options;
 
     try {
-        const scriptName = 'rotate_ambisonics.py';
+        if (!files || files.length === 0) throw new Error("No files provided");
+
+        const scriptName = 'rotator.py';
         const scriptPath = getScriptPath(scriptName);
 
         if (!fs.existsSync(scriptPath)) {
-            // Fallback for dev environment if path differs
-            // In dev: resources/scripts
-            // Check if it exists
             throw new Error(`Rotation script not found at: ${scriptPath}`);
         }
 
-        // Output Path
-        const outputPath = inputPath.replace(/\.[^/.]+$/, "") + "_Rotated.wav";
+        const results = [];
 
-        // Spawn Python
-        const pythonArgs = [
-            scriptPath,
-            inputPath,
-            outputPath,
-            '--yaw', yaw.toString(),
-            '--pitch', pitch.toString(),
-            '--roll', roll.toString()
-        ];
+        for (let i = 0; i < files.length; i++) {
+            const inputPath = files[i];
+            const outputPath = determineOutputPath(inputPath, settings, 'Rotated', '_Rotated.wav');
+            const statusMsg = `Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`;
 
-        console.log(`[AmbiRotate] Spawning python3 ${pythonArgs.join(' ')}`);
+            console.log(`[AmbiRotate] ${statusMsg}`);
+            event.sender.send('task-status', { msg: statusMsg, toolId: 'ambirotate' });
 
-        return new Promise((resolve) => {
-            const child = spawn('python3', pythonArgs);
-            let stdout = '';
-            let stderr = '';
+            // Spawn Python
+            const pythonArgs = [
+                scriptPath,
+                inputPath,
+                outputPath,
+                '--yaw', yaw.toString(),
+                '--pitch', pitch.toString(),
+                '--roll', roll.toString()
+            ];
 
-            child.stdout.on('data', d => stdout += d.toString());
-            child.stderr.on('data', d => stderr += d.toString());
+            // console.log(`[AmbiRotate] Spawning python3 ${pythonArgs.join(' ')}`);
 
-            child.on('close', (code) => {
-                if (code === 0) {
-                    event.sender.send('task-progress', 1.0);
-                    resolve({ success: true, data: { outputPath } });
-                } else {
-                    console.error("[AmbiRotate] Error:", stderr);
-                    resolve({ success: false, error: `Rotate script failed (code ${code}). ${stderr}` });
-                }
+            await new Promise<void>((resolve, reject) => {
+                const child = spawn('python3', pythonArgs);
+                let stdout = '';
+                let stderr = '';
+
+                child.stdout.on('data', d => {
+                    const str = d.toString();
+                    stdout += str;
+
+                    // Parse Progress
+                    const lines = str.split('\n');
+                    for (const line of lines) {
+                        const match = line.match(/PROGRESS:\s*(\d+)/);
+                        if (match) {
+                            const percent = parseInt(match[1], 10);
+                            const fileFraction = percent / 100.0;
+                            const overall = (i + fileFraction) / files.length;
+                            event.sender.send('task-progress', { progress: overall, toolId: 'ambirotate' });
+                        }
+                    }
+                });
+                child.stderr.on('data', d => stderr += d.toString());
+
+                child.on('close', (code) => {
+                    if (code === 0) {
+                        resolve();
+                    } else {
+                        console.error("[AmbiRotate] Error:", stderr);
+                        reject(new Error(`Rotate script failed (code ${code}). ${stderr}`));
+                    }
+                });
+
+                child.on('error', (err) => {
+                    reject(new Error(`Failed to spawn python3: ${err.message}`));
+                });
             });
 
-            child.on('error', (err) => {
-                resolve({ success: false, error: `Failed to spawn python3: ${err.message}` });
-            });
-        });
+            results.push(outputPath);
+            event.sender.send('task-progress', { progress: (i + 1) / files.length, toolId: 'ambirotate' });
+        }
+
+        return { success: true, data: { outputPaths: results } };
 
     } catch (e: any) {
         return { success: false, error: e.message };

@@ -22,6 +22,8 @@ interface ToolViewProps {
   tool: ToolDefinition;
 }
 
+import { useSettings } from '../contexts/SettingsContext';
+
 // ----------------------------------------------------------------------
 // SHARED COMPONENTS
 // ----------------------------------------------------------------------
@@ -452,6 +454,8 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     }
   }, [activeFileIndex, tool.id]);
 
+  const { settings } = useSettings();
+
   const handleRunTask = async (options: any) => {
     if (files.length === 0) return;
     setIsProcessing(true);
@@ -463,26 +467,32 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
         return p;
       });
 
+      // Prepare Settings Object for Backend
+      const backendSettings = {
+        outputDir: settings.outputMode === 'custom' ? settings.customOutputDir : undefined,
+        autoCreateFolder: settings.autoCreateFolder
+      };
+
       let result;
       switch (tool.id) {
         case ToolId.Ambix2Opus:
         case ToolId.Ambix2IAMF:
-          result = await window.electronAPI.convertBitrate(filePaths, options.bitrate, tool.id === ToolId.Ambix2IAMF ? 'iamf' : 'opus');
+          result = await window.electronAPI.convertBitrate(filePaths, options.bitrate, tool.id === ToolId.Ambix2IAMF ? 'iamf' : 'opus', backendSettings);
           break;
         case ToolId.Ambix2APAC:
-          result = await window.electronAPI.convertAmbix2Apac(filePaths, options.bitrate);
+          result = await window.electronAPI.convertAmbix2Apac(filePaths, options.bitrate, backendSettings);
           break;
         case ToolId.Ambix2Bin:
-          result = await window.electronAPI.convertAmbix2Bin(filePaths, options.hrtfProfile);
+          result = await window.electronAPI.convertAmbix2Bin(filePaths, options.hrtfProfile, backendSettings);
           break;
         case ToolId.AmbiSwap:
-          result = await window.electronAPI.convertAmbiSwap(filePaths, options.direction);
+          result = await window.electronAPI.convertAmbiSwap(filePaths, options.direction, backendSettings);
           break;
         case ToolId.Ambix2CAF:
-          result = await window.electronAPI.convertAmbix2Caf(filePaths, options.layout, options.bitDepth);
+          result = await window.electronAPI.convertAmbix2Caf(filePaths, options.layout, options.bitDepth, backendSettings);
           break;
         case ToolId.AmbiOrder:
-          result = await window.electronAPI.convertAmbiOrder(filePaths, options.targetOrder);
+          result = await window.electronAPI.convertAmbiOrder(filePaths, options.targetOrder, backendSettings);
           break;
       }
 

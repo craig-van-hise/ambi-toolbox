@@ -20,6 +20,37 @@ export interface AudioProbeResult {
     sampleRate: number;
 }
 
+// Helper: Determine Output Path based on Settings
+export function determineOutputPath(
+    inputPath: string,
+    settings?: { outputDir?: string; autoCreateFolder?: boolean },
+    formatName?: string,
+    extension?: string
+): string {
+    const inputDir = path.dirname(inputPath);
+    const fileName = path.basename(inputPath, path.extname(inputPath));
+    const ext = extension || path.extname(inputPath); // Use provided extension or keep original
+
+    // Determine Base Directory (Custom or Input)
+    let outputDir = (settings && settings.outputDir) ? settings.outputDir : inputDir;
+
+    // Auto-Create Subfolder (e.g. "Output/Opus/" or "Input/Opus/")
+    if (settings && settings.autoCreateFolder && formatName) {
+        outputDir = path.join(outputDir, formatName);
+        if (!fs.existsSync(outputDir)) {
+            try {
+                fs.mkdirSync(outputDir, { recursive: true });
+            } catch (err) {
+                console.error(`[Common] Failed to create auto-folder: ${outputDir}`, err);
+                // Fallback to base dir if mkdir fails
+                outputDir = (settings && settings.outputDir) ? settings.outputDir : inputDir;
+            }
+        }
+    }
+
+    return path.join(outputDir, `${fileName}${ext}`);
+}
+
 // Robust Probe using FFPROBE JSON (Primary)
 export function probeAudio(filePath: string): Promise<AudioProbeResult> {
     return new Promise((resolve, reject) => {

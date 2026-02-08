@@ -1,13 +1,14 @@
 import { IpcMainInvokeEvent } from 'electron';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
-import { getFfmpegPath, probeAudio } from './common';
+import { getFfmpegPath, probeAudio, determineOutputPath } from './common';
 
 export async function handleAmbix2Opus(event: IpcMainInvokeEvent, options: {
     files: string[];
     bitrate: string; // "High (96kbps)"
+    settings?: { outputDir?: string; autoCreateFolder?: boolean };
 }): Promise<{ success: boolean; error?: string; data?: any }> {
-    const { files, bitrate } = options;
+    const { files, bitrate, settings } = options;
 
     try {
         if (!files || files.length === 0) throw new Error("No files provided");
@@ -41,7 +42,7 @@ export async function handleAmbix2Opus(event: IpcMainInvokeEvent, options: {
             const mappingFamily = isAmbisonics ? '2' : '255';
 
             // Output Path
-            const outputPath = inputPath.replace(/\.[^/.]+$/, "") + ".opus";
+            const outputPath = determineOutputPath(inputPath, settings, 'Opus', '.opus');
 
             // 4. Run FFmpeg
             const args = [

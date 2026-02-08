@@ -1,6 +1,7 @@
 import { IpcMainInvokeEvent, app } from 'electron';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
+import { determineOutputPath } from './common';
 import fs from 'node:fs';
 
 // Helper to get script path
@@ -21,10 +22,10 @@ function getSofaPath(filename: string): string {
 
 export async function handleAmbix2Bin(event: IpcMainInvokeEvent, options: {
     files: string[];
-    hrtfProfile: string; // "Neumann", "Kemar", "Custom"
-    customSofaPath?: string;
+    hrtfProfile: string; // "Neumann", "Kemar", or custom path
+    settings?: { outputDir?: string; autoCreateFolder?: boolean };
 }): Promise<{ success: boolean; error?: string; data?: any }> {
-    const { files, hrtfProfile, customSofaPath } = options;
+    const { files, hrtfProfile, settings } = options;
 
     try {
         if (!files || files.length === 0) throw new Error("No files provided");
@@ -33,18 +34,16 @@ export async function handleAmbix2Bin(event: IpcMainInvokeEvent, options: {
         let sofaPath = '';
         console.log(`[Ambix2Bin] Profile requested: ${hrtfProfile}`);
 
-        if (hrtfProfile.includes('Neumann')) {
+        if (hrtfProfile === 'Neumann') {
             sofaPath = getSofaPath('HRIR_L2702.sofa');
-        } else if (hrtfProfile.includes('Kemar')) {
+        } else if (hrtfProfile === 'Kemar') {
             sofaPath = getSofaPath('mit_kemar_normal_pinna.sofa');
-        } else if (hrtfProfile.includes('Custom')) {
-            if (customSofaPath && fs.existsSync(customSofaPath)) {
-                sofaPath = customSofaPath;
+        } else { // Assume hrtfProfile is the custom path
+            if (fs.existsSync(hrtfProfile)) {
+                sofaPath = hrtfProfile;
             } else {
-                throw new Error("Custom SOFA path not provided.");
+                throw new Error(`Custom SOFA file not found at: ${hrtfProfile}`);
             }
-        } else {
-            sofaPath = getSofaPath('HRIR_L2702.sofa');
         }
 
         if (!fs.existsSync(sofaPath)) {
@@ -56,7 +55,8 @@ export async function handleAmbix2Bin(event: IpcMainInvokeEvent, options: {
 
         for (let i = 0; i < files.length; i++) {
             const inputPath = files[i];
-            const outputPath = inputPath.replace(/\.[^/.]+$/, "") + "_binaural.wav";
+
+            const outputPath = determineOutputPath(inputPath, settings, 'Binaural', '_Binaural.wav');
 
             const statusMsg = `Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`;
             console.log(`[Ambix2Bin] ${statusMsg}`);

@@ -1,13 +1,14 @@
 import { IpcMainInvokeEvent } from 'electron';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
-import { getFfmpegPath, probeAudio } from './common';
+import { getFfmpegPath, probeAudio, determineOutputPath } from './common';
 
 export async function handleAmbiSwap(event: IpcMainInvokeEvent, options: {
     files: string[];
-    direction: "AmbixToFuMa" | "FuMaToAmbix";
+    direction: string; // "AmbiX -> FuMa" or "FuMa -> AmbiX"
+    settings?: { outputDir?: string; autoCreateFolder?: boolean };
 }): Promise<{ success: boolean; error?: string; data?: any }> {
-    const { files, direction } = options;
+    const { files, direction, settings } = options;
 
     try {
         if (!files || files.length === 0) throw new Error("No files provided");
@@ -20,8 +21,8 @@ export async function handleAmbiSwap(event: IpcMainInvokeEvent, options: {
         const gainToAmbiX = "1.41421356";
         const ambixToFuMaIndices = [0, 3, 1, 2, 6, 7, 5, 8, 4, 12, 13, 11, 14, 10, 15, 9];
         const fuMaToAmbixIndices = [0, 2, 3, 1, 8, 6, 4, 5, 7, 15, 13, 11, 9, 10, 12, 14];
-        const mapIndices = direction === "AmbixToFuMa" ? ambixToFuMaIndices : fuMaToAmbixIndices;
-        const gain = direction === "AmbixToFuMa" ? gainToFuMa : gainToAmbiX;
+        const mapIndices = direction === "AmbiX -> FuMa" ? ambixToFuMaIndices : fuMaToAmbixIndices;
+        const gain = direction === "AmbiX -> FuMa" ? gainToFuMa : gainToAmbiX;
 
         for (let i = 0; i < files.length; i++) {
             const inputPath = files[i];
@@ -58,8 +59,9 @@ export async function handleAmbiSwap(event: IpcMainInvokeEvent, options: {
                 throw new Error(`Unsupported channel count: ${channels}`);
             }
 
-            const suffix = direction === "AmbixToFuMa" ? "_FuMa" : "_AmbiX";
-            const outputPath = inputPath.replace(/\.[^/.]+$/, "") + `${suffix}.wav`;
+            const suffix = direction === "AmbixToFuMa" ? "_FuMa.wav" : "_AmbiX.wav";
+            const formatName = direction === "AmbixToFuMa" ? "FuMa" : "AmbiX";
+            const outputPath = determineOutputPath(inputPath, settings, formatName, suffix);
 
             const args = [
                 '-y',

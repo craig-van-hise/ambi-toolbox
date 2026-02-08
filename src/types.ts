@@ -56,12 +56,13 @@ export interface AmbiRotateToolProps {
 export interface ElectronAPI {
   readChunk: (filePath: string, offset: number, length: number) => Promise<ArrayBuffer>;
   processAmbiRotate: (filePaths: string[], rotation: { yaw: number, pitch: number, roll: number }) => Promise<any>;
-  convertBitrate: (filePaths: string[], bitrate: string, format: 'opus' | 'iamf') => Promise<any>;
-  convertAmbix2Bin: (filePaths: string[], hrtfProfile: string) => Promise<any>;
-  convertAmbiSwap: (filePaths: string[], direction: string) => Promise<any>;
-  convertAmbix2Caf: (filePaths: string[], layout?: string, bitDepth?: string) => Promise<any>;
-  convertAmbiOrder: (filePaths: string[], targetOrder: string) => Promise<any>;
-  convertAmbix2Apac: (filePaths: string[], bitrate: string) => Promise<any>;
+  convertBitrate: (filePaths: string[], bitrate: string, format: 'opus' | 'iamf', settings?: any) => Promise<any>;
+  convertAmbix2Bin: (filePaths: string[], hrtfProfile: string, settings?: any) => Promise<any>;
+  convertAmbiSwap: (filePaths: string[], direction: string, settings?: any) => Promise<any>;
+  convertAmbix2Caf: (filePaths: string[], layout?: string, bitDepth?: string, settings?: any) => Promise<any>;
+  convertAmbiOrder: (filePaths: string[], targetOrder: string, settings?: any) => Promise<any>;
+  convertAmbix2Apac: (filePaths: string[], bitrate: string, settings?: any) => Promise<any>;
+  convertAmbiRotate: (filePaths: string[], rotation: { yaw: number, pitch: number, roll: number }, settings?: any) => Promise<any>;
   on: (channel: string, callback: (data: any) => void) => () => void;
   onProgress: (callback: (data: any) => void) => () => void;
 }
