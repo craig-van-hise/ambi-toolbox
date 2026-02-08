@@ -1,79 +1,123 @@
+
 # AmbiToolbox (Electron Monolith)
 
 **AmbiToolbox** is a unified spatial audio utility suite for macOS, built with **Electron, React, and TypeScript**.
 It consolidates multiple audio conversion tools into a single, modular application.
 
+## 🎯 Purpose & Workflow
+
+AmbiToolbox is designed to act as a "Swiss Army Knife" for spatial audio production pipelines. While Ambisonics is a powerful format, working with it often requires opening heavy Digital Audio Workstations (DAWs) for simple tasks or memorizing complex FFmpeg arguments in the command line.
+
+This suite eliminates those bottlenecks, allowing audio engineers to process, convert, and QC spatial audio assets in a standalone environment. It is built to save time on repetitive tasks and ensure interoperability between different spatial audio standards.
+
+### Common Use Cases
+
+* **Vision Pro & Apple Ecosystem Delivery:** Rapidly encode master files into the **APAC** codec (Apple Spatial Audio) or **CAF** containers without navigating Xcode scripts or DAW render queues.
+* **Web & VR Optimization:** Compress high-order Ambisonics into **Opus** (Ogg) using **Ambix2Opus** with correct channel mapping for web-based VR players, reducing file size while maintaining spatial fidelity.
+* **Instant Quality Control (QC):** Quickly render a binaural downmix using **Ambix2Bin** to check a mix on headphones without loading a DAW session or setting up a routing matrix.
+* **Format Rescue:** Solve "wrong channel order" or "wrong normalization" issues by instantly swapping between **AmbiX (ACN/SN3D)** and **FuMa** formats using **AmbiSwap** without data loss.
+* **Next-Gen Streaming Delivery:** Prepare assets for modern open-standard streaming (like YouTube or Samsung devices) by encoding to **IAMF** (Immersive Audio Model and Formats) using **Ambix2IAMF**.
+* **Asset Downscaling:** Use **AmbiOrder** to reduce a 3rd Order master file into 1st Order for mobile game engines (Unity/Unreal) or hardware with limited channel counts.
+* **Orientation Correction:** Fix recordings made with a misaligned or upside-down microphone by applying 3-axis rotation (Yaw/Pitch/Roll) in real-time with **AmbiRotate** before committing to a new file.
+
+---
+
 ## 🛠 Features
 
-### Ready & Active
-1.  **Ambix2Opus**: Convert Ambisonics (.wav/.amb) to Opus (.opus) with proper channel mapping (Family 2).
-    -   Supports 1st, 2nd, 3rd, 4th Order.
-    -   Configurable quality.
-2.  **Ambix2Bin**: Render Ambisonics to Binaural Stereo using SOFA HRTF files.
-    -   Built-in Neumann KU100 and KEMAR profiles.
-3.  **Ambix2IAMF**: Encode Ambisonics to IAMF (Immersive Audio Model and Formats).
-    -   Generates Type 2 (Ombisonic) IAMF streams.
-4.  **Ambix2CAF**: Convert to Apple CAF format (Discrete or HOA/ACN Layouts).
-5.  **Ambix2APAC**: Encode Ambisonics to Apple Spatial Audio Codec (APAC) for visionOS.
-    -   Native macOS 14+ encoder.
-6.  **AmbiOrder**: Reduce Ambisonic Order (e.g., 3rd -> 1st) with dynamic input detection.
-7.  **AmbiSwap**: Convert between ACN/SN3D (AmbiX) and FuMa (MaxN).
-    -   *Crucial*: Enforced 24-bit PCM output to prevent gain-normalization data loss.
-8.  **AmbiRotate**: Real-time Rotation Preview.
-    -   **Hybrid Native Engine**: 
-        -   **Order 1 (Ch 1-3)**: Full 3-Axis Matrix (Yaw/Pitch/Roll).
-        -   **Order >1 (Ch 4+)**: Infinite-Order Sectorial Yaw (Optimized).
-    -   **Monitoring**: Binaural stereo downmix for instant feedback.
+### Tools
 
-### Core Features
--   **Smart Persistence**: Remembers your last active tool and tool-specific settings (bitrate, HRTF, rotation) between sessions.
-    -   **Crash-Safe**: Robust legacy settings handling.
-    -   **Queue Safety**: File queue is explicitly cleared on relaunch.
+1. **Ambix2Opus**: Convert Ambisonics (.wav/.amb) to Opus (.opus) with proper channel mapping (Family 2).
+* Supports 1st, 2nd, 3rd, 4th Order.
+* Configurable quality.
+
+
+2. **Ambix2Bin**: Render Ambisonics to Binaural Stereo using SOFA HRTF files.
+* Built-in Neumann KU100 and KEMAR profiles.
+
+
+3. **Ambix2IAMF**: Encode Ambisonics to IAMF (Immersive Audio Model and Formats).
+* Generates Type 2 (Ombisonic) IAMF streams.
+
+
+4. **Ambix2CAF**: Convert to Apple CAF format (Discrete or HOA/ACN Layouts).
+5. **Ambix2APAC**: Encode Ambisonics to Apple Spatial Audio Codec (APAC) for visionOS.
+* Native macOS 14+ encoder.
+
+
+6. **AmbiOrder**: Reduce Ambisonic Order (e.g., 3rd -> 1st) with dynamic input detection.
+7. **AmbiSwap**: Convert between ACN/SN3D (AmbiX) and FuMa (MaxN).
+* *Crucial*: Enforced 24-bit PCM output to prevent gain-normalization data loss.
+
+
+8. **AmbiRotate**: Real-time Rotation Preview.
+* **Hybrid Native Engine**:
+* **Order 1 (Ch 1-3)**: Full 3-Axis Matrix (Yaw/Pitch/Roll).
+* **Order >1 (Ch 4+)**: Infinite-Order Sectorial Yaw (Optimized).
+
+
+* **Monitoring**: Binaural stereo downmix for instant feedback.
+
+
 
 ## 🚀 Getting Started
 
 ### Prerequisites
--   **Node.js** (v18+)
--   **Python 3** (for Ambix2Bin binaural rendering backend)
+
+* **Node.js** (v18+)
+* **Python 3** (for Ambix2Bin binaural rendering backend)
 
 ### Installation
-1.  Clone the repository.
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
+
+1. Clone the repository.
+2. Install dependencies:
+```bash
+npm install
+
+```
+
+
 
 ### Running in Development
+
 ```bash
 npm run dev
+
 ```
+
 (Binaries for ffmpeg/ffprobe/iamf-enc are expected in `assets/bin/`)
 
 ### Building for Production
+
 ```bash
 npm run build
+
 ```
+
 The output can be found in `release/` or `dist/`.
 
 ## 🏗 Architecture
 
--   **Frontend**: React + TypeScript + TailwindCSS (`src/`)
--   **Backend**: Electron Main Process (`electron/`)
-    -   **Handlers**: `electron/handlers/` (Business logic for each tool)
-    -   **Bridge**: `electron/preload.ts` (Unified Bridge: `window.electron` and `window.electronAPI`)
-    -   **Python Extension**: `py/ambi_rotate.py` (Active backend for AmbiRotate)
--   **Cleanup**: Legacy/Vestigial files moved to `xCleanup/` (Gitignored).
+* **Frontend**: React + TypeScript + TailwindCSS (`src/`)
+* **Backend**: Electron Main Process (`electron/`)
+* **Handlers**: `electron/handlers/` (Business logic for each tool)
+* **Bridge**: `electron/preload.ts` (Unified Bridge: `window.electron` and `window.electronAPI`)
+* **Python Extension**: `py/ambi_rotate.py` (Active backend for AmbiRotate)
+
+
+* **Cleanup**: Legacy/Vestigial files moved to `xCleanup/` (Gitignored).
 
 ## 🧪 Testing
 
 Run integration tests for the backend logic:
+
 ```bash
 npm run test
+
 ```
 
 ---
 
-##  Ambix2APAC: Apple Dependencies & Requirements
+##  Ambix2APAC: Apple Dependencies & Requirements
 
 The **Ambix2APAC** tool utilizes the native Apple Positional Audio Codec (APAC) to provide high-fidelity spatial audio compression optimized for the Apple Vision Pro and visionOS ecosystem. Because this tool relies on proprietary Apple frameworks, the following requirements must be met:
 
@@ -85,6 +129,8 @@ The **Ambix2APAC** tool utilizes the native Apple Positional Audio Codec (APAC) 
 * **iOS/iPadOS:** Requires **iOS 17.0+** or **iPadOS 17.0+** for native APAC decoding.
 * **macOS:** Requires **macOS 14.0+** for playback via AVFoundation-based applications.
 
+
+
 ### 2. Technical Capabilities
 
 * **Ambisonic Orders:** The native system encoder currently supports **1st (4ch), 2nd (9ch), and 3rd (16ch)** order Ambisonics. Support for up to **5th order (36ch)** is available in specific profiles.
@@ -93,11 +139,15 @@ The **Ambix2APAC** tool utilizes the native Apple Positional Audio Codec (APAC) 
 * **3rd Order:** ~768 kbps (total).
 * *Note: Our implementation uses a "Per-Channel" logic (e.g., 96kbps/ch) to maintain consistent quality across all orders.*
 
+
+
 ### 3. Build & Development Requirements
 
 * **Swift Environment:** Compilation of the `apac-enc` sidecar requires **Xcode 15.0+** or the **Command Line Tools for Xcode 15.0+** to access the necessary Core Audio headers.
 * **Frameworks Used:** * `AVFoundation`: For high-level media writing (`AVAssetWriter`).
 * `AudioToolbox`: For low-level codec identifiers and channel layout tagging.
+
+
 
 ### 4. Hardware Support
 
