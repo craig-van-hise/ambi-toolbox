@@ -26,6 +26,7 @@ interface ElectronAPI {
     convertAmbiSwap: (filePaths: string[], direction: string) => Promise<any>
     convertAmbix2Caf: (filePaths: string[], layout?: string, bitDepth?: string) => Promise<any>
     convertAmbiOrder: (filePaths: string[], targetOrder: string) => Promise<any>
+    convertAmbix2Apac: (filePaths: string[], bitrate: string) => Promise<any>
 }
 
 declare interface Window {

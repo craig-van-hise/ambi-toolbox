@@ -100,7 +100,7 @@ export const Timeline: React.FC<TimelineProps> = ({
 
                     {/* Right Flag (Out) - Left Pointing Triangle */}
                     <div
-                        className="absolute top-0 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[12px] border-r-red-500 cursor-ew-resize hover:scale-110 transition-transform z-20"
+                        className="absolute top-0 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[12px] border-r-green-500 cursor-ew-resize hover:scale-110 transition-transform z-20"
                         style={{ left: `calc(${pct(loopOut)}% - 12px)` }} // Align right edge (width of border)
                         onMouseDown={(e) => { e.stopPropagation(); setDragging('out'); }}
                         title="Loop End"

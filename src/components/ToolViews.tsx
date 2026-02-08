@@ -506,11 +506,21 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     index: i
   }));
 
+  // PERSISTENCE LOGIC FOR AMBIROTATE
+  const [ambiFiles, setAmbiFiles] = useState<File[]>([]);
+  const [ambiActiveIndex, setAmbiActiveIndex] = useState(0);
+
+  useEffect(() => {
+    if (tool.id === ToolId.AmbiRotate) {
+      setAmbiFiles(files);
+      setAmbiActiveIndex(activeFileIndex);
+    }
+  }, [tool.id, files, activeFileIndex]);
+
   return (
     <div className="h-screen flex flex-col overflow-hidden">
 
-      {/* 1. MIDDLE SECTION (Flexible) */}
-      <div className="flex-1 min-h-0 overflow-y-auto pt-8 pb-4 flex flex-col relative">
+      <div className={`${tool.id === ToolId.AmbiRotate ? 'flex-none max-h-[45vh] shadow-xl z-20 border-b border-studio-border' : 'flex-1 min-h-0'} overflow-y-auto pt-8 pb-4 flex flex-col relative bg-[#18181b]`}>
 
         {/* TOOL HEADER */}
         <div className="px-8 mb-6">
@@ -593,7 +603,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
                               `}
                     >
                       <span className="truncate font-mono">{f.name}</span>
-                      <span className="text-[10px] opacity-50">{f.path.includes('/') ? 'Local' : 'Mem'}</span>
+                      {/* REMOVED: Local/Mem tag */}
                     </div>
                   ))}
                 </div>
@@ -628,28 +638,35 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
           </div>
         )}
 
-        {/* 2. AMBIROTATE MAIN AREA (If active) */}
-        {/* 2. AMBIROTATE MAIN AREA (Persisted) */}
-        {files.length > 0 && (
-          <div className={`flex-1 min-h-0 p-8 flex flex-col ${tool.id === ToolId.AmbiRotate ? '' : 'hidden'}`}>
+      </div>
+
+      {/* 2. AMBIROTATE MAIN AREA (Removed separate partition) */}
+
+      {/* 3. ACTION BAR (Bottom Fixed) */}
+      <div className={`${tool.id === ToolId.AmbiRotate ? 'flex-1 min-h-0' : 'flex-none shadow-[0_-4px_20px_rgba(0,0,0,0.5)]'} border-t border-studio-border bg-[#18181b] p-6 z-30 overflow-y-auto custom-scrollbar`}>
+        <div className="max-w-4xl mx-auto flex flex-col gap-6">
+
+          {/* AMBIROTATE CONTROLS (Moved Here) */}
+          {/* Persist AmbiRotateTool to keep state, just hide it */}
+          <div className={`w-full ${tool.id === ToolId.AmbiRotate ? '' : 'hidden'}`}>
             <AmbiRotateTool
               ref={rotatorRef}
               tool={tool}
-              files={files}
-              activeIndex={activeFileIndex}
-              onIndexChange={setActiveFileIndex}
+              files={ambiFiles}
+              activeIndex={ambiActiveIndex}
+              onIndexChange={(idx) => {
+                if (tool.id === ToolId.AmbiRotate) {
+                  setActiveFileIndex(idx);
+                } else {
+                  setAmbiActiveIndex(idx);
+                }
+              }}
               onRun={handleRunTask}
               isProcessing={isProcessing}
               isVisible={tool.id === ToolId.AmbiRotate}
             />
           </div>
-        )}
 
-      </div>
-
-      {/* 3. ACTION BAR (Bottom Fixed) */}
-      <div className="flex-none border-t border-studio-border bg-[#18181b] p-6 z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
-        <div className="max-w-4xl mx-auto">
           {tool.id === ToolId.Ambix2Opus && <BitrateConverter tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
           {tool.id === ToolId.Ambix2IAMF && <BitrateConverter tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
           {tool.id === ToolId.Ambix2APAC && <Ambix2ApacTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
@@ -658,8 +675,8 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
           {tool.id === ToolId.AmbiSwap && <AmbiSwapTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
           {tool.id === ToolId.Ambix2CAF && <Ambix2CafTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
 
-          {/* AMBIROTATE ACTION BUTTON (Moved here) */}
-          {tool.id === ToolId.AmbiRotate && files.length > 0 && (
+          {/* AMBIROTATE ACTION BUTTON */}
+          {tool.id === ToolId.AmbiRotate && (
             <button
               onClick={async () => {
                 if (!rotatorRef.current) return;
@@ -675,10 +692,10 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
                   setIsProcessing(false);
                 }
               }}
-              disabled={isProcessing}
+              disabled={isProcessing || files.length === 0}
               className={`
                         w-full px-8 py-3 rounded-lg font-bold shadow-lg flex items-center justify-center gap-2 transition-all
-                        ${isProcessing
+                        ${isProcessing || files.length === 0
                   ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
                   : 'bg-red-600 hover:bg-red-500 text-white hover:scale-[1.02] active:scale-95 shadow-red-900/50'
                 }

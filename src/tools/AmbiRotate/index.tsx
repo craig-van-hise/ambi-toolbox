@@ -411,7 +411,7 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
         }`;
 
     return (
-        <div className="relative bg-[#1E1E1E] rounded-lg p-6 border border-studio-border shadow-xl h-full flex flex-col overflow-y-auto">
+        <div className="relative bg-[#1E1E1E] rounded-lg p-6 border border-studio-border shadow-xl flex flex-col h-full min-h-[400px]">
             {/* LOADING OVERLAY */}
             {/* LOADING STATE - Replaces Content */}
             {isLoading ? (
