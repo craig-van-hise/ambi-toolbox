@@ -7,6 +7,7 @@ import RegionsPlugin, { Region } from 'wavesurfer.js/dist/plugins/regions.js';
 import { useSettings } from '../../contexts/SettingsContext';
 import './AmbiTrim.css'; // PRP #62/63: Custom Styles (kept for fallback)
 import { PlayIcon, PauseIcon } from '@heroicons/react/24/solid';
+import { TimeInput } from './TimeInput';
 
 interface AmbiTrimProps {
     tool: ToolDefinition;
@@ -46,7 +47,7 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
         el.style.border = '0';
         el.style.borderLeft = '0';
         el.style.borderRight = '0';
-        el.style.backgroundColor = 'rgba(168, 85, 247, 0.25)'; // Visible Purple
+        el.style.backgroundColor = 'rgba(20, 184, 166, 0.25)'; // Visible Teal
 
         // 3. Find and Style Handles
         // We look for elements with the 'part' attribute containing 'region-handle'
@@ -86,7 +87,7 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
             flag.style.top = '0';
             flag.style.width = '14px';
             flag.style.height = '14px';
-            flag.style.backgroundColor = '#a855f7'; // Purple
+            flag.style.backgroundColor = '#14b8a6'; // Teal
             flag.style.pointerEvents = 'none';
             flag.style.zIndex = '20';
             flag.style.transition = 'transform 0.1s, background-color 0.1s';
@@ -117,7 +118,7 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
                 // Pole stays white
             };
             handle.onmouseleave = () => {
-                flag.style.backgroundColor = '#a855f7';
+                flag.style.backgroundColor = '#14b8a6';
                 flag.style.transform = 'scale(1)';
             };
 
@@ -183,8 +184,8 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
 
                 ws = WaveSurfer.create({
                     container: containerRef.current,
-                    waveColor: '#A855F7', // Purple-500
-                    progressColor: '#6B21A8', // Purple-800
+                    waveColor: '#2DD4BF', // Teal-400
+                    progressColor: '#115E59', // Teal-800
                     cursorColor: '#FF0000', // RED Playhead
                     cursorWidth: 2,
                     barWidth: 2,
@@ -228,7 +229,7 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
                     const newRegion = wsRegions.addRegion({
                         start: 0,
                         end: dur,
-                        color: 'rgba(168, 85, 247, 0.3)',
+                        color: 'rgba(45, 212, 191, 0.3)', // Teal-400 transparent
                         drag: true,
                         resize: true,
                     });
@@ -360,12 +361,7 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
     };
 
     // Time formatting helper
-    const formatTime = (time: number) => {
-        const mins = Math.floor(time / 60);
-        const secs = Math.floor(time % 60);
-        const ms = Math.floor((time % 1) * 100);
-        return `${mins}:${secs.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
-    };
+
 
     return (
         <div className="flex flex-col h-full bg-[#18181b] text-white">
@@ -384,7 +380,7 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
             {/* SECTION A: HEADER (Static) */}
             <div className="px-8 pt-8 pb-6">
                 <header>
-                    <h2 className="text-3xl font-bold mb-2 text-purple-400">
+                    <h2 className="text-3xl font-bold mb-2 text-teal-400">
                         AmbiTrim
                     </h2>
                     <p className="text-gray-400 text-lg font-light">
@@ -421,13 +417,13 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
                         {/* 1. TOP BAR: Info & Zoom */}
                         <div className="flex-none flex justify-between items-center px-4 py-2 border-b border-studio-border bg-[#27272a]">
                             <div className="flex items-center gap-6">
-                                <span className="font-mono text-sm text-purple-300 truncate max-w-[200px]">{file.name}</span>
+                                <span className="font-mono text-sm text-teal-300 truncate max-w-[200px]">{file.name}</span>
                                 <div className="flex items-center gap-2">
                                     <span className="text-xs text-gray-400 font-bold uppercase">Zoom</span>
                                     <input
                                         type="range" min="0" max="100" value={zoomLevel}
                                         onChange={handleZoom}
-                                        className="w-32 accent-purple-500 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                                        className="w-32 accent-teal-500 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
                                         title="0 = Fit to Screen"
                                     />
                                 </div>
@@ -448,8 +444,8 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
                         <div className="flex-1 relative bg-[#18181b] overflow-hidden">
                             {isGeneratingProxy ? (
                                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 z-20 bg-[#18181b]/80">
-                                    <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                                    <span className="text-purple-300 font-medium animate-pulse">Generating Waveform...</span>
+                                    <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+                                    <span className="text-teal-300 font-medium animate-pulse">Generating Waveform...</span>
                                 </div>
                             ) : null}
 
@@ -474,18 +470,40 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
 
                             {/* Time Inputs */}
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="w-full">
-                                    <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Start Time</label>
-                                    <div className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm text-white font-mono text-center">
-                                        {formatTime(startTime)}
-                                    </div>
-                                </div>
-                                <div className="w-full">
-                                    <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">End Time</label>
-                                    <div className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm text-white font-mono text-center">
-                                        {formatTime(endTime)}
-                                    </div>
-                                </div>
+                                <TimeInput
+                                    label="Start Time"
+                                    value={startTime}
+                                    min={0}
+                                    max={endTime}
+                                    onChange={(val) => {
+                                        setStartTime(val);
+                                        // Update Region
+                                        if (regions.current) {
+                                            const r = regions.current.getRegions()[0];
+                                            if (r) {
+                                                r.setOptions({ start: val, end: endTime });
+                                                styleRegion(r); // Re-apply styles if needed
+                                            }
+                                        }
+                                    }}
+                                />
+                                <TimeInput
+                                    label="End Time"
+                                    value={endTime}
+                                    min={startTime}
+                                    max={_duration}
+                                    onChange={(val) => {
+                                        setEndTime(val);
+                                        // Update Region
+                                        if (regions.current) {
+                                            const r = regions.current.getRegions()[0];
+                                            if (r) {
+                                                r.setOptions({ start: startTime, end: val });
+                                                styleRegion(r);
+                                            }
+                                        }
+                                    }}
+                                />
                             </div>
                         </div>
 
@@ -509,7 +527,7 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
                         className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed
                         ${!file || isGeneratingProxy || isExporting
                                 ? 'bg-gray-700 text-gray-500'
-                                : 'bg-purple-600 hover:bg-purple-700'
+                                : 'bg-teal-600 hover:bg-teal-700'
                             }`}
                     >
                         {isExporting ? 'Exporting...' : 'Export Trimmed File'}

@@ -61,8 +61,8 @@ export const TOOLS: ToolDefinition[] = [
     id: ToolId.AmbiTrim,
     label: 'AmbiTrim',
     description: 'Lossless trimming for Ambisonic master files.',
-    colorClass: 'text-purple-400',
-    btnColorClass: 'bg-purple-600 hover:bg-purple-700',
+    colorClass: 'text-teal-400',
+    btnColorClass: 'bg-teal-600 hover:bg-teal-700',
   }
 ];
 

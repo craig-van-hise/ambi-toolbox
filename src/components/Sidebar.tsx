@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ToolId } from '../types';
 import { TOOLS } from '../constants';
-import { Boxes, AudioWaveform, Layers, Repeat, Compass, Headphones, Clapperboard, Settings } from 'lucide-react';
+import { Boxes, AudioWaveform, Layers, Repeat, Compass, Headphones, Clapperboard, Settings, Scissors } from 'lucide-react';
 import { SettingsModal } from './SettingsModal';
 
 interface SidebarProps {
@@ -18,7 +18,7 @@ const getIcon = (id: ToolId) => {
     case ToolId.AmbiRotate: return <Compass className="w-5 h-5" />;
     case ToolId.Ambix2Bin: return <Headphones className="w-5 h-5" />;
     case ToolId.Ambix2IAMF: return <Clapperboard className="w-5 h-5" />;
-    case ToolId.AmbiTrim: return <Boxes className="w-5 h-5 text-purple-400" />; // Fallback icon or Scissors if available
+    case ToolId.AmbiTrim: return <Scissors className="w-5 h-5" />;
     default: return <Boxes className="w-5 h-5" />;
   }
 };
