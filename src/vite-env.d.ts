@@ -28,6 +28,10 @@ interface ElectronAPI {
     convertAmbiOrder: (filePaths: string[], targetOrder: string, settings?: any) => Promise<any>
     convertAmbix2Apac: (filePaths: string[], bitrate: string, settings?: any) => Promise<any>
     convertAmbiRotate: (filePaths: string[], rotation: { yaw: number, pitch: number, roll: number }, settings?: any) => Promise<any>
+    trim: {
+        generateProxy: (filePath: string) => Promise<string>;
+        executeTrim: (filePath: string, start: number, end: number, outputDir: string) => Promise<string>;
+    }
 }
 
 declare interface Window {

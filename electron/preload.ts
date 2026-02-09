@@ -67,4 +67,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   convertAmbiRotate: (filePaths: string[], rotation: { yaw: number, pitch: number, roll: number }, settings?: any) =>
     ipcRenderer.invoke('run-task', 'ambirotate', { files: filePaths, ...rotation, settings }),
+
+
+  // AmbiTrim
+  trim: {
+    generateProxy: (filePath: string) => ipcRenderer.invoke('trim:generateProxy', filePath),
+    executeTrim: (filePath: string, start: number, end: number, outputDir: string) =>
+      ipcRenderer.invoke('trim:executeTrim', filePath, start, end, outputDir)
+  }
 });

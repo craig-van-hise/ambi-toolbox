@@ -1,9 +1,11 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, protocol, net } from 'electron'
 // import { createRequire } from 'node:module' // Unused
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import path from 'node:path'
 import { dispatchTask } from './handlers/index'
 import { probeAudio } from './handlers/common'
+import { generateProxy, executeTrim } from './handlers/trim'
+
 import { spawn } from 'child_process';
 
 // const require = createRequire(import.meta.url) // Unused
@@ -18,6 +20,11 @@ export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron')
 export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
+
+// 1. REGISTER SCHEME (Must be done before app.on('ready'))
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'media', privileges: { secure: true, supportFetchAPI: true, bypassCSP: true } }
+]);
 
 let win: BrowserWindow | null
 
@@ -58,6 +65,22 @@ app.on('activate', () => {
 })
 
 app.whenReady().then(() => {
+
+  // 2. HANDLE MEDIA REQUESTS
+  protocol.handle('media', (request) => {
+    // Convert "media://path/to/file.mp3" -> "file:///path/to/file.mp3"
+    const filePath = request.url.replace('media://', '');
+
+    // Decoding is crucial for paths with spaces or special chars
+    const decodedPath = decodeURIComponent(filePath);
+
+    // Normalize path just in case (optional but safe)
+    // const normalizedPath = path.normalize(decodedPath);
+
+    // Return the file response safely
+    return net.fetch(pathToFileURL(decodedPath).toString());
+  });
+
   // Register IPC Handlers
   ipcMain.handle('run-task', async (event, toolId, options) => {
     return await dispatchTask(event, toolId, options);
@@ -208,6 +231,17 @@ app.whenReady().then(() => {
         }
       });
     });
+  });
+
+  // ------------------------------------------------------------------
+  // AmbiTrim Handlers
+  // ------------------------------------------------------------------
+  ipcMain.handle('trim:generateProxy', async (_event, filePath: string) => {
+    return await generateProxy(filePath);
+  });
+
+  ipcMain.handle('trim:executeTrim', async (_event, filePath: string, start: number, end: number, outputDir: string) => {
+    return await executeTrim(filePath, start, end, outputDir);
   });
 
   createWindow()

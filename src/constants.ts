@@ -56,6 +56,13 @@ export const TOOLS: ToolDefinition[] = [
     description: 'Fixes orientation issues (Yaw/Pitch/Roll) with real-time preview.',
     colorClass: 'text-red-500',
     btnColorClass: 'bg-red-600 hover:bg-red-700',
+  },
+  {
+    id: ToolId.AmbiTrim,
+    label: 'AmbiTrim',
+    description: 'Lossless trimming for Ambisonic master files.',
+    colorClass: 'text-purple-400',
+    btnColorClass: 'bg-purple-600 hover:bg-purple-700',
   }
 ];
 

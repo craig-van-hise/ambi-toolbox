@@ -20,6 +20,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 | **AmbiSwap** | 🟢 Ready | `electron/handlers/AmbiSwap.ts` | Supports 1st-3rd Order. Enforces 24-bit PCM. |
 | **AmbiRotate** | 🟢 Ready | `py/ambi_rotate.py` (NumPy) | Chunked Processing for Memory Efficiency. Real-time Progress. |
 | **Ambix2CAF** | 🟢 Ready | `electron/handlers/Ambix2CAF.ts` | Supports Discrete & HOA Layouts. |
+| **AmbiTrim** | 🟢 Ready | `electron/handlers/trim.ts` | Proxy Workflow (Mid-Side), Lossless Cut (`-c copy`), WaveSurfer Regions. |
 | **Persistence** | 🟢 Ready | `src/contexts/SettingsContext.tsx` | Saves active tool, bitrates, layouts, and rotation values. |
 
 ## 3. Directory Structure (Key Paths)
@@ -44,4 +45,8 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 -   **Native DSP Engine**: Implemented `NativeRotator.ts` "Hybrid Engine": Full 3x3 Matrix for 1st Order (Yaw/Pitch/Roll) + Sectorial Logic for Higher Orders (Yaw only).
 -   **Architecture Restoration**: Restored Legacy Bridge (`window.electron`) alongside New Bridge (`window.electronAPI`) in `preload.ts` to ensure backward compatibility for all tools (PRP #39/#40).
 -   **Batch Processing**: All tools updated to support batch processing (Array inputs) with queue UI.
+-   **AmbiTrim**: Implemented "AmbiTrim" tool with a Proxy Workflow.
+    -   **Frontend**: Built "Sandwich Interface" with WaveSurfer.js + Regions Plugin. Implemented "Nuclear" DOM manipulation for pixel-perfect handle styling (PRP #70).
+    -   **Backend**: `generateProxy` creates a Mid-Side MP3 for visualization. `executeTrim` performs lossless FFmpeg cut.
+    -   **UX**: "Fit to Screen" zoom (0 value), auto-scroll, and full-range default region initialization (PRP #71).
 -   **Settings Persistence**: Implemented `SettingsContext` to persist user preferences (HRTF, Bitrate, Rotation) using `localStorage`. secure merge strategy handles legacy settings to prevent crashes.

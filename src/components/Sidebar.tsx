@@ -18,6 +18,7 @@ const getIcon = (id: ToolId) => {
     case ToolId.AmbiRotate: return <Compass className="w-5 h-5" />;
     case ToolId.Ambix2Bin: return <Headphones className="w-5 h-5" />;
     case ToolId.Ambix2IAMF: return <Clapperboard className="w-5 h-5" />;
+    case ToolId.AmbiTrim: return <Boxes className="w-5 h-5 text-purple-400" />; // Fallback icon or Scissors if available
     default: return <Boxes className="w-5 h-5" />;
   }
 };

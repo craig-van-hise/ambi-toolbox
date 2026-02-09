@@ -19,6 +19,7 @@ This suite eliminates those bottlenecks, allowing audio engineers to process, co
 * **Next-Gen Streaming Delivery:** Prepare assets for modern open-standard streaming (like YouTube or Samsung devices) by encoding to **IAMF** (Immersive Audio Model and Formats) using **Ambix2IAMF**.
 * **Asset Downscaling:** Use **AmbiOrder** to reduce a 3rd Order master file into 1st Order for mobile game engines (Unity/Unreal) or hardware with limited channel counts.
 * **Orientation Correction:** Fix recordings made with a misaligned or upside-down microphone by applying 3-axis rotation (Yaw/Pitch/Roll) in real-time with **AmbiRotate** before committing to a new file.
+* **Lossless Trimming:** Use **AmbiTrim** to cut unwanted sections from massive multi-channel master files without re-encoding, preserving the original audio data bit-for-bit.
 
 ---
 
@@ -55,7 +56,13 @@ This suite eliminates those bottlenecks, allowing audio engineers to process, co
 * **Order >1 (Ch 4+)**: Infinite-Order Sectorial Yaw (Optimized).
 
 
-* **Monitoring**: Binaural stereo downmix for instant feedback.
+* *Monitoring*: Binaural stereo downmix for instant feedback.
+
+
+9. **AmbiTrim**: Lossless Ambisonic Cutter.
+* **Proxy Workflow**: Generates a fast-loading stereo proxy (Mid-Side decode) for smooth waveform navigation.
+* **Non-Destructive**: Uses FFmpeg stream copy (`-c copy`) to trim files without quality loss.
+* **Precision**: Sample-accurate handles with "Fit to Screen" zoom.
 
 
 

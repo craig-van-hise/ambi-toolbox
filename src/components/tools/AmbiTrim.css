@@ -1,0 +1,42 @@
+/* AmbiTrim Custom Styles (PRP #63) */
+
+/* REGION BOX */
+.wavesurfer-region {
+  border: 1px solid rgba(168, 85, 247, 0.5) !important;
+  /* Purple Border */
+  background-color: rgba(168, 85, 247, 0.2) !important;
+  /* Purple Tint */
+  z-index: 10;
+}
+
+/* HANDLES (The "Grabbers") */
+/* Targeting the internal handle elements created by Regions Plugin */
+.wavesurfer-region-handle {
+  width: 16px !important;
+  /* Wider hit area */
+  background-color: rgba(255, 255, 255, 0.05);
+  /* Subtle hover area */
+  cursor: col-resize;
+}
+
+/* VISUAL INDICATORS (Pseudo-elements) */
+/* Utilizing the specific direction attributes if available, or just generic handle styling */
+.wavesurfer-region-handle::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  /* The visible white line */
+  background-color: white;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Position the white line correctly within the wide hit area */
+.wavesurfer-region-handle-start::after {
+  left: 0;
+}
+
+.wavesurfer-region-handle-end::after {
+  right: 0;
+}

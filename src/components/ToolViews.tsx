@@ -15,6 +15,7 @@ import {
   ChevronDown,
   ChevronRight
 } from 'lucide-react';
+import { AmbiTrim } from '../components/tools/AmbiTrim';
 
 interface ToolViewProps {
   tool: ToolDefinition;
@@ -601,6 +602,11 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
       setAmbiActiveIndex(activeFileIndex);
     }
   }, [tool.id, files, activeFileIndex]);
+
+  // SPECIAL CASE: AmbiTrim handles its own full-screen layout (PRP #54/55)
+  if (tool.id === ToolId.AmbiTrim) {
+    return <AmbiTrim tool={tool} />;
+  }
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
