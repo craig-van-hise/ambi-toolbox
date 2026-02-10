@@ -1,5 +1,5 @@
 
-# AmbiToolbox (Electron Monolith)
+# AmbiToolbox
 
 **AmbiToolbox** is a unified spatial audio utility suite for macOS, built with **Electron, React, and TypeScript**.
 It consolidates multiple audio conversion tools into a single, modular application.

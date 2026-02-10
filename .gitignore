@@ -158,5 +158,8 @@ xCleanup/
 # Test Files
 *.wav
 *.mp4
-test_16ch.wav test_16ch_desc.mp4 96000 && assets/bin/apac-enc test_4ch.wav test_4ch_desc.mp4 96000*/*.mp4
+
 test output/
+
+# PRP Documentation
+PRPs/
