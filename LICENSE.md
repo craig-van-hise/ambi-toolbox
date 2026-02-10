@@ -1,0 +1,1 @@
+Copyright (c) 2026 Craig Van Hise. All Rights Reserved. Use of this software is governed by the terms in EULA.md

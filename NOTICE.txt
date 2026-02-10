@@ -1,0 +1,48 @@
+AmbiToolbox - Third Party Notices
+
+This software includes the following third-party components:
+
+========================================================================
+SECTION 1: BINARY EXECUTABLES
+========================================================================
+
+1. FFmpeg & FFprobe
+   - License: LGPL v2.1 (GNU Lesser General Public License)
+   - Home: https://ffmpeg.org/
+   - Note: This software uses valid stock builds of FFmpeg. You may replace these libraries with your own builds.
+
+2. APAC Encoder (apac-enc)
+   - Copyright (c) 2023-2024 Apple Inc. All Rights Reserved.
+   - Note: Proprietary Apple Framework redistributed under terms of the Apple Developer Agreement for usage with visionOS workflows.
+
+3. IAMF Encoder (iamf-enc)
+   - License: BSD-3-Clause
+   - Home: https://github.com/AOMediaCodec/iamf-tools
+
+========================================================================
+SECTION 2: NODE.JS LIBRARIES (Production)
+========================================================================
+
+*   @heroicons/react (MIT) - Copyright (c) 2020 Refactoring UI Inc.
+*   ambisonics (BSD-3-Clause) - Copyright (c) 2017 David Poirier-Quinot
+*   cross-spawn (MIT) - Copyright (c) 2018 Andre Cruz
+*   lucide-react (ISC) - Copyright (c) 2020 Lucide Contributors
+*   react (MIT) - Copyright (c) Meta Platforms, Inc.
+*   react-dom (MIT) - Copyright (c) Meta Platforms, Inc.
+*   uuid (MIT) - Copyright (c) 2010-2020 Robert Kieffer
+*   wavesurfer.js (BSD-3-Clause) - Copyright (c) 2012-2023 katspaugh
+
+========================================================================
+SECTION 3: AUDIO DATA (HRTF)
+========================================================================
+
+1. MIT KEMAR (MIT_KEMAR_Normal.sofa)
+   - License: MIT License
+   - Copyright (c) 1994 Bill Gardner and Keith Martin, MIT Media Lab.
+   - Source: http://sound.media.mit.edu/resources/KEMAR/
+
+2. Neumann KU100 (Neumann_KU100_48k.sofa)
+   - License: Creative Commons Attribution 4.0 International (CC-BY 4.0)
+   - Title: Spherical Far-Field HRIR / HRTF Compilation of the Neumann KU 100
+   - Author: Benjamin Bernschütz (Technische Universität Berlin)
+   - Source: https://zenodo.org/record/3928297
