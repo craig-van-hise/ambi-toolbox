@@ -10,6 +10,8 @@ interface SmartDropZoneProps {
     onFilesLoaded?: (files: string[] | File[]) => void;
     /** List of allowed extensions (lowercase, with dot). Defaults to audio formats. */
     allowedExtensions?: string[];
+    /** Optional. Override specific label text (e.g. "WAV (PCM) Only"). */
+    label?: string;
     children?: React.ReactNode;
     className?: string;
     compact?: boolean;
@@ -19,6 +21,7 @@ export const SmartDropZone: React.FC<SmartDropZoneProps> = ({
     onDrop,
     onFilesLoaded,
     allowedExtensions = DEFAULT_EXTENSIONS,
+    label,
     children,
     className = '',
     compact = false
@@ -122,7 +125,7 @@ export const SmartDropZone: React.FC<SmartDropZoneProps> = ({
                     </p>
                     {!compact && (
                         <p className="text-xs text-gray-500 mt-2">
-                            {allowedExtensions.slice(0, 4).join(', ')} supported
+                            {label || `${allowedExtensions.slice(0, 4).join(', ')} supported`}
                         </p>
                     )}
                 </>

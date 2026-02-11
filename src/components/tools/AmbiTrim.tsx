@@ -395,6 +395,7 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
                     <div className="h-full border-2 border-dashed border-studio-border rounded-xl flex items-center justify-center bg-[#1E1E1E] overflow-hidden">
                         <SmartDropZone
                             className="w-full h-full border-none"
+                            label=".wav, .amb, .caf, .opus, .ogg, .mp3, .flac, .aac accepted"
                             onFilesLoaded={(files) => {
                                 const processed = files.map(f => {
                                     if (typeof f === 'string') {

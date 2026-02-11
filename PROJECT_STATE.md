@@ -1,6 +1,6 @@
 # AmbiToolbox - Project State Report
 
-**Date:** February 11, 2026
+**Date:** February 11, 2026 (Updated 18:35)
 **Architecture:** Electron Modular Monolith
 
 ## 1. Executive Summary
@@ -42,4 +42,6 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 -   **AmbiTrim Repair (PRP #72)**: Verified backend functionality (stream copy/opus) manually after integration test flaw.
 -   **Settings Persistence**: Implemented `SettingsContext` to persist user preferences (HRTF, Bitrate, Rotation) using `localStorage`. secure merge strategy handles legacy settings to prevent crashes.
 -   **Ambix2Ogg Implementation**: Added new tool for wrapping Ambisonics in Ogg containers. Supports both transcoding (Opus) and direct remuxing (Stream Copy). Includes write permission verification.
+-   **DropZone Label Refinement**: Updated all tool drop zones to display explicit, tool-specific file extension acceptance lists (e.g., ".wav, .opus accepted") instead of generic text.
+-   **File Type Audit**: Conducted comprehensive audit of all backend handlers to determine exact file support, resulting in the "Accepted File Types by Tool.md" documentation.
 

@@ -728,24 +728,54 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
             `}>
             {/* Drop Zone */}
             <div className={`${tool.id === ToolId.AmbiRotate ? 'h-32' : 'h-48'} transition-all`}>
-              <SmartDropZone
-                className="h-full w-full"
-                onFilesLoaded={(loadedFiles) => {
-                  const processed = loadedFiles.map(f => {
-                    if (typeof f === 'string') {
-                      const name = f.split('/').pop() || f;
-                      return { name, path: f } as File;
-                    }
-                    return f;
-                  });
-                  handleFilesDropped(processed as File[]);
-                }}
-                onDrop={(e) => {
-                  if (e.dataTransfer.files) {
-                    handleFilesDropped(Array.from(e.dataTransfer.files));
-                  }
-                }}
-              />
+              {(() => {
+                // DEFINE TOOL-SPECIFIC CONFIGURATION
+                let allowedExts = ['.wav', '.amb', '.caf', '.opus', '.mp3', '.aac', '.flac', '.ogg'];
+                let labelText: string | undefined = undefined;
+
+                if (tool.id === ToolId.Ambix2IAMF) {
+                  allowedExts = ['.wav'];
+                  labelText = ".wav accepted";
+                } else if (tool.id === ToolId.Ambix2APAC) {
+                  allowedExts = ['.wav', '.caf'];
+                  labelText = ".wav, .caf accepted";
+                } else if (tool.id === ToolId.Ambix2Bin || tool.id === ToolId.AmbiRotate) {
+                  allowedExts = ['.wav', '.flac', '.ogg', '.caf'];
+                  labelText = ".wav, .flac, .ogg, .caf accepted";
+                } else if (tool.id === ToolId.Ambix2Opus) {
+                  allowedExts = ['.wav', '.amb', '.caf', '.flac', '.mp3'];
+                  labelText = ".wav, .amb, .caf, .flac, .mp3 accepted";
+                } else if (tool.id === ToolId.Ambix2Ogg) {
+                  labelText = ".wav, .amb, .caf, .flac, .mp3, .opus, .ogg accepted";
+                } else if (tool.id === ToolId.Ambix2CAF || tool.id === ToolId.AmbiOrder || tool.id === ToolId.AmbiSwap) {
+                  // FFmpeg-based tools (highly flexible)
+                  allowedExts = ['.wav', '.amb', '.caf', '.opus', '.mp3', '.aac', '.flac', '.ogg'];
+                  labelText = ".wav, .amb, .caf, .opus, .mp3, .aac, .flac, .ogg accepted";
+                }
+
+                return (
+                  <SmartDropZone
+                    className="h-full w-full"
+                    allowedExtensions={allowedExts}
+                    label={labelText}
+                    onFilesLoaded={(loadedFiles) => {
+                      const processed = loadedFiles.map(f => {
+                        if (typeof f === 'string') {
+                          const name = f.split('/').pop() || f;
+                          return { name, path: f } as File;
+                        }
+                        return f;
+                      });
+                      handleFilesDropped(processed as File[]);
+                    }}
+                    onDrop={(e) => {
+                      if (e.dataTransfer.files) {
+                        handleFilesDropped(Array.from(e.dataTransfer.files));
+                      }
+                    }}
+                  />
+                );
+              })()}
             </div>
 
             {/* Queue */}
