@@ -66,6 +66,12 @@ This suite eliminates those bottlenecks, allowing audio engineers to process, co
 
 
 
+
+10. **Ambix2Ogg**: Ambisonic Ogg/Opus Wrapper.
+* **Smart Transcode**: Converts WAV/AMB to Opus with mapping family 2.
+* **Instant Remux**: Detects existing Opus files and wraps them in Ogg container without re-encoding (Pass-Through).
+
+
 ## 🚀 Getting Started
 
 ### Prerequisites
