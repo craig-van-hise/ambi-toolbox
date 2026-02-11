@@ -8,6 +8,7 @@ import { handleAmbiSwap } from './AmbiSwap';
 import { handleAmbiRotate } from './AmbiRotate';
 
 import { handleAmbix2APAC } from './Ambix2APAC';
+import { handleAmbix2Ogg } from './Ambix2Ogg';
 
 // Handler Interface
 export type TaskHandler = (event: IpcMainInvokeEvent, options: any) => Promise<{ success: boolean; error?: string; data?: any }>;
@@ -23,6 +24,7 @@ handlers['ambiorder'] = handleAmbiOrder;
 handlers['ambiswap'] = handleAmbiSwap;
 handlers['ambirotate'] = handleAmbiRotate;
 handlers['ambix2apac'] = handleAmbix2APAC;
+handlers['ambix2ogg'] = handleAmbix2Ogg;
 
 export function registerHandler(toolId: string, handler: TaskHandler) {
     handlers[toolId] = handler;

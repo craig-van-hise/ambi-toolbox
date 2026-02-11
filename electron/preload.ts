@@ -65,6 +65,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   convertAmbix2Apac: (filePaths: string[], bitrate: string, settings?: any) =>
     ipcRenderer.invoke('run-task', 'ambix2apac', { files: filePaths, bitrate, settings }),
 
+  convertAmbix2Ogg: (filePaths: string[], bitrate: string, settings?: any) =>
+    ipcRenderer.invoke('run-task', 'ambix2ogg', { files: filePaths, bitrate, settings }),
+
   convertAmbiRotate: (filePaths: string[], rotation: { yaw: number, pitch: number, roll: number }, settings?: any) =>
     ipcRenderer.invoke('run-task', 'ambirotate', { files: filePaths, ...rotation, settings }),
 

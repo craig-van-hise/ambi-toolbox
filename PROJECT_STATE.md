@@ -1,6 +1,6 @@
 # AmbiToolbox - Project State Report
 
-**Date:** February 10, 2026
+**Date:** February 11, 2026
 **Architecture:** Electron Modular Monolith
 
 ## 1. Executive Summary
@@ -20,6 +20,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 | **AmbiSwap** | 🟢 Ready | `electron/handlers/AmbiSwap.ts` | Supports 1st-3rd Order. Enforces 24-bit PCM. |
 | **AmbiRotate** | 🟢 Ready | `py/ambi_rotate.py` (NumPy) | Chunked Processing for Memory Efficiency. Real-time Progress. |
 | **Ambix2CAF** | 🟢 Ready | `electron/handlers/Ambix2CAF.ts` | Supports Discrete & HOA Layouts. |
+| **Ambix2Ogg** | 🟢 Ready | `electron/handlers/Ambix2Ogg.ts` | Smart Transcode/Remux. Permission Checks. |
 | **AmbiTrim** | 🟢 Ready | `electron/handlers/trim.ts` | Proxy Workflow (Mid-Side), Lossless Cut (`-c copy`), WaveSurfer Regions. |
 | **Persistence** | 🟢 Ready | `src/contexts/SettingsContext.tsx` | Saves active tool, bitrates, layouts, and rotation values. |
 
@@ -40,4 +41,5 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 -   **FFmpeg Migration (PRP #71/72)**: Replaced binary with custom **LGPL v2.1** build (Release 6.1) supporting Opus. Verified compliance (`--disable-gpl`, `--disable-libx264`).
 -   **AmbiTrim Repair (PRP #72)**: Verified backend functionality (stream copy/opus) manually after integration test flaw.
 -   **Settings Persistence**: Implemented `SettingsContext` to persist user preferences (HRTF, Bitrate, Rotation) using `localStorage`. secure merge strategy handles legacy settings to prevent crashes.
+-   **Ambix2Ogg Implementation**: Added new tool for wrapping Ambisonics in Ogg containers. Supports both transcoding (Opus) and direct remuxing (Stream Copy). Includes write permission verification.
 

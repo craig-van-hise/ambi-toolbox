@@ -197,7 +197,6 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
                     autoScroll: true,
                     autoCenter: true,
                     normalize: true,
-                    splitChannels: false,
                     backend: 'WebAudio',
                     plugins: [wsRegions],
                 });
@@ -319,7 +318,7 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
             // Blob creation
             let blob: Blob;
             if (isUint8) {
-                blob = new Blob([rawData], { type: 'audio/mp3' });
+                blob = new Blob([rawData as any], { type: 'audio/mp3' });
             } else {
                 blob = new Blob([new Uint8Array(rawData)], { type: 'audio/mp3' });
             }

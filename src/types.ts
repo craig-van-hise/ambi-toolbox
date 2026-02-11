@@ -8,6 +8,7 @@ export enum ToolId {
   Ambix2IAMF = 'ambix2iamf',
   Ambix2APAC = 'ambix2apac',
   AmbiTrim = 'ambitrim',
+  Ambix2Ogg = 'ambix2ogg',
 }
 
 export interface ToolDefinition {
@@ -63,6 +64,7 @@ export interface ElectronAPI {
   convertAmbix2Caf: (filePaths: string[], layout?: string, bitDepth?: string, settings?: any) => Promise<any>;
   convertAmbiOrder: (filePaths: string[], targetOrder: string, settings?: any) => Promise<any>;
   convertAmbix2Apac: (filePaths: string[], bitrate: string, settings?: any) => Promise<any>;
+  convertAmbix2Ogg: (filePaths: string[], bitrate: string, settings?: any) => Promise<any>;
   convertAmbiRotate: (filePaths: string[], rotation: { yaw: number, pitch: number, roll: number }, settings?: any) => Promise<any>;
   trim: {
     generateProxy: (filePath: string) => Promise<string>;

@@ -16,6 +16,13 @@ export const TOOLS: ToolDefinition[] = [
     btnColorClass: 'bg-purple-600 hover:bg-purple-700',
   },
   {
+    id: ToolId.Ambix2Ogg,
+    label: 'Ambix2Ogg',
+    description: 'Wraps Ambisonics into Ogg container (.ogg). Supports Opus transcoding or remuxing.',
+    colorClass: 'text-teal-500',
+    btnColorClass: 'bg-teal-600 hover:bg-teal-700',
+  },
+  {
     id: ToolId.Ambix2IAMF,
     label: 'Ambix2IAMF',
     description: 'Encodes Ambisonics to IAMF (Samsung/YouTube).',
