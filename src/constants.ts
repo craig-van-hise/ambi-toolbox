@@ -19,8 +19,8 @@ export const TOOLS: ToolDefinition[] = [
     id: ToolId.Ambix2Ogg,
     label: 'Ambix2Ogg',
     description: 'Wraps Ambisonics into Ogg container (.ogg). Supports Opus transcoding or remuxing.',
-    colorClass: 'text-teal-500',
-    btnColorClass: 'bg-teal-600 hover:bg-teal-700',
+    colorClass: 'text-pink-500',
+    btnColorClass: 'bg-pink-600 hover:bg-pink-700',
   },
   {
     id: ToolId.Ambix2IAMF,

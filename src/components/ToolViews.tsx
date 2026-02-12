@@ -141,15 +141,61 @@ const Ambix2BinTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void
   const [profile, setProfile] = useState<HrtfProfile>(() => {
     return settings.toolSettings?.[tool.id]?.hrtfProfile || HrtfProfile.Neumann;
   });
+  // State to hold the path of the custom SOFA file
+  const [customSofaPath, setCustomSofaPath] = useState<string | null>(() => {
+    return settings.toolSettings?.[tool.id]?.customSofaPath || null;
+  });
 
-  const handleProfileChange = (val: HrtfProfile) => {
-    setProfile(val);
-    updateSettings({
-      toolSettings: {
-        ...settings.toolSettings,
-        [tool.id]: { ...settings.toolSettings?.[tool.id], hrtfProfile: val }
+  const handleProfileChange = async (val: HrtfProfile) => {
+    if (val === HrtfProfile.Custom) {
+      // Trigger file dialog
+      try {
+        const result = await window.electronAPI.selectFiles({
+          properties: ['openFile'],
+          filters: [
+            { name: 'SOFA Files', extensions: ['sofa'] },
+            { name: 'All Files', extensions: ['*'] }
+          ]
+        });
+
+        if (result && result.length > 0) {
+          const selectedPath = result[0];
+          setCustomSofaPath(selectedPath);
+          setProfile(HrtfProfile.Custom); // Only set to Custom if file selected
+
+          // Persist (store 'Custom' in settings, AND store path)
+          updateSettings({
+            toolSettings: {
+              ...settings.toolSettings,
+              [tool.id]: {
+                ...settings.toolSettings?.[tool.id],
+                hrtfProfile: val,
+                customSofaPath: selectedPath
+              }
+            }
+          });
+        } else {
+          // Cancelled: Do nothing? Or revert select? 
+          // If we don't update state, select remains on old value naturally.
+        }
+      } catch (err) {
+        console.error("Failed to select custom SOFA:", err);
       }
-    });
+    } else {
+      setProfile(val);
+      // Don't clear custom path, just switch profile. User might switch back.
+
+      updateSettings({
+        toolSettings: {
+          ...settings.toolSettings,
+          [tool.id]: {
+            ...settings.toolSettings?.[tool.id],
+            hrtfProfile: val
+            // customSofaPath is preserved in settings
+          }
+        }
+      });
+    }
   };
 
   return (
@@ -161,7 +207,7 @@ const Ambix2BinTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void
             <select
               value={profile}
               onChange={(e) => handleProfileChange(e.target.value as HrtfProfile)}
-              className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-green-500 appearance-none text-white"
+              className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-white appearance-none text-white"
             >
               <option value={HrtfProfile.Neumann}>{HrtfProfile.Neumann}</option>
               <option value={HrtfProfile.Kemar}>{HrtfProfile.Kemar}</option>
@@ -169,11 +215,17 @@ const Ambix2BinTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void
             </select>
             <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-gray-500 pointer-events-none" />
           </div>
+          {/* Show selected file path if Custom */}
+          {profile === HrtfProfile.Custom && customSofaPath && (
+            <p className="text-[10px] text-green-400 mt-1 font-mono break-all">
+              Using: {customSofaPath.split('/').pop()}
+            </p>
+          )}
         </div>
 
         <button
-          onClick={() => onRun({ hrtfProfile: profile })}
-          disabled={isProcessing}
+          onClick={() => onRun({ hrtfProfile: profile === HrtfProfile.Custom ? customSofaPath : profile })}
+          disabled={isProcessing || (profile === HrtfProfile.Custom && !customSofaPath)}
           className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
         >
           {isProcessing ? 'Converting...' : 'Convert'}

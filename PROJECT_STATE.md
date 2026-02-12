@@ -1,6 +1,6 @@
 # AmbiToolbox - Project State Report
 
-**Date:** February 11, 2026 (Updated 18:35)
+**Date:** February 11, 2026 (Updated 19:50)
 **Architecture:** Electron Modular Monolith
 
 ## 1. Executive Summary
@@ -14,7 +14,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 | :--- | :--- | :--- | :--- |
 | **Frontend UI** | 🟢 Ready | React + Tailwind | Scoped Progress, Auto-Scroll, Drag & Drop. |
 | **Ambix2Opus** | 🟢 Ready | `electron/handlers/Ambix2Opus.ts` | Uses `ffprobe` for robust channel detection. |
-| **Ambix2Bin** | 🟢 Ready | `electron/handlers/Ambix2Bin.ts` | Uses **Neumann KU100 (CC-BY)** & **MIT KEMAR** HRTFs. |
+| **Ambix2Bin** | 🟢 Ready | `electron/handlers/Ambix2Bin.ts` | Uses **Neumann KU100 (CC-BY)** & **MIT KEMAR** HRTFs. Custom SOFA Loading. |
 | **Ambix2IAMF** | 🟢 Ready | `electron/handlers/Ambix2IAMF.ts` | Generates textproto config and runs `iamf-enc`. |
 | **AmbiOrder** | 🟢 Ready | `electron/handlers/AmbiOrder.ts` | Uses `channelmap` filter. Dynamic Order Detection. Fixed FFmpeg syntax. |
 | **AmbiSwap** | 🟢 Ready | `electron/handlers/AmbiSwap.ts` | Supports 1st-3rd Order. Enforces 24-bit PCM. |
@@ -37,6 +37,8 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 -   **`xCleanup/`**: Quantined legacy files (Gitignored).
 
 ## 4. Recent Logic Changes
+-   **Ambix2Bin Custom HRTF**: Implemented "Load Custom .sofa..." feature. Users can now select arbitrary `.sofa` files via system dialog. Selection is persisted in `localStorage` across sessions.
+-   **UI Refinements (Double Border/Colors)**: Implemented double-border effect for active sidebar tabs (White Outer + Tool Color Inner). Updated `Ambix2Ogg` to Pink and fixed `Ambix2Bin` dropdown focus color (White).
 -   **Asset Compliance (PRP #73)**: Purged non-commercial HRTF files. Added **Neumann KU100** (CC-BY 4.0) and **MIT KEMAR** assets to `assets/hrtf/`. Updated `NOTICE.txt`.
 -   **FFmpeg Migration (PRP #71/72)**: Replaced binary with custom **LGPL v2.1** build (Release 6.1) supporting Opus. Verified compliance (`--disable-gpl`, `--disable-libx264`).
 -   **AmbiTrim Repair (PRP #72)**: Verified backend functionality (stream copy/opus) manually after integration test flaw.

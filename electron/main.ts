@@ -139,9 +139,13 @@ app.whenReady().then(() => {
   });
 
   // NEW: Native File Dialog (PRP #42-1)
-  ipcMain.handle('dialog:openFile', async () => {
+  ipcMain.handle('dialog:openFile', async (_event, options: Electron.OpenDialogOptions = {}) => {
+    const defaultProps: any[] = ['openFile', 'multiSelections'];
+    // Merge provided properties if any, otherwise stick to defaults
+    // If options.properties is provided, we use it. If not, we use default.
     const result = await dialog.showOpenDialog({
-      properties: ['openFile', 'multiSelections']
+      properties: options.properties || defaultProps,
+      filters: options.filters
     });
     return result.canceled ? null : result.filePaths;
   });

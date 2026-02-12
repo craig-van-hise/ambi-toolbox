@@ -24,6 +24,22 @@ const getIcon = (id: ToolId) => {
   }
 };
 
+const getBorderColor = (id: ToolId) => {
+  switch (id) {
+    case ToolId.Ambix2Bin: return 'border-green-500';
+    case ToolId.Ambix2Opus: return 'border-purple-500';
+    case ToolId.Ambix2Ogg: return 'border-pink-500';
+    case ToolId.Ambix2IAMF: return 'border-yellow-500';
+    case ToolId.Ambix2CAF: return 'border-gray-300';
+    case ToolId.Ambix2APAC: return 'border-cyan-500';
+    case ToolId.AmbiOrder: return 'border-blue-500';
+    case ToolId.AmbiSwap: return 'border-orange-500';
+    case ToolId.AmbiRotate: return 'border-red-500';
+    case ToolId.AmbiTrim: return 'border-teal-400';
+    default: return 'border-white';
+  }
+};
+
 export const Sidebar: React.FC<SidebarProps> = ({ activeTool, onSelectTool }) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -56,25 +72,34 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTool, onSelectTool }) =>
               <Settings className="w-5 h-5" />
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-1">Ambisonics Audio Suite v1.0</p>
+          <p className="text-xs text-gray-500 mt-1">Ambisonics Audio Suite v0.9-beta</p>
         </div>
 
         {/* ... existing util list ... */}
         <nav className="flex-1 overflow-y-auto p-2 space-y-1">
           {TOOLS.map((tool) => {
             const isActive = activeTool === tool.id;
+
             return (
               <button
                 key={tool.id}
                 onClick={() => onSelectTool(tool.id)}
                 className={`
-                  w-full flex items-center gap-3 px-3 py-3 rounded-md text-left transition-all
+                  w-full flex items-center gap-3 px-3 py-3 rounded-md text-left transition-all relative
                   ${isActive
                     ? 'bg-[#37373D] text-white shadow-sm'
                     : 'text-gray-400 hover:bg-[#2D2D2E] hover:text-gray-200'
                   }
                 `}
               >
+                {/* Active Tool Double Border Overlay */}
+                {isActive && (
+                  <>
+                    <div className="absolute inset-0 border border-white rounded-md pointer-events-none z-10" />
+                    <div className={`absolute inset-[1px] border ${getBorderColor(tool.id)} rounded-[5px] pointer-events-none z-10`} />
+                  </>
+                )}
+
                 <span className={`${tool.colorClass} ${isActive ? 'opacity-100' : 'opacity-80'}`}>
                   {getIcon(tool.id)}
                 </span>

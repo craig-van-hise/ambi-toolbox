@@ -20,7 +20,7 @@ contextBridge.exposeInMainWorld('electron', {
 // --- NEW BRIDGE (For AmbiRotate) ---
 contextBridge.exposeInMainWorld('electronAPI', {
   // Dialogs
-  selectFiles: () => ipcRenderer.invoke('dialog:openFile'),
+  selectFiles: (options?: any) => ipcRenderer.invoke('dialog:openFile', options),
   expandPaths: (paths: string[]) => ipcRenderer.invoke('app:expandPaths', paths),
 
   // IPC for AmbiRotate
