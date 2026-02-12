@@ -3,9 +3,10 @@ import { AmbiRotateToolProps } from '../../types';
 import { NativeRotator } from './NativeRotator';
 import { WavDecoder } from '../../utils/WavDecoder';
 import { Timeline } from './components/Timeline';
+import { Knob } from './components/Knob';
 import {
     Play, Pause, Square, Repeat,
-    Disc, MoveHorizontal,
+    Disc, MoveHorizontal, MoveVertical, RotateCw,
     Trash2,
     SkipBack, SkipForward
 } from 'lucide-react';
@@ -390,6 +391,30 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
     }, [isVisible]);
 
     // ------------------------------------------------------------------
+    // KEYBOARD SHORTCUTS (Spacebar Play/Pause)
+    // ------------------------------------------------------------------
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.code === 'Space') {
+                // Ignore if focus is on an input element
+                const activeTag = document.activeElement?.tagName.toLowerCase();
+                if (activeTag === 'input' || activeTag === 'textarea') return;
+
+                e.preventDefault(); // Prevent scrolling
+                togglePlayPause();
+            }
+        };
+
+        if (isVisible) {
+            window.addEventListener('keydown', handleKeyDown);
+        }
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isVisible, isPlaying, isReady, togglePlayPause]); // togglePlayPause deps are handled by its definition scope
+
+    // ------------------------------------------------------------------
     // 3. UPDATES & ANIMATION
     // ------------------------------------------------------------------
 
@@ -458,19 +483,16 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
     const doLayFlat = () => handlePitchChange(Math.abs(pitch - 90) < 1 ? 0 : 90);
     const doReset = () => { handleYawChange(0); handlePitchChange(0); handleRollChange(0); };
 
-    const getBtnClass = (isActive: boolean) =>
-        `px-3 py-1.5 rounded text-xs font-bold transition-all border ${isActive
-            ? 'bg-blue-600 text-white border-blue-500 shadow-[0_0_10px_rgba(37,99,235,0.5)]'
-            : 'bg-gray-800 text-gray-300 border-gray-700 hover:bg-gray-700'
-        }`;
+
 
     return (
-        <div className="relative bg-[#1E1E1E] rounded-lg p-6 border border-studio-border shadow-xl flex flex-col h-full min-h-[400px]">
-            {/* LOADING OVERLAY */}
-            {/* LOADING STATE - Replaces Content */}
-            {isLoading ? (
-                <div className="h-full flex flex-col items-center justify-center space-y-4 animate-in fade-in duration-300">
+        <div className="relative bg-[#0a0a0a] rounded-lg px-6 pt-6 pb-2 border border-studio-border shadow-xl flex flex-col w-full h-fit select-none text-white overflow-hidden">
+            {/* GRADIENT GLOW BACKGROUND */}
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-900/10 via-transparent to-purple-900/10 pointer-events-none" />
 
+            {/* LOADING OVERLAY */}
+            {isLoading ? (
+                <div className="h-full flex flex-col items-center justify-center space-y-4 animate-in fade-in duration-300 z-10 py-12">
                     <div className="text-blue-400 font-mono text-xl animate-pulse">SYSTEM LOADING</div>
                     <div className="w-64 h-1 bg-gray-800 rounded-full overflow-hidden">
                         <div className="h-full bg-blue-500 transition-all duration-75" style={{ width: `${loadingProgress}%` }} />
@@ -478,64 +500,120 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
                     <div className="text-xs text-gray-500 font-mono">{loadingMessage}</div>
                 </div>
             ) : (
-                <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-300">
+                <div className="flex flex-col w-full space-y-3 z-10">
 
-                    {/* TRACK INFO & CONTROLS */}
-                    <div>
-                        {/* Track Info (Moved Up) */}
-                        <div className="mb-4 text-sm text-gray-400 truncate font-mono">
-                            {files.length > 0 ? (
-                                <span>
-                                    <span className="text-gray-500 mr-2">TRACK {currentFileIndex + 1}/{files.length}:</span>
-                                    <span className="text-gray-300">{files[currentFileIndex].name}</span>
-                                </span>
-                            ) : "NO MEDIA"}
-                        </div>
+                    {/* ROW 1: HEADER */}
+                    <div className="flex justify-between items-center border-b border-gray-800/50 pb-2">
 
-                        {/* Quick Actions */}
+                        {/* PRESETS (MOVED LEFT) */}
                         <div className="flex gap-2">
-                            <div className="flex gap-2 flex-1">
-                                <button onClick={doUpsideDown} className={getBtnClass(Math.abs(roll - 180) < 1)}>Upside Down</button>
-                                <button onClick={doRotate180} className={getBtnClass(Math.abs(yaw - 180) < 1)}>Rotate 180</button>
-                                <button onClick={doLayFlat} className={getBtnClass(Math.abs(pitch - 90) < 1)}>Lay Flat</button>
-                            </div>
-                            <button onClick={doReset} className="bg-red-900/30 hover:bg-red-900/50 text-xs px-3 py-1.5 rounded text-red-300 border border-red-900/50 transition flex items-center gap-1">
-                                <Trash2 size={12} /> Reset
+                            <button
+                                onClick={doUpsideDown}
+                                className={`px-3 py-1 border rounded text-xs transition ${Math.abs(Math.abs(roll) - 180) < 5 ? 'bg-blue-600 border-blue-500 text-white shadow-[0_0_10px_rgba(37,99,235,0.5)]' : 'border-gray-600 text-gray-400 hover:bg-gray-800 hover:border-gray-500'}`}
+                            >
+                                Upside Down
+                            </button>
+                            <button
+                                onClick={doRotate180}
+                                className={`px-3 py-1 border rounded text-xs transition ${Math.abs(Math.abs(yaw) - 180) < 5 ? 'bg-blue-600 border-blue-500 text-white shadow-[0_0_10px_rgba(37,99,235,0.5)]' : 'border-gray-600 text-gray-400 hover:bg-gray-800 hover:border-gray-500'}`}
+                            >
+                                Rotate 180
+                            </button>
+                            <button
+                                onClick={doLayFlat}
+                                className={`px-3 py-1 border rounded text-xs transition ${Math.abs(Math.abs(pitch) - 90) < 5 ? 'bg-blue-600 border-blue-500 text-white shadow-[0_0_10px_rgba(37,99,235,0.5)]' : 'border-gray-600 text-gray-400 hover:bg-gray-800 hover:border-gray-500'}`}
+                            >
+                                Lay Flat
                             </button>
                         </div>
+
+                        {/* RESET (RIGHT) */}
+                        <button onClick={doReset} className="px-3 py-1 border border-red-900/50 text-red-400 rounded text-xs hover:bg-red-900/20 transition flex items-center gap-1">
+                            <Trash2 size={12} /> Reset
+                        </button>
                     </div>
 
-                    {/* ROTATORS */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* YAW */}
-                        <div className="bg-[#252526] p-4 rounded border border-studio-border">
-                            <div className="flex justify-between mb-2">
-                                <label className="text-xs font-bold text-gray-400">YAW (Z)</label>
-                                <span className="text-xs text-blue-400 font-mono">{yaw}°</span>
+                    {/* ROW 2: 3D CARDS */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                        {/* YAW CARD */}
+                        <div className="bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-col justify-between shadow-[0_0_15px_rgba(0,0,0,0.5)] relative overflow-hidden group min-h-[100px]">
+                            <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+
+                            <label className="text-gray-400 font-bold text-xs tracking-wider z-10">YAW</label>
+
+                            <div className="flex-1 flex items-center justify-center z-10 my-1">
+                                <span className="text-3xl font-bold text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]">
+                                    {Math.round(yaw)}°
+                                </span>
                             </div>
-                            <input type="range" min="-180" max="180" value={yaw} onChange={(e) => handleYawChange(Number(e.target.value))} className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500" />
-                        </div>
-                        {/* PITCH */}
-                        <div className="bg-[#252526] p-4 rounded border border-studio-border">
-                            <div className="flex justify-between mb-2">
-                                <label className="text-xs font-bold text-gray-400">PITCH (Y)</label>
-                                <span className="text-xs text-green-400 font-mono">{pitch}°</span>
+
+                            <div className="flex items-center gap-2 z-10 px-2">
+                                <input
+                                    type="range"
+                                    min="-180" max="180"
+                                    value={yaw}
+                                    onChange={(e) => handleYawChange(Number(e.target.value))}
+                                    className="flex-1 h-1.5 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-blue-500 hover:accent-blue-400"
+                                />
                             </div>
-                            <input type="range" min="-90" max="90" value={pitch} onChange={(e) => handlePitchChange(Number(e.target.value))} className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-green-500" />
                         </div>
-                        {/* ROLL */}
-                        <div className="bg-[#252526] p-4 rounded border border-studio-border">
-                            <div className="flex justify-between mb-2">
-                                <label className="text-xs font-bold text-gray-400">ROLL (X)</label>
-                                <span className="text-xs text-red-400 font-mono">{roll}°</span>
+
+                        {/* PITCH CARD */}
+                        <div className="bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-row items-center justify-between shadow-[0_0_15px_rgba(0,0,0,0.5)] relative overflow-hidden group min-h-[100px]">
+                            <div className="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+
+                            <div className="flex flex-col justify-between h-full z-10">
+                                <label className="text-gray-400 font-bold text-xs tracking-wider">PITCH</label>
+                                <span className="text-3xl font-bold text-green-500 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">
+                                    {Math.round(pitch)}°
+                                </span>
+                                <div className="h-2" /> {/* Spacer */}
                             </div>
-                            <input type="range" min="-180" max="180" value={roll} onChange={(e) => handleRollChange(Number(e.target.value))} className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-red-500" />
+
+                            <div className="h-full flex flex-col items-center justify-center py-1 z-10">
+                                <div className="h-20 flex items-center">
+                                    <input
+                                        type="range"
+                                        min="-90" max="90"
+                                        value={pitch}
+                                        onChange={(e) => handlePitchChange(Number(e.target.value))}
+                                        className="w-20 h-1.5 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-green-500 -rotate-90 hover:accent-green-400"
+                                    />
+                                </div>
+                            </div>
                         </div>
+
+                        {/* ROLL CARD */}
+                        <div className="bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-row items-center justify-between shadow-[0_0_15px_rgba(0,0,0,0.5)] relative overflow-hidden group min-h-[100px]">
+                            <div className="absolute inset-0 bg-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+
+                            <div className="flex flex-col justify-between h-full z-10">
+                                <label className="text-gray-400 font-bold text-xs tracking-wider">ROLL</label>
+                                <span className="text-3xl font-bold text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">
+                                    {Math.round(roll)}°
+                                </span>
+                                <div className="h-2" /> {/* Spacer */}
+                            </div>
+
+                            <div className="relative z-10 pr-2">
+                                <Knob
+                                    value={roll}
+                                    min={-180} max={180}
+                                    onChange={handleRollChange}
+                                    size={60}
+                                    color="#ef4444"
+                                />
+                            </div>
+                        </div>
+
                     </div>
 
-                    {/* TIMELINE */}
-                    <div className="bg-[#252526] p-4 rounded border border-studio-border select-none">
-                        <div className="mb-4">
+                    {/* ROW 3: TRANSPORT */}
+                    <div className="bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-col gap-2 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+
+                        {/* SCRUB BAR (TIMELINE) */}
+                        <div className="w-full px-1">
                             <Timeline
                                 duration={duration}
                                 currentTime={progress}
@@ -547,66 +625,50 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
                             />
                         </div>
 
-                        <div className="flex justify-between items-center mt-2">
-                            <div className="flex items-center gap-4">
-                                <button
-                                    onClick={() => loadTrack(currentFileIndex - 1)}
-                                    disabled={currentFileIndex === 0}
-                                    className={`p-2 rounded-full transition-colors ${currentFileIndex === 0 ? 'text-gray-700' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}
-                                >
-                                    <SkipBack size={20} fill="currentColor" />
+                        {/* CONTROLS ROW */}
+                        <div className="flex justify-between items-center mt-1">
+
+                            {/* PLAYBACK BUTTONS */}
+                            <div className="flex items-center gap-3">
+                                <button onClick={togglePlayPause} className="text-gray-200 hover:text-white transition">
+                                    {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
                                 </button>
 
-                                <button
-                                    onClick={togglePlayPause}
-                                    disabled={!isReady}
-                                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${!isReady ? 'bg-gray-800 text-gray-600 cursor-not-allowed' :
-                                        isPlaying
-                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 hover:bg-blue-500'
-                                            : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
-                                        }`}
-                                >
-                                    {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
+                                <button onClick={() => loadTrack(currentFileIndex - 1)} disabled={currentFileIndex === 0} className="text-gray-400 hover:text-white disabled:opacity-30 transition">
+                                    <SkipBack size={18} fill="currentColor" />
                                 </button>
 
-                                <button
-                                    onClick={() => loadTrack(currentFileIndex + 1)}
-                                    disabled={currentFileIndex >= files.length - 1}
-                                    className={`p-2 rounded-full transition-colors ${currentFileIndex >= files.length - 1 ? 'text-gray-700' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}
-                                >
-                                    <SkipForward size={20} fill="currentColor" />
+                                <button onClick={() => loadTrack(currentFileIndex + 1)} disabled={currentFileIndex >= files.length - 1} className="text-gray-400 hover:text-white disabled:opacity-30 transition">
+                                    <SkipForward size={18} fill="currentColor" />
                                 </button>
 
-                                <button
-                                    onClick={() => performStop(false)}
-                                    disabled={!isReady}
-                                    className="w-10 h-10 rounded-full bg-gray-700 text-gray-400 hover:bg-gray-600 flex items-center justify-center hover:text-red-400 transition ml-2"
-                                >
+                                <button onClick={() => performStop(false)} className="text-gray-400 hover:text-red-400 transition ml-2">
                                     <Square size={16} fill="currentColor" />
                                 </button>
-
-                                <div className="text-xs font-mono text-gray-500 ml-2">
-                                    {formatTime(progress)} / {formatTime(duration)}
-                                </div>
                             </div>
 
-                            <div className="flex items-center gap-2 bg-[#1E1E1E] p-1 rounded-lg border border-studio-border">
-                                <span className="text-[10px] font-bold text-gray-600 uppercase px-2">Looping</span>
+                            {/* TIME & LOOP */}
+                            <div className="flex items-center gap-4">
+                                <span className="text-base font-mono text-white tracking-widest font-light">
+                                    {formatTime(progress)} <span className="text-gray-600">/</span> {formatTime(duration)}
+                                </span>
+
                                 <button
                                     onClick={handleLoopToggle}
-                                    className={`p-2 rounded transition-colors ${isLooping ? 'bg-green-900/30 text-green-400' : 'text-gray-500 hover:text-gray-300'}`}
+                                    className={`p-1.5 rounded-lg border ${isLooping ? 'bg-gray-800 border-gray-600 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
                                 >
-                                    <Repeat size={18} />
+                                    <Repeat size={16} />
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    {/* STATUS BAR */}
-                    <div className="flex justify-between text-[10px] text-gray-500 font-mono px-2">
-                        <span className="flex items-center gap-1"><Disc size={10} /> BINAURAL MONITOR</span>
-                        <span className="flex items-center gap-1"><MoveHorizontal size={10} /> STATUS: {isReady ? "READY" : "WAITING"}</span>
+                    {/* FOOTER */}
+                    <div className="flex justify-between text-[10px] text-gray-500 font-mono px-1 uppercase tracking-widest">
+                        <span className="flex items-center gap-2"><Disc size={12} /> BINAURAL MONITOR</span>
+                        <span className="flex items-center gap-2">STATUS: {isReady ? <span className="text-green-500">READY</span> : "WAITING"} <MoveHorizontal size={12} /></span>
                     </div>
+
                 </div>
             )}
         </div>

@@ -155,6 +155,31 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
         wavesurfer.current?.playPause();
     };
 
+    // Keyboard Shortcuts
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.code === 'Space') {
+                // Ignore if focus is on an input element
+                const activeTag = document.activeElement?.tagName.toLowerCase();
+                if (activeTag === 'input' || activeTag === 'textarea') return;
+
+                e.preventDefault(); // Prevent scrolling
+                togglePlay();
+            }
+        };
+
+        // Only listen if we have a file loaded (editor is active)
+        if (file) {
+            window.addEventListener('keydown', handleKeyDown);
+        }
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [file]); // deps: togglePlay is stable? No, it depends on closure, but wavesurfer ref is stable enough. 
+    // Actually togglePlay definition depends on closure if we put it inside component. 
+    // But wavesurfer.current is a ref. safe.
+
     // Initialize WaveSurfer when proxyPath is ready
     useEffect(() => {
         if (!proxyPath || !containerRef.current) return;
