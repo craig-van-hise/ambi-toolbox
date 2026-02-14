@@ -1,4 +1,5 @@
 export enum ToolId {
+  AmbiData = 'ambidata',
   Ambix2Opus = 'ambix2opus',
   Ambix2CAF = 'ambix2caf',
   AmbiOrder = 'ambiorder',
@@ -70,6 +71,7 @@ export interface ElectronAPI {
     generateProxy: (filePath: string) => Promise<string>;
     executeTrim: (filePath: string, start: number, end: number, outputDir: string) => Promise<string>;
   };
-  on: (channel: string, callback: (data: any) => void) => () => void;
-  onProgress: (callback: (data: any) => void) => () => void;
+  on: (channel: string, callback: (data: any) => void) => (() => void);
+  onProgress: (callback: (data: any) => void) => (() => void);
+  analyzeAmbiFile: (filePath: string) => Promise<any>;
 }

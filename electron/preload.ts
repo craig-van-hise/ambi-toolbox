@@ -77,5 +77,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     generateProxy: (filePath: string) => ipcRenderer.invoke('trim:generateProxy', filePath),
     executeTrim: (filePath: string, start: number, end: number, outputDir: string) =>
       ipcRenderer.invoke('trim:executeTrim', filePath, start, end, outputDir)
-  }
+  },
+
+  // AmbiData
+  analyzeAmbiFile: (filePath: string) => ipcRenderer.invoke('analyze-ambi-file', filePath)
 });

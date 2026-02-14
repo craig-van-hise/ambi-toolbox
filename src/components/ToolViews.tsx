@@ -16,6 +16,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { AmbiTrim } from '../components/tools/AmbiTrim';
+import { AmbiDataTool } from '../tools/AmbiData';
 
 interface ToolViewProps {
   tool: ToolDefinition;
@@ -730,6 +731,11 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
   // SPECIAL CASE: AmbiTrim handles its own full-screen layout (PRP #54/55)
   if (tool.id === ToolId.AmbiTrim) {
     return <AmbiTrim tool={tool} />;
+  }
+
+  // SPECIAL CASE: AmbiData has its own layout (PRP #76)
+  if (tool.id === ToolId.AmbiData) {
+    return <AmbiDataTool tool={tool} files={files} isProcessing={isProcessing} />;
   }
 
   return (

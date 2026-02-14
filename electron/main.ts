@@ -248,5 +248,13 @@ app.whenReady().then(() => {
     return await executeTrim(filePath, start, end, outputDir);
   });
 
+  // ------------------------------------------------------------------
+  // AmbiData Handler
+  // ------------------------------------------------------------------  // AmbiData analysis
+  ipcMain.handle('analyze-ambi-file', async (event, filePath: string) => {
+    const { analyzeAmbiFile } = await import('./handlers/AmbiData');
+    return await analyzeAmbiFile(event, filePath);
+  });
+
   createWindow()
 })

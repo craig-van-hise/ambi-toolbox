@@ -1,0 +1,298 @@
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { FileQueue } from './components/FileQueue';
+import { Inspector } from './components/Inspector';
+import { MediaFile, FileType } from './types';
+import { SmartDropZone } from '../../components/SmartDropZone';
+import { ToolDefinition } from '../../types';
+
+interface AmbiDataToolProps {
+    tool: ToolDefinition;
+    files: any[];
+    isProcessing: boolean;
+}
+
+const MIN_HEIGHT_PERCENT = 0;
+const MAX_HEIGHT_PERCENT = 80;
+
+// Helper to get nested value for comparison
+const getOriginalValue = (file: MediaFile, path: string) => {
+    const parts = path.split('.');
+    let current: any = file;
+    for (const part of parts) {
+        if (current === undefined || current === null) return undefined;
+        current = current[part];
+    }
+    return current;
+};
+
+export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
+    // State
+    const [topHeightPercent, setTopHeightPercent] = useState(60);
+    const [isDragging, setIsDragging] = useState(false);
+    const [files, setFiles] = useState<MediaFile[]>([]);
+    const [selectedFileId, setSelectedFileId] = useState<string>('');
+    const [activeEdits, setActiveEdits] = useState<Record<string, any>>({});
+
+    // Refs for dragging calculation
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    // Derived state
+    const selectedFile = files.find(f => f.id === selectedFileId);
+    const hasChanges = Object.keys(activeEdits).length > 0;
+
+    // Clear edits when file changes
+    useEffect(() => {
+        setActiveEdits({});
+    }, [selectedFileId]);
+
+    // Handle file drop - Convert paths to MediaFile stub objects
+    const handleFilesLoaded = (pathsOrFiles: string[] | File[]) => {
+        const newFiles: MediaFile[] = pathsOrFiles.map((item) => {
+            const path = typeof item === 'string' ? item : (item as any).path;
+            const name = typeof item === 'string' ? path.split('/').pop() || path : item.name;
+            const extension = name.includes('.') ? '.' + name.split('.').pop() : '';
+
+            // Determine file type from extension
+            const videoExtensions = ['.mp4', '.mov', '.webm', '.mkv', '.avi', '.m4v'];
+            const type = videoExtensions.includes(extension.toLowerCase()) ? FileType.Video : FileType.Audio;
+
+            return {
+                id: path, // Use full path as unique ID
+                name: name.replace(extension, ''),
+                extension,
+                path,
+                type,
+                // Stub values - Phase 3 will populate these from backend
+                size: 'Analyzing...',
+                containerFormat: 'Unknown',
+                duration: '--:--',
+                bitRate: '--',
+                audio: {
+                    codec: 'Unknown',
+                    sampleRate: 0,
+                    bitDepth: 0,
+                    channelCount: 0,
+                    ambisonicOrder: 0
+                },
+                loudness: {
+                    integrated: 0,
+                    range: 0,
+                    truePeak: 0
+                },
+                health: {
+                    clippingCount: 0,
+                    dcOffsetWarning: false,
+                    emptyStreamWarning: false
+                },
+                spatial: {
+                    formatPrediction: 'Unknown',
+                    normalizationPrediction: 'Unknown',
+                    hasAmbisonicGUID: false,
+                    bextDescription: undefined,
+                    channelMappingFamily: undefined,
+                    headerGain: undefined,
+                    coreAudioLayoutTag: undefined,
+                    hasSA3DAtom: false
+                },
+                isAnalyzing: true // Start in analyzing state
+            };
+        });
+
+        setFiles(prev => [...prev, ...newFiles]);
+
+        // Auto-select the first file if none selected
+        if (!selectedFileId && newFiles.length > 0) {
+            setSelectedFileId(newFiles[0].id);
+        }
+
+        // Set up progress listener for incremental updates
+        const unsubscribe = window.electronAPI.on('ambi-data-progress', (data: any) => {
+            const { filePath: updatedPath, phase, data: partialData } = data;
+            console.log(`[AmbiData] Phase ${phase} complete:`, updatedPath);
+
+            setFiles(prev => prev.map(f => {
+                if (f.id === updatedPath) {
+                    // Merge partial data, keeping isAnalyzing true until spatial phase
+                    return {
+                        ...f,
+                        ...partialData,
+                        isAnalyzing: phase !== 'spatial' // Turn off on final phase
+                    };
+                }
+                return f;
+            }));
+        });
+
+        // Trigger backend analysis for each file
+        newFiles.forEach(async (file) => {
+            try {
+                const result = await window.electronAPI.analyzeAmbiFile(file.path);
+
+                // Final update with complete data (in case progress events were missed)
+                setFiles(prev => prev.map(f =>
+                    f.id === file.id ? { ...f, ...result, isAnalyzing: false } : f
+                ));
+            } catch (error) {
+                console.error(`Failed to analyze ${file.path}:`, error);
+                // Mark as not analyzing even on error
+                setFiles(prev => prev.map(f =>
+                    f.id === file.id ? { ...f, isAnalyzing: false } : f
+                ));
+            }
+        });
+    };
+
+
+    // Handle Edit Logic
+    const handleEdit = (path: string, newValue: any) => {
+        if (!selectedFile) return;
+
+        const originalValue = getOriginalValue(selectedFile, path);
+
+        if (newValue === originalValue || (originalValue === undefined && newValue === "")) {
+            const newEdits = { ...activeEdits };
+            delete newEdits[path];
+            setActiveEdits(newEdits);
+        } else {
+            setActiveEdits(prev => ({ ...prev, [path]: newValue }));
+        }
+    };
+
+    // Apply Changes Handler (Phase 6)
+    const handleApplyChanges = () => {
+        console.log('Applying changes:', activeEdits);
+        // Phase 6: IPC call to backend
+    };
+
+    // Clear Files Handler
+    const handleClearFiles = () => {
+        setFiles([]);
+        setSelectedFileId('');
+        setActiveEdits({});
+    };
+
+    // Drag Handlers for Resizable Divider
+    const handleMouseDown = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsDragging(true);
+    }, []);
+
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+        if (!isDragging || !containerRef.current) return;
+
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const relativeY = e.clientY - containerRect.top;
+        const newPercent = (relativeY / containerRect.height) * 100;
+
+        const clampedPercent = Math.max(MIN_HEIGHT_PERCENT, Math.min(newPercent, MAX_HEIGHT_PERCENT));
+        setTopHeightPercent(clampedPercent);
+    }, [isDragging]);
+
+    const handleMouseUp = useCallback(() => {
+        setIsDragging(false);
+    }, []);
+
+    // Global event listeners for drag
+    useEffect(() => {
+        if (isDragging) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+            document.body.style.cursor = 'row-resize';
+            document.body.style.userSelect = 'none';
+        } else {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+            document.body.style.cursor = 'default';
+            document.body.style.userSelect = 'auto';
+        }
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isDragging, handleMouseMove, handleMouseUp]);
+
+    return (
+        <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#18181b]">
+            {/* TOOL HEADER */}
+            <div className="px-8 pt-8 pb-6">
+                <header>
+                    <h2 className={`text-3xl font-bold mb-2 ${tool.colorClass}`}>
+                        {tool.label}
+                    </h2>
+                    <p className="text-gray-400 text-lg font-light">
+                        {tool.description}
+                    </p>
+                </header>
+            </div>
+
+            {/* Main Split Container */}
+            <div
+                ref={containerRef}
+                className="flex-1 flex flex-col relative overflow-hidden"
+            >
+                {/* UPPER PARTITION */}
+                <div
+                    style={{ height: `${topHeightPercent}%` }}
+                    className="w-full flex flex-col bg-studio-bg min-h-0"
+                >
+                    <div className="flex-1 overflow-y-auto pb-4 px-8">
+                        <SmartDropZone
+                            onFilesLoaded={handleFilesLoaded}
+                            allowedExtensions={['.wav', '.amb', '.opus', '.ogg', '.mp4', '.mov', '.m4a', '.caf', '.webm', '.mkv']}
+                            label=".wav, .amb, .opus, .ogg, .mp4, .mov, .m4a, .caf, .webm, .mkv accepted"
+                        />
+                        <div className="mt-4">
+                            <FileQueue
+                                files={files}
+                                selectedId={selectedFileId}
+                                onSelect={setSelectedFileId}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* DRAGGABLE DIVIDER */}
+                <div
+                    onMouseDown={handleMouseDown}
+                    className="h-3 w-full bg-studio-bg cursor-row-resize flex items-center justify-center z-10 relative group shrink-0"
+                >
+                    {/* High Contrast Line */}
+                    <div className={`absolute w-full h-[2px] transition-colors duration-200 ${isDragging ? 'bg-indigo-400' : 'bg-white/80 group-hover:bg-white'}`} />
+                </div>
+
+                {/* LOWER PARTITION */}
+                <div
+                    style={{ height: `${100 - topHeightPercent}%` }}
+                    className="w-full bg-studio-bg relative flex flex-col min-h-0"
+                >
+                    {/* Scrollable Content */}
+                    <div className="flex-1 overflow-hidden relative">
+                        <Inspector
+                            file={selectedFile}
+                            activeEdits={activeEdits}
+                            onEdit={handleEdit}
+                        />
+                    </div>
+
+                    {/* Persistent Action Bar */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-[#18181b] border-t border-white/10 z-30">
+                        <button
+                            disabled={!hasChanges}
+                            onClick={handleApplyChanges}
+                            className={`
+                w-full py-3 font-bold text-sm uppercase tracking-wider rounded shadow-lg transition-all transform
+                ${hasChanges
+                                    ? 'bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-700 active:scale-[0.99] cursor-pointer'
+                                    : 'bg-white/5 text-neutral-500 cursor-not-allowed opacity-50'
+                                }
+              `}
+                        >
+                            Apply Changes {hasChanges && `(${Object.keys(activeEdits).length})`}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};

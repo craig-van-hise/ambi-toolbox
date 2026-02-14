@@ -1,6 +1,6 @@
 # AmbiToolbox - Project State Report
 
-**Date:** February 11, 2026 (Updated 19:50)
+**Date:** February 13, 2026 (Updated 22:42)
 **Architecture:** Electron Modular Monolith
 
 ## 1. Executive Summary
@@ -22,6 +22,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 | **Ambix2CAF** | 🟢 Ready | `electron/handlers/Ambix2CAF.ts` | Supports Discrete & HOA Layouts. |
 | **Ambix2Ogg** | 🟢 Ready | `electron/handlers/Ambix2Ogg.ts` | Smart Transcode/Remux. Permission Checks. |
 | **AmbiTrim** | 🟢 Ready | `electron/handlers/trim.ts` | Proxy Workflow (Mid-Side), Lossless Cut (`-c copy`), WaveSurfer Regions. |
+| **AmbiData** | 🟡 Development | `electron/handlers/AmbiData.ts` | File analysis: FFprobe metadata, EBUR128 loudness, signal health, Python heuristics. |
 | **Persistence** | 🟢 Ready | `src/contexts/SettingsContext.tsx` | Saves active tool, bitrates, layouts, and rotation values. |
 
 ## 3. Directory Structure (Key Paths)
