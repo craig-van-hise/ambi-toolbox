@@ -45,22 +45,22 @@ export const Inspector: React.FC<InspectorProps> = ({ file, activeEdits, onEdit 
                 </div>
 
                 <HorizontalRow>
-                    <DataField label="Container Format" value={file.containerFormat} isAnalyzing={file.isAnalyzing} />
-                    <DataField label="File Size" value={file.size} isAnalyzing={file.isAnalyzing} />
-                    <DataField label="Precise Duration" value={file.duration} isAnalyzing={file.isAnalyzing} />
-                    <DataField label="Overall Bit Rate" value={file.bitRate} isAnalyzing={file.isAnalyzing} />
+                    <DataField label="Container Format" value={file.containerFormat} isAnalyzing={!file.loadedPhases.includes('metadata') && file.containerFormat === 'Unknown'} />
+                    <DataField label="File Size" value={file.size} isAnalyzing={!file.loadedPhases.includes('basic')} />
+                    <DataField label="Precise Duration" value={file.duration} isAnalyzing={!file.loadedPhases.includes('metadata')} />
+                    <DataField label="Overall Bit Rate" value={file.bitRate} isAnalyzing={!file.loadedPhases.includes('metadata')} />
                 </HorizontalRow>
 
                 <HorizontalRow>
-                    <DataField label="Codec" value={file.audio.codec} isAnalyzing={file.isAnalyzing} />
-                    <DataField label="Sample Rate" value={`${(file.audio.sampleRate / 1000).toFixed(1)} kHz`} isAnalyzing={file.isAnalyzing} />
-                    <DataField label="Bit Depth" value={`${file.audio.bitDepth}-bit`} isAnalyzing={file.isAnalyzing} />
-                    <DataField label="Channels" value={file.audio.channelCount} isAnalyzing={file.isAnalyzing} />
+                    <DataField label="Codec" value={file.audio.codec} isAnalyzing={!file.loadedPhases.includes('metadata') && file.audio.codec === 'Unknown'} />
+                    <DataField label="Sample Rate" value={`${(file.audio.sampleRate / 1000).toFixed(1)} kHz`} isAnalyzing={!file.loadedPhases.includes('metadata') && file.audio.sampleRate === 0} />
+                    <DataField label="Bit Depth" value={`${file.audio.bitDepth}-bit`} isAnalyzing={!file.loadedPhases.includes('metadata') && file.audio.bitDepth === 0} />
+                    <DataField label="Channels" value={file.audio.channelCount} isAnalyzing={!file.loadedPhases.includes('metadata') && file.audio.channelCount === 0} />
                     <DataField label="Ambisonic Order" value={(() => {
                         const order = file.audio.ambisonicOrder;
                         const suffix = order === 1 ? 'st' : order === 2 ? 'nd' : order === 3 ? 'rd' : 'th';
                         return `${order}${suffix}`;
-                    })()} isAnalyzing={file.isAnalyzing} />
+                    })()} isAnalyzing={!file.loadedPhases.includes('metadata') && file.audio.channelCount === 0} />
                 </HorizontalRow>
 
                 {file.type === FileType.Video && file.video && (
@@ -77,31 +77,31 @@ export const Inspector: React.FC<InspectorProps> = ({ file, activeEdits, onEdit 
             {/* CARD 2: Dynamics & Signal Health */}
             <InspectorCard title="Dynamics & Signal Health" defaultOpen={true}>
                 <HorizontalRow>
-                    <DataField label="Integrated Loudness" value={`${file.loudness.integrated.toFixed(1)} LUFS`} isAnalyzing={file.isAnalyzing} />
-                    <DataField label="Loudness Range (LRA)" value={`${file.loudness.range.toFixed(1)} LU`} isAnalyzing={file.isAnalyzing} />
+                    <DataField label="Integrated Loudness" value={`${file.loudness.integrated.toFixed(1)} LUFS`} isAnalyzing={!file.loadedPhases.includes('loudness')} />
+                    <DataField label="Loudness Range (LRA)" value={`${file.loudness.range.toFixed(1)} LU`} isAnalyzing={!file.loadedPhases.includes('loudness')} />
                     <DataField
                         label="True Peak Max (dBTP)"
                         value={`${file.loudness.truePeak.toFixed(1)} dBTP`}
                         warningLevel={file.loudness.truePeak > -1.0 ? 'warning' : 'success'}
-                        isAnalyzing={file.isAnalyzing}
+                        isAnalyzing={!file.loadedPhases.includes('loudness')}
                     />
                     <DataField
                         label="Raw Clipping Count"
                         value={file.health.clippingCount}
                         warningLevel={file.health.clippingCount > 0 ? 'error' : 'success'}
-                        isAnalyzing={file.isAnalyzing}
+                        isAnalyzing={!file.loadedPhases.includes('health')}
                     />
                     <DataField
                         label="DC Offset Warning"
                         value={file.health.dcOffsetWarning ? "DETECTED" : "None"}
                         warningLevel={file.health.dcOffsetWarning ? 'warning' : 'success'}
-                        isAnalyzing={file.isAnalyzing}
+                        isAnalyzing={!file.loadedPhases.includes('health')}
                     />
                     <DataField
                         label="Empty Stream Warning"
                         value={file.health.emptyStreamWarning ? "DETECTED" : "None"}
                         warningLevel={file.health.emptyStreamWarning ? 'error' : 'success'}
-                        isAnalyzing={file.isAnalyzing}
+                        isAnalyzing={!file.loadedPhases.includes('health')}
                     />
                 </HorizontalRow>
             </InspectorCard>
@@ -109,7 +109,7 @@ export const Inspector: React.FC<InspectorProps> = ({ file, activeEdits, onEdit 
             {/* CARD 3: Spatial Metadata & Heuristics */}
             <InspectorCard title="Spatial Metadata & Heuristics" defaultOpen={true}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                    <DataField label="Format Type Prediction" value={file.spatial.formatPrediction} isAnalyzing={file.isAnalyzing} />
+                    <DataField label="Format Type Prediction" value={file.spatial.formatPrediction} isAnalyzing={!file.loadedPhases.includes('spatial')} />
                     <DataField
                         label="Ordering/Normalization"
                         value={(() => {
@@ -124,7 +124,7 @@ export const Inspector: React.FC<InspectorProps> = ({ file, activeEdits, onEdit 
                             }
                             return base;
                         })()}
-                        isAnalyzing={file.isAnalyzing}
+                        isAnalyzing={!file.loadedPhases.includes('spatial')}
                     />
                 </div>
 

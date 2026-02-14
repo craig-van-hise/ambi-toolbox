@@ -1,5 +1,4 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { flushSync } from 'react-dom';
 import { FileQueue } from './components/FileQueue';
 import { Inspector } from './components/Inspector';
 import { MediaFile, FileType } from './types';
@@ -39,18 +38,6 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
 
     // Derived state
     const selectedFile = files.find(f => f.id === selectedFileId);
-
-    // Debug: Log when selectedFile changes
-    useEffect(() => {
-        if (selectedFile) {
-            console.log('[AmbiData] selectedFile updated:', {
-                name: selectedFile.name,
-                loudness: selectedFile.loudness,
-                isAnalyzing: selectedFile.isAnalyzing
-            });
-        }
-    }, [selectedFile]);
-
     const hasChanges = Object.keys(activeEdits).length > 0;
 
     // Clear edits when file changes
@@ -62,23 +49,19 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
     useEffect(() => {
         const unsubscribe = window.electronAPI.on('ambi-data-progress', (data: any) => {
             const { filePath: updatedPath, phase, data: partialData } = data;
-            const tReceived = Date.now();
-            console.log(`[AmbiData Frontend] [${tReceived}] ⚡ Phase "${phase}" received:`, updatedPath);
+            console.log(`[AmbiData] Phase ${phase} complete:`, updatedPath);
 
-            // Force immediate render - prevent React from batching updates
-            flushSync(() => {
-                setFiles(prev => prev.map(f => {
-                    if (f.id === updatedPath) {
-                        return {
-                            ...f,
-                            ...partialData,
-                            isAnalyzing: phase !== 'spatial' && phase !== 'spatial-final', // Turn off on spatial or final
-                            loadedPhases: [...(f.loadedPhases || []), phase] // Append new phase
-                        };
-                    }
-                    return f;
-                }));
-            });
+            setFiles(prev => prev.map(f => {
+                if (f.id === updatedPath) {
+                    // Merge partial data, keeping isAnalyzing true until spatial phase
+                    return {
+                        ...f,
+                        ...partialData,
+                        isAnalyzing: phase !== 'spatial' // Turn off on final phase
+                    };
+                }
+                return f;
+            }));
         });
 
         // Cleanup on unmount
@@ -136,8 +119,7 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                     coreAudioLayoutTag: undefined,
                     hasSA3DAtom: false
                 },
-                isAnalyzing: true, // Start in analyzing state
-                loadedPhases: [] // Start with no phases loaded
+                isAnalyzing: true // Start in analyzing state
             };
         });
 
@@ -148,6 +130,23 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
             setSelectedFileId(newFiles[0].id);
         }
 
+        // Set up progress listener for incremental updates
+        const unsubscribe = window.electronAPI.on('ambi-data-progress', (data: any) => {
+            const { filePath: updatedPath, phase, data: partialData } = data;
+            console.log(`[AmbiData] Phase ${phase} complete:`, updatedPath);
+
+            setFiles(prev => prev.map(f => {
+                if (f.id === updatedPath) {
+                    // Merge partial data, keeping isAnalyzing true until spatial phase
+                    return {
+                        ...f,
+                        ...partialData,
+                        isAnalyzing: phase !== 'spatial' // Turn off on final phase
+                    };
+                }
+                return f;
+            }));
+        });
 
         // Trigger backend analysis for each file
         newFiles.forEach(async (file) => {
@@ -190,6 +189,12 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
         // Phase 6: IPC call to backend
     };
 
+    // Clear Files Handler
+    const handleClearFiles = () => {
+        setFiles([]);
+        setSelectedFileId('');
+        setActiveEdits({});
+    };
 
     // Drag Handlers for Resizable Divider
     const handleMouseDown = useCallback((e: React.MouseEvent) => {

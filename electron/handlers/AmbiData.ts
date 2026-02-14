@@ -4,6 +4,8 @@ import fs from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { getFfmpegPath, getFfprobePath } from './common';
 
+import { parseWavHeader } from './WaveParser';
+
 // Helper to get Python script path
 function getPythonScriptPath(scriptName: string): string {
     if (app.isPackaged) {
@@ -20,7 +22,43 @@ export async function analyzeAmbiFile(event: IpcMainInvokeEvent, filePath: strin
     try {
         console.log(`[AmbiData] Starting analysis: ${filePath}`);
 
-        // PHASE 1: Basic metadata (ffprobe)
+        // PHASE 1a: Basic File Info (Instant)
+        const stat = await fs.stat(filePath);
+        const extension = path.extname(filePath);
+        const nameWithoutExt = path.basename(filePath, extension);
+        const sizeFormatted = formatFileSize(stat.size);
+
+        // Try fast WAV parsing
+        const fastAudioData = await parseWavHeader(filePath);
+        let basicData: any = {
+            id: filePath,
+            name: nameWithoutExt,
+            extension,
+            path: filePath,
+            size: sizeFormatted
+        };
+
+        if (fastAudioData) {
+            const ambisonicOrder = Math.floor(Math.sqrt(fastAudioData.channels)) - 1;
+            basicData.audio = {
+                codec: fastAudioData.codec,
+                sampleRate: fastAudioData.sampleRate,
+                bitDepth: fastAudioData.bitDepth,
+                channelCount: fastAudioData.channels,
+                ambisonicOrder
+            };
+            // Also add these to top level if needed, or structured
+            basicData.containerFormat = 'WAV (Fast Check)';
+        }
+
+        // Send basic info immediately
+        event.sender.send('ambi-data-progress', {
+            filePath,
+            phase: 'basic',
+            data: basicData
+        });
+
+        // PHASE 1b: Detailed Metadata (FFprobe)
         const probeData = await runFFprobe(filePath);
         const audioStream = probeData.streams?.find((s: any) => s.codec_type === 'audio');
         const videoStream = probeData.streams?.find((s: any) => s.codec_type === 'video');
@@ -28,10 +66,6 @@ export async function analyzeAmbiFile(event: IpcMainInvokeEvent, filePath: strin
         if (!audioStream) {
             throw new Error('No audio stream found in file');
         }
-
-        const stat = await fs.stat(filePath);
-        const extension = path.extname(filePath);
-        const nameWithoutExt = path.basename(filePath, extension);
 
         const channelCount = audioStream.channels || 0;
         const ambisonicOrder = Math.floor(Math.sqrt(channelCount)) - 1;
@@ -41,7 +75,7 @@ export async function analyzeAmbiFile(event: IpcMainInvokeEvent, filePath: strin
             name: nameWithoutExt,
             extension,
             path: filePath,
-            size: formatFileSize(stat.size),
+            size: sizeFormatted,
             containerFormat: probeData.format?.format_name || 'Unknown',
             duration: formatDuration(parseFloat(probeData.format?.duration || '0')),
             bitRate: probeData.format?.bit_rate ? `${Math.round(parseInt(probeData.format.bit_rate) / 1000)} kbps` : 'Unknown',
@@ -78,25 +112,47 @@ export async function analyzeAmbiFile(event: IpcMainInvokeEvent, filePath: strin
             };
         }
 
-        // Send Phase 1 complete
+        // Send Metadata Phase complete
+        console.log('[AmbiData Backend] 📤 Sending metadata phase event');
         event.sender.send('ambi-data-progress', { filePath, phase: 'metadata', data: result });
 
         // PHASE 2: Loudness analysis
+        console.log('[AmbiData Backend] Starting loudness analysis...');
         const loudnessData = await analyzeLoudness(filePath, channelCount);
         result.loudness = loudnessData;
+        console.log('[AmbiData Backend] 📤 Sending loudness phase event');
         event.sender.send('ambi-data-progress', { filePath, phase: 'loudness', data: result });
 
         // PHASE 3: Signal health
+        console.log('[AmbiData Backend] Starting health analysis...');
         const healthData = await analyzeSignalHealth(filePath);
         result.health = healthData;
+        console.log('[AmbiData Backend] 📤 Sending health phase event');
         event.sender.send('ambi-data-progress', { filePath, phase: 'health', data: result });
 
-        // PHASE 4: Python heuristics
+        // PHASE 4: Send spatial metadata early (without Python predictions)
+        result.spatial = {
+            formatPrediction: 'Analyzing...',
+            normalizationPrediction: 'Analyzing...',
+            sequencePrediction: 'Analyzing...',
+            confidence: 0,
+            hasAmbisonicGUID: false,
+            channelMappingFamily: undefined,
+            headerGain: undefined,
+            coreAudioLayoutTag: undefined,
+            hasSA3DAtom: false
+        };
+        console.log('[AmbiData Backend] 📤 Sending spatial phase event (preliminary)');
+        event.sender.send('ambi-data-progress', { filePath, phase: 'spatial', data: result });
+
+        // PHASE 5: Python heuristics (runs in background, updates if needed)
+        console.log('[AmbiData Backend] Starting Python heuristics (may take 20+ seconds)...');
         const heuristicsData = await runPythonHeuristics(filePath);
 
-        // PHASE 5: Container metadata
-        const spatialMetadata = await extractSpatialMetadata(filePath, audioStream.codec_name || '');
+        // PHASE 6: Container metadata
+        const spatialMetadata = await extractSpatialMetadata();
 
+        // Update spatial with heuristics results
         result.spatial = {
             formatPrediction: heuristicsData.format || 'Unknown',
             normalizationPrediction: heuristicsData.normalization || 'Unknown',
@@ -110,7 +166,8 @@ export async function analyzeAmbiFile(event: IpcMainInvokeEvent, filePath: strin
             hasSA3DAtom: false
         };
 
-        event.sender.send('ambi-data-progress', { filePath, phase: 'spatial', data: result });
+        console.log('[AmbiData Backend] 📤 Sending spatial-final phase event (with predictions)');
+        event.sender.send('ambi-data-progress', { filePath, phase: 'spatial-final', data: result });
 
         console.log(`[AmbiData] Analysis complete: ${channelCount} channels, ${ambisonicOrder}th order`);
         return result;
@@ -311,7 +368,7 @@ async function runPythonHeuristics(filePath: string): Promise<any> {
 /**
  * Extract container-specific spatial metadata
  */
-async function extractSpatialMetadata(filePath: string, codecName: string): Promise<any> {
+async function extractSpatialMetadata(): Promise<any> {
     // Placeholder - can be expanded for specific containers like Opus, MP4, etc.
     return {};
 }

@@ -60,6 +60,7 @@ export interface MediaFile {
     bitRate: string;
     type: FileType;
     isAnalyzing?: boolean; // True while backend analysis is in progress
+    loadedPhases: string[]; // Tracks which analysis phases have completed
 
     audio: AudioStreamInfo;
     video?: VideoStreamInfo;
