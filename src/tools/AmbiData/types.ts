@@ -4,11 +4,30 @@ export enum FileType {
 }
 
 export interface AudioStreamInfo {
+    index?: number;
     codec: string;
     sampleRate: number; // Hz
     bitDepth: number; // bits
     channelCount: number;
     ambisonicOrder: number;
+}
+
+export interface IamfMetadata {
+    profile?: string;
+    primaryProfile?: string;
+    additionalProfile?: string;
+    mixPresentation?: {
+        loudness?: number; // LUFS
+        truePeak?: number; // dBTP
+    };
+    audioElements?: {
+        id: number;
+        type: string; // 'Scene-Based' | 'Channel-Based'
+        ambisonicOrder?: number;
+        normalization?: string;
+        outputChannelCount?: number;
+    }[];
+    mixTargets?: string[];
 }
 
 export interface VideoStreamInfo {
@@ -47,6 +66,8 @@ export interface SpatialMetadata {
     // Container Specific - MP4/MOV/CAF
     coreAudioLayoutTag?: string; // Editable
     hasSA3DAtom?: boolean;
+
+    confidence?: number; // Heuristic confidence score (0-100)
 }
 
 export interface MediaFile {
@@ -61,8 +82,13 @@ export interface MediaFile {
     type: FileType;
     isAnalyzing?: boolean; // True while backend analysis is in progress
     loadedPhases: string[]; // Tracks which analysis phases have completed
+    selectedStreamIndex?: number; // Adaptive UI: Currently selected stream index for analysis
+
 
     audio: AudioStreamInfo;
+    audioStreams?: AudioStreamInfo[]; // For multi-stream files (IAMF)
+    iamf?: IamfMetadata; // IAMF-specific metadata
+
     video?: VideoStreamInfo;
 
     loudness: LoudnessMetrics;

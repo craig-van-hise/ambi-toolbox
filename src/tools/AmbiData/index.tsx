@@ -95,7 +95,7 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
             const extension = name.includes('.') ? '.' + name.split('.').pop() : '';
 
             // Determine file type from extension
-            const videoExtensions = ['.mp4', '.mov', '.webm', '.mkv', '.avi', '.m4v'];
+            const videoExtensions = ['.mp4', '.mov', '.webm', '.mkv', '.avi', '.m4v', '.aivu'];
             const type = videoExtensions.includes(extension.toLowerCase()) ? FileType.Video : FileType.Audio;
 
             return {
@@ -141,22 +141,33 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
             };
         });
 
-        setFiles(prev => [...prev, ...newFiles]);
+        // Add new files to state (avoid duplicates)
+        setFiles(prev => {
+            const existingIds = new Set(prev.map(f => f.id));
+            const uniqueNewFiles = newFiles.filter(f => !existingIds.has(f.id));
+            return [...prev, ...uniqueNewFiles];
+        });
+
 
         // Auto-select the first file if none selected
         if (!selectedFileId && newFiles.length > 0) {
             setSelectedFileId(newFiles[0].id);
         }
 
-
         // Trigger backend analysis for each file
         newFiles.forEach(async (file) => {
             try {
-                const result = await window.electronAPI.analyzeAmbiFile(file.path);
+                // Initial analysis defaults to stream 0
+                const result = await window.electronAPI.analyzeAmbiFile(file.path, { streamIndex: 0 });
 
                 // Final update with complete data (in case progress events were missed)
                 setFiles(prev => prev.map(f =>
-                    f.id === file.id ? { ...f, ...result, isAnalyzing: false } : f
+                    f.id === file.id ? {
+                        ...f,
+                        ...result,
+                        isAnalyzing: false,
+                        selectedStreamIndex: 0 // Initialize to 0
+                    } : f
                 ));
             } catch (error) {
                 console.error(`Failed to analyze ${file.path}:`, error);
@@ -166,6 +177,41 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                 ));
             }
         });
+    };
+
+    // Handle Stream Selection (Adaptive UI)
+    const handleStreamSelect = async (fileId: string, streamIndex: number) => {
+        const file = files.find(f => f.id === fileId);
+        if (!file) return;
+
+        console.log(`[AmbiData] Switching to stream ${streamIndex} for ${file.name}`);
+
+        // PRP #86: IAMF Guardrail - Skip Backend Analysis
+        // Identity check: If IAMF, we strictly update state and RETURN.
+        // We do NOT trigger re-analysis because OBU metadata is already parsed.
+        if (file.extension.toLowerCase() === '.iamf') {
+            setFiles(prev => prev.map(f =>
+                f.id === fileId ? { ...f, selectedStreamIndex: streamIndex } : f
+            ));
+            return;
+        }
+
+        // 1. Optimistically update selected index
+        setFiles(prev => prev.map(f =>
+            f.id === fileId ? { ...f, selectedStreamIndex: streamIndex, isAnalyzing: true, loadedPhases: [] } : f
+        ));
+
+        // 2. Trigger backend re-analysis with new stream index
+        try {
+            // We don't wait for result to update state here because we listen to 'ambi-data-progress'
+            // But we do need to catch errors
+            await window.electronAPI.analyzeAmbiFile(file.path, { streamIndex });
+        } catch (error) {
+            console.error(`Failed to re-analyze stream ${streamIndex}:`, error);
+            setFiles(prev => prev.map(f =>
+                f.id === fileId ? { ...f, isAnalyzing: false } : f
+            ));
+        }
     };
 
 
@@ -259,8 +305,8 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                     <div className="flex-1 overflow-y-auto pb-4 px-8">
                         <SmartDropZone
                             onFilesLoaded={handleFilesLoaded}
-                            allowedExtensions={['.wav', '.amb', '.opus', '.ogg', '.mp4', '.mov', '.m4a', '.caf', '.webm', '.mkv']}
-                            label=".wav, .amb, .opus, .ogg, .mp4, .mov, .m4a, .caf, .webm, .mkv accepted"
+                            allowedExtensions={['.wav', '.amb', '.opus', '.ogg', '.mp4', '.mov', '.m4a', '.caf', '.webm', '.mkv', '.iamf', '.aivu']}
+                            label=".wav, .iamf, .aivu, .amb, .opus, .ogg, .mp4, .mov ... accepted"
                         />
                         <div className="mt-4">
                             <FileQueue
@@ -292,6 +338,7 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                             file={selectedFile}
                             activeEdits={activeEdits}
                             onEdit={handleEdit}
+                            onStreamSelect={handleStreamSelect}
                         />
                     </div>
 

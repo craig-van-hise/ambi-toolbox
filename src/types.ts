@@ -73,5 +73,10 @@ export interface ElectronAPI {
   };
   on: (channel: string, callback: (data: any) => void) => (() => void);
   onProgress: (callback: (data: any) => void) => (() => void);
-  analyzeAmbiFile: (filePath: string) => Promise<any>;
+  analyzeAmbiFile: (filePath: string, options?: { streamIndex?: number }) => Promise<any>;
+  contractPath: (path: string) => Promise<string>;
+  expandPaths: (paths: string[]) => Promise<string[]>;
+  getFileSize: (filePath: string) => Promise<number>;
+  fileOpen?: (options?: any) => Promise<string[]>;
+  selectFiles: (options?: any) => Promise<string[]>;
 }

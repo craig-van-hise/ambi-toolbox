@@ -43,7 +43,10 @@ export const Knob: React.FC<KnobProps> = ({
             if (!isDragging) return;
 
             const deltaY = startY.current - e.clientY; // Up is positive
-            const sensitivity = 2; // Pixels per unit? No, let's do pixels per range percent
+            // Sensitivity removed (unused)
+
+            // Pixels per unit? No, let's do pixels per range percent
+
 
             // 200px drag = full range
             const dragPercent = deltaY / 200;

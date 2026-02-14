@@ -6,7 +6,7 @@ import { Timeline } from './components/Timeline';
 import { Knob } from './components/Knob';
 import {
     Play, Pause, Square, Repeat,
-    Disc, MoveHorizontal, MoveVertical, RotateCw,
+    Disc, MoveHorizontal,
     Trash2,
     SkipBack, SkipForward
 } from 'lucide-react';

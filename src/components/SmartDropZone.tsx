@@ -51,7 +51,7 @@ export const SmartDropZone: React.FC<SmartDropZoneProps> = ({
         if (onFilesLoaded && window.electronAPI && window.electronAPI.expandPaths) {
             if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                 // Collect raw paths
-                const rawPaths = Array.from(e.dataTransfer.files).map(f => f.path); // 'path' exists on Electron File object
+                const rawPaths = Array.from(e.dataTransfer.files).map((f: any) => f.path); // 'path' exists on Electron File object
 
                 try {
                     // Expand directories

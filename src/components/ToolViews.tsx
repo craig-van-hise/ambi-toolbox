@@ -256,9 +256,10 @@ const AmbiOrderTool: React.FC<{ tool: ToolDefinition, files: File[], onRun: (opt
   React.useEffect(() => {
     if (files.length > 0) {
       const path = (files[0] as any).path;
-      window.electron.inspectFile(path).then((result) => {
-        if (result.success && result.data) {
-          const ch = result.data.channels;
+      // Use standard analyzeAmbiFile
+      window.electronAPI.analyzeAmbiFile(path).then((result: any) => {
+        if (result && result.audio) {
+          const ch = result.audio.channelCount;
           if (ch === 4) setDetectedOrder(AmbisonicOrder.First);
           else if (ch === 9) setDetectedOrder(AmbisonicOrder.Second);
           else if (ch === 16) setDetectedOrder(AmbisonicOrder.Third);
@@ -267,6 +268,9 @@ const AmbiOrderTool: React.FC<{ tool: ToolDefinition, files: File[], onRun: (opt
           else if (ch === 49) setDetectedOrder('6th');
           else setDetectedOrder('Custom/Unknown');
         }
+      }).catch((err: any) => {
+        console.error("Analysis failed", err);
+        setDetectedOrder('Unknown');
       });
     } else {
       setDetectedOrder('None');

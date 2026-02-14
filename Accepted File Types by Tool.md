@@ -60,14 +60,18 @@ These tools use Python scripts with the `soundfile` library (based on `libsndfil
 ### 3. Binary-Specific Tools (Stricter Compatibility)
 These tools rely on external binaries provided by third parties (Google, Apple).
 
-*   **Ambix2IAMF**
-    *   **Backend:** `iamf-enc` (Google)
-    *   **Input:** **WAV (PCM) Recommended.**
-    *   **Risk:** The handler passes the input directory directly to the encoder. `iamf-enc` is strictly designed for WAV input. Passing compressed formats (MP3, AAC) will likely result in a failure.
 *   **Ambix2APAC**
     *   **Backend:** `apac-enc` (Apple / wrapper around usage of AVFoundation)
     *   **Input:** **WAV / CAF (PCM) Recommended.**
     *   **Risk:** Relies on Apple's Core Audio/AVFoundation. While it can decode many formats, the encoder expects clean PCM data for high-order Ambisonics.
+
+### 4. Analysis Tools (Broadest Compatibility)
+These tools are designed to read and analyze, not convert.
+
+*   **AmbiData**
+    *   **Input:** **Virtually Any Audio/Video.**
+    *   **Extensions:** `.wav`, `.amb`, `.opus`, `.ogg`, `.mp3`, `.m4a`, `.aac`, `.flac`, `.caf`, `.mp4`, `.mov`, `.mkv`, `.webm`, `.aivu`, `.iamf`.
+    *   **Note:** Support for `.iamf` (Immersive Audio) and `.aivu` (Apple Immersive Video) is experimental and relies on the underlying `ffprobe` build's capability to demux these formats.
 
 ## Summary Table
 
@@ -83,5 +87,6 @@ These tools rely on external binaries provided by third parties (Google, Apple).
 | **Ambix2APAC** | Standard* | `apac-enc` (Apple) | WAV/CAF | ⚠️ System Dependent |
 | **Ambix2Ogg** | Standard* | FFmpeg | Any | ✅ Yes |
 | **AmbiTrim** | Standard* | FFmpeg (Copy) | Any | ✅ Yes |
+| **AmbiData** | **Extended** | FFmpeg/WaveParser | Any + IAMF/AIVU | ✅ Yes |
 
 *\*Standard = .wav, .amb, .caf, .opus, .mp3, .aac, .flac, .ogg*

@@ -22,7 +22,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 | **Ambix2CAF** | 🟢 Ready | `electron/handlers/Ambix2CAF.ts` | Supports Discrete & HOA Layouts. |
 | **Ambix2Ogg** | 🟢 Ready | `electron/handlers/Ambix2Ogg.ts` | Smart Transcode/Remux. Permission Checks. |
 | **AmbiTrim** | 🟢 Ready | `electron/handlers/trim.ts` | Proxy Workflow (Mid-Side), Lossless Cut (`-c copy`), WaveSurfer Regions. |
-| **AmbiData** | 🟡 Development | `electron/handlers/AmbiData.ts` | File analysis: FFprobe metadata, EBUR128 loudness, signal health, Python heuristics. |
+| **AmbiData** | 🟡 Advanced Beta | `electron/handlers/AmbiData.ts` | **IAMF OBU Support** (PRP #86), Adaptive UI, EBUR128, Signal Health. |
 | **Persistence** | 🟢 Ready | `src/contexts/SettingsContext.tsx` | Saves active tool, bitrates, layouts, and rotation values. |
 
 ## 3. Directory Structure (Key Paths)
@@ -46,5 +46,10 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 -   **Settings Persistence**: Implemented `SettingsContext` to persist user preferences (HRTF, Bitrate, Rotation) using `localStorage`. secure merge strategy handles legacy settings to prevent crashes.
 -   **Ambix2Ogg Implementation**: Added new tool for wrapping Ambisonics in Ogg containers. Supports both transcoding (Opus) and direct remuxing (Stream Copy). Includes write permission verification.
 -   **DropZone Label Refinement**: Updated all tool drop zones to display explicit, tool-specific file extension acceptance lists (e.g., ".wav, .opus accepted") instead of generic text.
+-   **AmbiData IAMF Integration (PRP #85/86)**:
+    -   Implemented robust OBU (Open Bitstream Unit) parser for IAMF files.
+    -   **Adaptive UI**: Stream Selector now lists parsed OBU IDs (e.g. ID 108) instead of generic streams.
+    -   **Data Binding**: Core specs (Channels, Order) now bind directly to the selected OBU's metadata, resolving "0 channel" bugs.
+    -   **State Fix**: Optimized stream switching to bypass redundant backend analysis for raw bitstreams.
 -   **File Type Audit**: Conducted comprehensive audit of all backend handlers to determine exact file support, resulting in the "Accepted File Types by Tool.md" documentation.
 

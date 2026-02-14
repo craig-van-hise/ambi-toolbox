@@ -65,10 +65,10 @@ This suite eliminates those bottlenecks, allowing audio engineers to process, co
 
 
 10. **AmbiData**: Comprehensive file analysis and metadata inspection.
-* FFprobe metadata extraction (format, codec, sample rate, bit depth, channel count)
-* EBUR128 loudness analysis (Integrated, LRA, True Peak)
-* Signal health checks (clipping detection, DC offset warnings)
-* Spatial format prediction via Python heuristics (AmbiX/FuMa detection)
+*   **Adaptive UI**: 5-Card Layout with dynamic stream selection.
+*   **IAMF Support**: Deep analysis of IAMF OBU structures (Scene-Based/Channel-Based).
+*   **Metrics**: EBUR128 loudness (Integrated, LRA, True Peak) and signal health (clipping, DC offset).
+*   **Heuristics**: Python-based spatial format prediction (AmbiX/FuMa) for WAV/AmbiX.
 
 
 11. **Ambix2Ogg**: Ambisonic Ogg/Opus Wrapper.

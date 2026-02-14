@@ -2,13 +2,16 @@ import React from 'react';
 import { Pencil, ChevronDown, ChevronRight, AlertTriangle, CheckCircle2, AlertOctagon } from './Icons';
 
 // --- Card Component ---
+// --- Card Component ---
 interface CardProps {
     title: string;
     children: React.ReactNode;
     defaultOpen?: boolean;
+    icon?: React.ReactNode;
+    loading?: boolean;
 }
 
-export const InspectorCard: React.FC<CardProps> = ({ title, children, defaultOpen = true }) => {
+export const InspectorCard: React.FC<CardProps> = ({ title, children, defaultOpen = true, icon, loading }) => {
     const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
     return (
@@ -17,7 +20,11 @@ export const InspectorCard: React.FC<CardProps> = ({ title, children, defaultOpe
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full px-4 py-3 flex items-center justify-between bg-gradient-to-r from-studio-bg-lighter to-studio-bg hover:from-white/5 hover:to-white/5 transition-all border-b border-white/5"
             >
-                <span className="text-sm font-bold text-neutral-100 uppercase tracking-widest">{title}</span>
+                <div className="flex items-center gap-2">
+                    {icon && <span className="opacity-80">{icon}</span>}
+                    <span className="text-sm font-bold text-neutral-100 uppercase tracking-widest">{title}</span>
+                    {loading && <span className="ml-2 text-xs text-indigo-400 animate-pulse">(Analyzing...)</span>}
+                </div>
                 {isOpen ? <ChevronDown size={16} className="text-indigo-400" /> : <ChevronRight size={16} className="text-neutral-400" />}
             </button>
 
