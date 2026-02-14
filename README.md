@@ -59,15 +59,19 @@ This suite eliminates those bottlenecks, allowing audio engineers to process, co
 * *Monitoring*: Binaural stereo downmix for instant feedback.
 
 
-9. **AmbiTrim**: Lossless Ambisonic Cutter.
-* **Proxy Workflow**: Generates a fast-loading stereo proxy (Mid-Side decode) for smooth waveform navigation.
-* **Non-Destructive**: Uses FFmpeg stream copy (`-c copy`) to trim files without quality loss.
-* **Precision**: Sample-accurate handles with "Fit to Screen" zoom.
+9. **AmbiTrim**: Lossless trimming for high-channel-count files.
+* Proxy workflow (Mid-Side stereo) for instant waveform editing.
+* **Stream Copy**: Output uses `-c copy` to preserve original codec and bit depth.
 
 
+10. **AmbiData**: Comprehensive file analysis and metadata inspection.
+* FFprobe metadata extraction (format, codec, sample rate, bit depth, channel count)
+* EBUR128 loudness analysis (Integrated, LRA, True Peak)
+* Signal health checks (clipping detection, DC offset warnings)
+* Spatial format prediction via Python heuristics (AmbiX/FuMa detection)
 
 
-10. **Ambix2Ogg**: Ambisonic Ogg/Opus Wrapper.
+11. **Ambix2Ogg**: Ambisonic Ogg/Opus Wrapper.
 * **Smart Transcode**: Converts WAV/AMB to Opus with mapping family 2.
 * **Instant Remux**: Detects existing Opus files and wraps them in Ogg container without re-encoding (Pass-Through).
 
