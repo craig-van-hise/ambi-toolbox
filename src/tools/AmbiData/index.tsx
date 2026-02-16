@@ -13,8 +13,8 @@ interface AmbiDataToolProps {
     isProcessing: boolean;
 }
 
-const MIN_HEIGHT_PERCENT = 0;
-const MAX_HEIGHT_PERCENT = 80;
+const MIN_HEIGHT_PERCENT = 10;
+const MAX_HEIGHT_PERCENT = 90;
 
 // Helper to get nested value for comparison
 const getOriginalValue = (file: MediaFile, path: string) => {
@@ -288,18 +288,6 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
 
     return (
         <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#18181b]">
-            {/* TOOL HEADER */}
-            <div className="px-8 pt-8 pb-6">
-                <header>
-                    <h2 className={`text-3xl font-bold mb-2 ${tool.colorClass}`}>
-                        {tool.label}
-                    </h2>
-                    <p className="text-gray-400 text-lg font-light">
-                        {tool.description}
-                    </p>
-                </header>
-            </div>
-
             {/* Main Split Container */}
             <div
                 ref={containerRef}
@@ -308,41 +296,63 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                 {/* UPPER PARTITION */}
                 <div
                     style={{ height: `${topHeightPercent}%` }}
-                    className="w-full flex flex-col bg-studio-bg min-h-0"
+                    className="w-full flex flex-col bg-studio-bg min-h-0 relative"
                 >
-                    <div className="flex-1 overflow-y-auto pb-4 px-8">
-                        <SmartDropZone
-                            onFilesLoaded={handleFilesLoaded}
-                            allowedExtensions={['.wav', '.amb', '.opus', '.ogg', '.mp4', '.mov', '.m4a', '.caf', '.webm', '.mkv', '.iamf', '.aivu']}
-                            label=".wav, .iamf, .aivu, .amb, .opus, .ogg, .mp4, .mov ... accepted"
-                        />
-                        <div className="mt-4">
-                            <FileQueue
-                                files={files}
-                                selectedId={selectedFileId}
-                                onSelect={setSelectedFileId}
-                                onClear={() => {
-                                    setFiles([]);
-                                    setSelectedFileId('');
-                                }}
-                            />
+                    <div className="flex-1 overflow-y-auto pt-8 pb-4 flex flex-col relative">
+                        {/* TOOL HEADER */}
+                        <div className="px-8 mb-6 flex-none">
+                            <header>
+                                <h2 className={`text-3xl font-bold mb-2 ${tool.colorClass}`}>
+                                    {tool.label}
+                                </h2>
+                                <p className="text-gray-400 text-lg font-light">
+                                    {tool.description}
+                                </p>
+                            </header>
                         </div>
+
+                        {/* INPUT SECTION */}
+                        <div className="px-8 flex-none flex flex-col gap-4 relative z-10">
+                            <div className={`${files.length > 0 ? 'h-20' : 'h-48'} ${isDragging ? '' : 'transition-all duration-300'}`}>
+                                <SmartDropZone
+                                    onFilesLoaded={handleFilesLoaded}
+                                    allowedExtensions={['.wav', '.amb', '.opus', '.ogg', '.mp4', '.mov', '.m4a', '.caf', '.webm', '.mkv', '.iamf', '.aivu']}
+                                    label=".wav, .iamf, .aivu, .amb, .opus, .ogg, .mp4, .mov ... accepted"
+                                    compact={files.length > 0}
+                                    className="h-full w-full"
+                                />
+                            </div>
+                            <div className="mt-0">
+                                <FileQueue
+                                    files={files}
+                                    selectedId={selectedFileId}
+                                    onSelect={setSelectedFileId}
+                                    onClear={() => {
+                                        setFiles([]);
+                                        setSelectedFileId('');
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Spacer for bottom scrolling */}
+                        <div className="h-8 flex-none"></div>
                     </div>
                 </div>
 
                 {/* DRAGGABLE DIVIDER */}
                 <div
                     onMouseDown={handleMouseDown}
-                    className="h-3 w-full bg-studio-bg cursor-row-resize flex items-center justify-center z-10 relative group shrink-0"
+                    className="h-0 w-full border-t border-studio-border relative z-50 group hover:border-indigo-500/50 transition-colors cursor-row-resize shrink-0"
                 >
-                    {/* High Contrast Line */}
-                    <div className={`absolute w-full h-[2px] transition-colors duration-200 ${isDragging ? 'bg-indigo-400' : 'bg-white/80 group-hover:bg-white'}`} />
+                    {/* Invisible Hit Area */}
+                    <div className="absolute top-[-6px] bottom-[-6px] left-0 right-0 z-50 cursor-row-resize"></div>
                 </div>
 
                 {/* LOWER PARTITION */}
                 <div
                     style={{ height: `${100 - topHeightPercent}%` }}
-                    className="w-full bg-studio-bg relative flex flex-col min-h-0"
+                    className="w-full bg-[#18181b] flex flex-col min-h-0 relative"
                 >
                     {/* Scrollable Content */}
                     <div className="flex-1 overflow-hidden relative">
@@ -355,7 +365,7 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                     </div>
 
                     {/* Persistent Action Bar */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-[#18181b] border-t border-white/10 z-30">
+                    <div className="flex-none p-4 bg-[#18181b] border-t border-white/10 z-30">
                         <button
                             disabled={!hasChanges}
                             onClick={handleApplyChanges}

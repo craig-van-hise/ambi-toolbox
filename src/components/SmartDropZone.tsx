@@ -97,12 +97,12 @@ export const SmartDropZone: React.FC<SmartDropZoneProps> = ({
     const containerClasses = `
     border-2 border-dashed rounded-lg
     flex flex-col items-center justify-center text-center
-    transition-colors duration-200 cursor-pointer
+    transition-all duration-300 cursor-pointer
     group
     ${isDragOver
             ? 'border-studio-text bg-[#2A2A2B]'
             : 'border-studio-border hover:border-studio-text hover:bg-[#2A2A2B]'}
-    ${compact ? 'p-4 h-32' : 'p-4'}
+    ${compact ? 'h-20 p-0' : 'p-4 h-full'}
     overflow-hidden
     ${className}
   `;
@@ -116,19 +116,21 @@ export const SmartDropZone: React.FC<SmartDropZoneProps> = ({
             className={containerClasses}
         >
             {children ? children : (
-                <>
-                    <div className={`p-3 bg-[#1E1E1E] rounded-full mb-3 transition-transform ${isDragOver ? 'scale-110' : 'group-hover:scale-110'}`}>
-                        <Upload className={`w-6 h-6 ${isDragOver ? 'text-white' : 'text-gray-400'}`} />
+                <div className={`flex flex-col items-center justify-center transition-all ${compact ? 'gap-0' : 'gap-3'}`}>
+                    <div className={`p-2 bg-[#1E1E1E] rounded-full transition-transform ${isDragOver ? 'scale-110' : 'group-hover:scale-110'} ${compact ? 'p-1.5' : 'p-3 mb-1'}`}>
+                        <Upload className={`${compact ? 'w-5 h-5' : 'w-6 h-6'} ${isDragOver ? 'text-white' : 'text-gray-400'}`} />
                     </div>
-                    <p className="text-sm font-medium text-studio-text">
-                        {isDragOver ? 'Drop Files Now' : 'Drag Audio Files or Click to Browse'}
-                    </p>
                     {!compact && (
-                        <p className="text-xs text-gray-500 mt-2">
-                            {label || `${allowedExtensions.slice(0, 4).join(', ')} supported`}
-                        </p>
+                        <>
+                            <p className="text-sm font-medium text-studio-text transition-opacity duration-200">
+                                {isDragOver ? 'Drop Files Now' : 'Drag Audio Files or Click to Browse'}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-2 transition-opacity duration-200">
+                                {label || `${allowedExtensions.slice(0, 4).join(', ')} supported`}
+                            </p>
+                        </>
                     )}
-                </>
+                </div>
             )}
         </div>
     );

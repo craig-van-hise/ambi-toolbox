@@ -566,8 +566,53 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
   // Refs for scrolling
   const queueRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to Queue when files are added
+  // RESIZABLE PARTITION STATE
+  // Standard tools usually have a large top / small bottom.
+  // AmbiRotate prefers a more balanced split.
+  const [topHeightPercent, setTopHeightPercent] = useState(tool.id === ToolId.AmbiRotate ? 45 : 70);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Resize Handlers
+  const handleMouseDown = React.useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleMouseMove = React.useCallback((e: MouseEvent) => {
+    if (!isDragging || !containerRef.current) return;
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const relativeY = e.clientY - containerRect.top;
+    const newPercent = (relativeY / containerRect.height) * 100;
+    // Clamp between 10% and 90%
+    const clamped = Math.max(10, Math.min(newPercent, 90));
+    setTopHeightPercent(clamped);
+  }, [isDragging]);
+
+  const handleMouseUp = React.useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  // Global event listeners for drag
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'row-resize';
+      document.body.style.userSelect = 'none';
+    } else {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'default';
+      document.body.style.userSelect = 'auto';
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, handleMouseMove, handleMouseUp]);
+
   useEffect(() => {
     if (files.length > 0 && queueRef.current) {
       // Short delay to ensure rendering
@@ -787,224 +832,247 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
   return (
     <div className="h-screen flex flex-col overflow-hidden">
 
-      <div className={`${tool.id === ToolId.AmbiRotate ? 'flex-none max-h-[45vh] shadow-xl z-20 border-b border-studio-border' : 'flex-1 min-h-0'} overflow-y-auto pt-8 pb-4 flex flex-col relative bg-[#18181b]`}>
+      <div ref={containerRef} className="flex-1 flex flex-col relative overflow-hidden">
+        {/* TOP PARTITION (Input / Queue / Messages) */}
+        <div
+          style={{ height: `${topHeightPercent}%` }}
+          className="w-full flex flex-col overflow-hidden relative bg-[#18181b]"
+        >
+          <div className="flex-1 overflow-y-auto pt-8 pb-4 flex flex-col relative">
+            {/* TOOL HEADER */}
+            <div className="px-8 mb-6 flex-none">
+              <header>
+                <h2 className={`text-3xl font-bold mb-2 ${tool.colorClass}`}>
+                  {tool.label}
+                </h2>
+                <p className="text-gray-400 text-lg font-light">
+                  {tool.description}
+                </p>
+              </header>
+            </div>
 
-        {/* TOOL HEADER */}
-        <div className="px-8 mb-6">
-          <header>
-            <h2 className={`text-3xl font-bold mb-2 ${tool.colorClass}`}>
-              {tool.label}
-            </h2>
-            <p className="text-gray-400 text-lg font-light">
-              {tool.description}
-            </p>
-          </header>
-        </div>
-
-        {/* INPUT SECTION (Collapsible for AmbiRotate) */}
-        <div className="px-8 flex-none flex flex-col gap-4 relative z-10">
-          {/* Collapse Header for AmbiRotate */}
-          {tool.id === ToolId.AmbiRotate && files.length > 0 && (
-            <div
-              onClick={() => setInputExpanded(!isInputExpanded)}
-              className="flex items-center justify-between bg-gray-600/20 p-2 rounded-t-lg cursor-pointer hover:bg-gray-600/40 transition select-none border border-white/10"
-            >
-              <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                {isInputExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                <span>Input Files ({files.length})</span>
-              </div>
-              {!isInputExpanded && (
-                <span className="text-xs text-gray-500 font-mono">
-                  Active: {files[activeFileIndex]?.name}
-                </span>
+            {/* INPUT SECTION (Collapsible for AmbiRotate) */}
+            <div className="px-8 flex-none flex flex-col gap-4 relative z-10">
+              {/* Collapse Header for AmbiRotate */}
+              {tool.id === ToolId.AmbiRotate && files.length > 0 && (
+                <div
+                  onClick={() => setInputExpanded(!isInputExpanded)}
+                  className="flex items-center justify-between bg-gray-600/20 p-2 rounded-t-lg cursor-pointer hover:bg-gray-600/40 transition select-none border border-white/10"
+                >
+                  <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                    {isInputExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                    <span>Input Files ({files.length})</span>
+                  </div>
+                  {!isInputExpanded && (
+                    <span className="text-xs text-gray-500 font-mono">
+                      Active: {files[activeFileIndex]?.name}
+                    </span>
+                  )}
+                </div>
               )}
-            </div>
-          )}
 
-          {/* The Actual Input Body */}
-          <div className={`
-                flex flex-col gap-4 overflow-hidden transition-all duration-300 ease-in-out
-                ${tool.id === ToolId.AmbiRotate && files.length > 0
-              ? (isInputExpanded ? 'opacity-100 max-h-[500px]' : 'opacity-0 max-h-0 border-none m-0 p-0')
-              : 'opacity-100'
-            }
-                ${tool.id === ToolId.AmbiRotate && files.length > 0 && isInputExpanded ? 'bg-gray-900/30 p-4 rounded-b-lg border border-t-0 border-white/10' : ''}
-            `}>
-            {/* Drop Zone */}
-            <div className={`${tool.id === ToolId.AmbiRotate ? 'h-32' : 'h-48'} transition-all`}>
-              {(() => {
-                // DEFINE TOOL-SPECIFIC CONFIGURATION
-                let allowedExts = ['.wav', '.amb', '.caf', '.opus', '.mp3', '.aac', '.flac', '.ogg'];
-                let labelText: string | undefined = undefined;
-
-                if (tool.id === ToolId.Ambix2IAMF) {
-                  allowedExts = ['.wav'];
-                  labelText = ".wav accepted";
-                } else if (tool.id === ToolId.Ambix2APAC) {
-                  allowedExts = ['.wav', '.caf'];
-                  labelText = ".wav, .caf accepted";
-                } else if (tool.id === ToolId.Ambix2Bin || tool.id === ToolId.AmbiRotate) {
-                  allowedExts = ['.wav', '.flac', '.ogg', '.caf'];
-                  labelText = ".wav, .flac, .ogg, .caf accepted";
-                } else if (tool.id === ToolId.Ambix2Opus) {
-                  allowedExts = ['.wav', '.amb', '.caf', '.flac', '.mp3'];
-                  labelText = ".wav, .amb, .caf, .flac, .mp3 accepted";
-                } else if (tool.id === ToolId.Ambix2Ogg) {
-                  labelText = ".wav, .amb, .caf, .flac, .mp3, .opus, .ogg accepted";
-                } else if (tool.id === ToolId.Ambix2CAF || tool.id === ToolId.AmbiOrder || tool.id === ToolId.AmbiSwap) {
-                  // FFmpeg-based tools (highly flexible)
-                  allowedExts = ['.wav', '.amb', '.caf', '.opus', '.mp3', '.aac', '.flac', '.ogg'];
-                  labelText = ".wav, .amb, .caf, .opus, .mp3, .aac, .flac, .ogg accepted";
+              {/* The Actual Input Body */}
+              <div className={`
+                    flex flex-col gap-4 overflow-hidden transition-all duration-300 ease-in-out
+                    ${tool.id === ToolId.AmbiRotate && files.length > 0
+                  ? (isInputExpanded ? 'opacity-100 max-h-[500px]' : 'opacity-0 max-h-0 border-none m-0 p-0')
+                  : 'opacity-100'
                 }
+                    ${tool.id === ToolId.AmbiRotate && files.length > 0 && isInputExpanded ? 'bg-gray-900/30 p-4 rounded-b-lg border border-t-0 border-white/10' : ''}
+                `}>
+                {/* Drop Zone */}
+                <div className={`${files.length > 0 ? 'h-20' : (tool.id === ToolId.AmbiRotate ? 'h-32' : 'h-48')} transition-all duration-300`}>
+                  {(() => {
+                    // DEFINE TOOL-SPECIFIC CONFIGURATION
+                    let allowedExts = ['.wav', '.amb', '.caf', '.opus', '.mp3', '.aac', '.flac', '.ogg'];
+                    let labelText: string | undefined = undefined;
 
-                return (
-                  <SmartDropZone
-                    className="h-full w-full"
-                    allowedExtensions={allowedExts}
-                    label={labelText}
-                    onFilesLoaded={(loadedFiles) => {
-                      const processed = loadedFiles.map(f => {
-                        if (typeof f === 'string') {
-                          const name = f.split('/').pop() || f;
-                          return { name, path: f } as File;
-                        }
-                        return f;
-                      });
-                      handleFilesDropped(processed as File[]);
-                    }}
-                    onDrop={(e) => {
-                      if (e.dataTransfer.files) {
-                        handleFilesDropped(Array.from(e.dataTransfer.files));
-                      }
-                    }}
-                  />
-                );
-              })()}
+                    if (tool.id === ToolId.Ambix2IAMF) {
+                      allowedExts = ['.wav'];
+                      labelText = ".wav accepted";
+                    } else if (tool.id === ToolId.Ambix2APAC) {
+                      allowedExts = ['.wav', '.caf'];
+                      labelText = ".wav, .caf accepted";
+                    } else if (tool.id === ToolId.Ambix2Bin || tool.id === ToolId.AmbiRotate) {
+                      allowedExts = ['.wav', '.flac', '.ogg', '.caf'];
+                      labelText = ".wav, .flac, .ogg, .caf accepted";
+                    } else if (tool.id === ToolId.Ambix2Opus) {
+                      allowedExts = ['.wav', '.amb', '.caf', '.flac', '.mp3'];
+                      labelText = ".wav, .amb, .caf, .flac, .mp3 accepted";
+                    } else if (tool.id === ToolId.Ambix2Ogg) {
+                      labelText = ".wav, .amb, .caf, .flac, .mp3, .opus, .ogg accepted";
+                    } else if (tool.id === ToolId.Ambix2CAF || tool.id === ToolId.AmbiOrder || tool.id === ToolId.AmbiSwap) {
+                      // FFmpeg-based tools (highly flexible)
+                      allowedExts = ['.wav', '.amb', '.caf', '.opus', '.mp3', '.aac', '.flac', '.ogg'];
+                      labelText = ".wav, .amb, .caf, .opus, .mp3, .aac, .flac, .ogg accepted";
+                    }
+
+                    return (
+                      <SmartDropZone
+                        className="h-full w-full"
+                        allowedExtensions={allowedExts}
+                        label={labelText}
+                        compact={files.length > 0}
+                        onFilesLoaded={(loadedFiles) => {
+                          const processed = loadedFiles.map(f => {
+                            if (typeof f === 'string') {
+                              const name = f.split('/').pop() || f;
+                              return { name, path: f } as File;
+                            }
+                            return f;
+                          });
+                          handleFilesDropped(processed as File[]);
+                        }}
+                        onDrop={(e) => {
+                          if (e.dataTransfer.files) {
+                            handleFilesDropped(Array.from(e.dataTransfer.files));
+                          }
+                        }}
+                      />
+                    );
+                  })()}
+                </div>
+
+                {/* Queue */}
+                {files.length > 0 && (
+                  <div ref={queueRef} className="max-h-48 overflow-y-auto bg-[#1E1E1E] rounded-lg border border-studio-border flex flex-col shadow-lg p-2">
+                    <div className="flex justify-between items-center mb-2 px-2 pt-1 flex-none">
+                      <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Queue</h3>
+                      <button onClick={handleClearFiles} className="text-[10px] text-red-500 hover:text-red-400">CLEAR</button>
+                    </div>
+                    <div className="flex-1 overflow-y-auto px-1 custom-scrollbar space-y-1">
+                      {processedFiles.map((f, i) => (
+                        <div
+                          key={i}
+                          onClick={() => handleSelectFile(i)}
+                          className={`
+                                      flex items-center justify-between text-xs py-1.5 px-2 rounded cursor-pointer transition-colors
+                                      ${i === activeFileIndex && tool.id === ToolId.AmbiRotate ? 'bg-blue-900/40 text-blue-200 border border-blue-800/50' : 'hover:bg-gray-800 text-gray-400'}
+                                  `}
+                        >
+                          <span className="truncate font-mono">{f.name}</span>
+                          {/* REMOVED: Local/Mem tag */}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Queue */}
-            {files.length > 0 && (
-              <div ref={queueRef} className="max-h-48 overflow-y-auto bg-[#1E1E1E] rounded-lg border border-studio-border flex flex-col shadow-lg p-2">
-                <div className="flex justify-between items-center mb-2 px-2 pt-1 flex-none">
-                  <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Queue</h3>
-                  <button onClick={handleClearFiles} className="text-[10px] text-red-500 hover:text-red-400">CLEAR</button>
-                </div>
-                <div className="flex-1 overflow-y-auto px-1 custom-scrollbar space-y-1">
-                  {processedFiles.map((f, i) => (
+            {/* MESSAGES & PROGRESS */}
+            {(statusMsg || isProcessing) && (
+              <div ref={progressRef} className="px-8 mt-4 flex flex-col gap-2 flex-none">
+                {statusMsg && (
+                  <div className={`p-3 rounded text-sm font-mono border ${statusMsg.includes("Error") ? "bg-red-900/20 border-red-900/50 text-red-300" : "bg-blue-900/20 border-blue-900/50 text-blue-300"}`}>
+                    {statusMsg}
+                  </div>
+                )}
+
+                {/* PROGRESS BAR */}
+                {isProcessing && (
+                  <div className="w-full bg-gray-800 rounded-full h-2.5 overflow-hidden border border-gray-700">
                     <div
-                      key={i}
-                      onClick={() => handleSelectFile(i)}
-                      className={`
-                                  flex items-center justify-between text-xs py-1.5 px-2 rounded cursor-pointer transition-colors
-                                  ${i === activeFileIndex && tool.id === ToolId.AmbiRotate ? 'bg-blue-900/40 text-blue-200 border border-blue-800/50' : 'hover:bg-gray-800 text-gray-400'}
-                              `}
-                    >
-                      <span className="truncate font-mono">{f.name}</span>
-                      {/* REMOVED: Local/Mem tag */}
-                    </div>
-                  ))}
-                </div>
+                      className="bg-blue-500 h-2.5 rounded-full transition-all duration-300 ease-out"
+                      style={{ width: `${Math.round(progress * 100)}%` }}
+                    />
+                  </div>
+                )}
+                {isProcessing && (
+                  <div className="text-right text-[10px] text-gray-500 font-mono">
+                    {Math.round(progress * 100)}%
+                  </div>
+                )}
               </div>
             )}
+
+            {/* Spacer for bottom scrolling */}
+            <div className="h-8 flex-none"></div>
           </div>
         </div>
 
-        {/* MESSAGES & PROGRESS */}
-        {(statusMsg || isProcessing) && (
-          <div ref={progressRef} className="px-8 mt-4 flex flex-col gap-2">
-            {statusMsg && (
-              <div className={`p-3 rounded text-sm font-mono border ${statusMsg.includes("Error") ? "bg-red-900/20 border-red-900/50 text-red-300" : "bg-blue-900/20 border-blue-900/50 text-blue-300"}`}>
-                {statusMsg}
-              </div>
-            )}
+        {/* DRAGGABLE DIVIDER */}
 
-            {/* PROGRESS BAR */}
-            {isProcessing && (
-              <div className="w-full bg-gray-800 rounded-full h-2.5 overflow-hidden border border-gray-700">
-                <div
-                  className="bg-blue-500 h-2.5 rounded-full transition-all duration-300 ease-out"
-                  style={{ width: `${Math.round(progress * 100)}%` }}
+        <div
+          onMouseDown={handleMouseDown}
+          className="h-0 w-full border-t border-studio-border relative z-50 group hover:border-indigo-500/50 transition-colors cursor-row-resize shrink-0"
+        >
+          {/* Invisible Hit Area */}
+          <div className="absolute top-[-6px] bottom-[-6px] left-0 right-0 z-50 cursor-row-resize"></div>
+        </div>
+
+        {/* BOTTOM PARTITION (Controls / AmbiRotate Visuals) */}
+        <div
+          style={{ height: `${100 - topHeightPercent}%` }}
+          className="w-full bg-[#18181b] flex flex-col min-h-0 relative"
+        >
+          <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+            <div className="max-w-4xl mx-auto flex flex-col gap-6">
+
+              {/* AMBIROTATE CONTROLS (Moved Here) */}
+              {/* Persist AmbiRotateTool to keep state, just hide it */}
+              <div className={`w-full ${tool.id === ToolId.AmbiRotate ? '' : 'hidden'}`}>
+                <AmbiRotateTool
+                  ref={rotatorRef}
+                  tool={tool}
+                  files={files}
+                  activeIndex={activeFileIndex}
+                  onIndexChange={(idx) => {
+                    setActiveFileIndex(idx);
+                  }}
+                  onRun={handleRunTask}
+                  isProcessing={isProcessing}
+                  isVisible={tool.id === ToolId.AmbiRotate}
                 />
               </div>
-            )}
-            {isProcessing && (
-              <div className="text-right text-[10px] text-gray-500 font-mono">
-                {Math.round(progress * 100)}%
-              </div>
-            )}
-          </div>
-        )}
 
-      </div>
+              {tool.id === ToolId.Ambix2Ogg && <Ambix2OggTool tool={tool} files={files} onRun={handleRunTask} isProcessing={isProcessing} />}
+              {tool.id === ToolId.Ambix2Opus && <BitrateConverter tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
+              {tool.id === ToolId.Ambix2IAMF && <BitrateConverter tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
+              {tool.id === ToolId.Ambix2APAC && <Ambix2ApacTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
+              {tool.id === ToolId.Ambix2Bin && <Ambix2BinTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
+              {tool.id === ToolId.AmbiOrder && <AmbiOrderTool tool={tool} files={files} onRun={handleRunTask} isProcessing={isProcessing} />}
+              {tool.id === ToolId.AmbiSwap && <AmbiSwapTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
+              {tool.id === ToolId.Ambix2CAF && <Ambix2CafTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
 
-      {/* 2. AMBIROTATE MAIN AREA (Removed separate partition) */}
-
-      {/* 3. ACTION BAR (Bottom Fixed) */}
-      <div className={`${tool.id === ToolId.AmbiRotate ? 'flex-1 min-h-0' : 'flex-none shadow-[0_-4px_20px_rgba(0,0,0,0.5)]'} border-t border-studio-border bg-[#18181b] p-6 z-30 overflow-y-auto custom-scrollbar`}>
-        <div className="max-w-4xl mx-auto flex flex-col gap-6">
-
-          {/* AMBIROTATE CONTROLS (Moved Here) */}
-          {/* Persist AmbiRotateTool to keep state, just hide it */}
-          <div className={`w-full ${tool.id === ToolId.AmbiRotate ? '' : 'hidden'}`}>
-            <AmbiRotateTool
-              ref={rotatorRef}
-              tool={tool}
-              files={files}
-              activeIndex={activeFileIndex}
-              onIndexChange={(idx) => {
-                setActiveFileIndex(idx);
-              }}
-              onRun={handleRunTask}
-              isProcessing={isProcessing}
-              isVisible={tool.id === ToolId.AmbiRotate}
-            />
-          </div>
-
-          {tool.id === ToolId.Ambix2Ogg && <Ambix2OggTool tool={tool} files={files} onRun={handleRunTask} isProcessing={isProcessing} />}
-          {tool.id === ToolId.Ambix2Opus && <BitrateConverter tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
-          {tool.id === ToolId.Ambix2IAMF && <BitrateConverter tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
-          {tool.id === ToolId.Ambix2APAC && <Ambix2ApacTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
-          {tool.id === ToolId.Ambix2Bin && <Ambix2BinTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
-          {tool.id === ToolId.AmbiOrder && <AmbiOrderTool tool={tool} files={files} onRun={handleRunTask} isProcessing={isProcessing} />}
-          {tool.id === ToolId.AmbiSwap && <AmbiSwapTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
-          {tool.id === ToolId.Ambix2CAF && <Ambix2CafTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
-
-          {/* AMBIROTATE ACTION BUTTON */}
-          {tool.id === ToolId.AmbiRotate && (
-            <button
-              onClick={async () => {
-                if (!rotatorRef.current) return;
-                setIsProcessing(true);
-                try {
-                  setStatusMsg("Processing Rotation...");
-                  await rotatorRef.current.handleRender();
-                  setStatusMsg("Success!");
-                } catch (err: any) {
-                  console.error("Rotation UI Error:", err);
-                  setStatusMsg(`Error: ${err.message}`);
-                } finally {
-                  setIsProcessing(false);
-                }
-              }}
-              disabled={isProcessing || files.length === 0}
-              className={`
-                        w-full px-8 py-3 rounded-lg font-bold shadow-lg flex items-center justify-center gap-2 transition-all
-                        ${isProcessing || files.length === 0
-                  ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                  : 'bg-red-600 hover:bg-red-500 text-white hover:scale-[1.02] active:scale-95 shadow-red-900/50'
-                }
-                    `}
-            >
-              {isProcessing ? (
-                <>Rendering...</>
-              ) : (
-                <>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                  Render Rotated File(s)
-                </>
+              {/* AMBIROTATE ACTION BUTTON */}
+              {tool.id === ToolId.AmbiRotate && (
+                <button
+                  onClick={async () => {
+                    if (!rotatorRef.current) return;
+                    setIsProcessing(true);
+                    try {
+                      setStatusMsg("Processing Rotation...");
+                      await rotatorRef.current.handleRender();
+                      setStatusMsg("Success!");
+                    } catch (err: any) {
+                      console.error("Rotation UI Error:", err);
+                      setStatusMsg(`Error: ${err.message}`);
+                    } finally {
+                      setIsProcessing(false);
+                    }
+                  }}
+                  disabled={isProcessing || files.length === 0}
+                  className={`
+                            w-full px-8 py-3 rounded-lg font-bold shadow-lg flex items-center justify-center gap-2 transition-all
+                            ${isProcessing || files.length === 0
+                      ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                      : 'bg-red-600 hover:bg-red-500 text-white hover:scale-[1.02] active:scale-95 shadow-red-900/50'
+                    }
+                        `}
+                >
+                  {isProcessing ? (
+                    <>Rendering...</>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                      Render Rotated File(s)
+                    </>
+                  )}
+                </button>
               )}
-            </button>
-          )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

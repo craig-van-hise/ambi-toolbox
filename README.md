@@ -107,19 +107,18 @@ npm run dev
 
 ```bash
 npm run build
-
 ```
 
-The output can be found in `release/` or `dist/`.
+The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 
 ## 🏗 Architecture
 
 * **Frontend**: React + TypeScript + TailwindCSS (`src/`)
 * **Backend**: Electron Main Process (`electron/`)
-* **Handlers**: `electron/handlers/` (Business logic for each tool)
+* **Handlers**: `electron/handlers/` (Modular Handler Pattern)
 * **Bridge**: `electron/preload.ts` (Unified Bridge: `window.electron` and `window.electronAPI`)
-* **Python Extension**: `py/ambi_rotate.py` (Active backend for AmbiRotate)
-
+* **Python Subsystem**: `resources/scripts/` (NumPy/Audio Processing scripts)
+* **Unified UI Pattern**: All tools (except AmbiTrim) use a shared resizable partition system in `src/components/ToolViews.tsx`.
 
 * **Cleanup**: Legacy/Vestigial files moved to `xCleanup/` (Gitignored).
 
