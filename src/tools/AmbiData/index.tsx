@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { flushSync } from 'react-dom';
+import { useToolState } from '../../contexts/ToolStateContext';
 import { FileQueue } from './components/FileQueue';
 import { Inspector } from './components/Inspector';
 import { MediaFile, FileType } from './types';
@@ -30,7 +31,7 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
     // State
     const [topHeightPercent, setTopHeightPercent] = useState(60);
     const [isDragging, setIsDragging] = useState(false);
-    const [files, setFiles] = useState<MediaFile[]>([]);
+    const { globalFiles: files, setGlobalFiles: setFiles } = useToolState();
     const [selectedFileId, setSelectedFileId] = useState<string>('');
     const [activeEdits, setActiveEdits] = useState<Record<string, any>>({});
 
@@ -57,6 +58,13 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
     useEffect(() => {
         setActiveEdits({});
     }, [selectedFileId]);
+
+    // Auto-select first file if none selected
+    useEffect(() => {
+        if (!selectedFileId && files.length > 0) {
+            setSelectedFileId(files[0].id);
+        }
+    }, [files.length, selectedFileId]); // Re-run when count changes or selection is cleared
 
     // Set up IPC progress listener on component mount
     useEffect(() => {
@@ -313,6 +321,10 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                                 files={files}
                                 selectedId={selectedFileId}
                                 onSelect={setSelectedFileId}
+                                onClear={() => {
+                                    setFiles([]);
+                                    setSelectedFileId('');
+                                }}
                             />
                         </div>
                     </div>

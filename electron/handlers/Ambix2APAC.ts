@@ -1,7 +1,7 @@
-import { IpcMainInvokeEvent } from 'electron';
+import { IpcMainInvokeEvent } from '../shim';
 import path from 'path';
 import { spawn } from 'child_process';
-import { app } from 'electron';
+import { app } from '../shim';
 import { determineOutputPath } from './common';
 
 export async function handleAmbix2APAC(event: IpcMainInvokeEvent, options: {

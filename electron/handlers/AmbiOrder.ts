@@ -1,4 +1,4 @@
-import { IpcMainInvokeEvent } from 'electron';
+import { IpcMainInvokeEvent } from '../shim';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { getFfmpegPath, probeAudio, determineOutputPath } from './common';

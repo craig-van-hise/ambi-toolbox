@@ -1,4 +1,4 @@
-import { IpcMainInvokeEvent } from 'electron';
+import { IpcMainInvokeEvent } from '../shim';
 import { handleAmbix2Opus } from './Ambix2Opus';
 import { handleAmbix2Bin } from './Ambix2Bin';
 import { handleAmbix2IAMF } from './Ambix2IAMF';

@@ -23,6 +23,8 @@ interface ToolViewProps {
 }
 
 import { useSettings } from '../contexts/SettingsContext';
+import { useToolState } from '../contexts/ToolStateContext';
+import { MediaFile, FileType } from '../tools/AmbiData/types';
 
 // ----------------------------------------------------------------------
 // SHARED COMPONENTS
@@ -546,7 +548,17 @@ const Ambix2OggTool: React.FC<{ tool: ToolDefinition, files: File[], onRun: (opt
 // ----------------------------------------------------------------------
 
 export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
-  const [files, setFiles] = useState<File[]>([]);
+  const { globalFiles, setGlobalFiles } = useToolState();
+  // Map global MediaFile[] back to File[] for compatibility with existing components
+  // We create synthetic File objects that have the properties we need
+  const files = React.useMemo(() => globalFiles.map(mf => {
+    // Create a dummy File object with the right path/name properties
+    // The actual File object data isn't persisted, but path/name are what matters for backend
+    const f = new File([], mf.name + mf.extension);
+    Object.defineProperty(f, 'path', { value: mf.id }); // ID is the full path
+    return f;
+  }), [globalFiles]);
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -631,12 +643,49 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
   const rotatorRef = useRef<AmbiRotateHandle>(null);
 
   // Handlers
-  const handleFilesDropped = (newFiles: File[]) => {
-    setFiles(prev => [...prev, ...newFiles]);
+  const handleFilesDropped = (newDropFiles: File[]) => {
+    const newMediaFiles: MediaFile[] = newDropFiles.map((f: any) => {
+      const path = f.path;
+      const name = f.name;
+      const extension = name.includes('.') ? '.' + name.split('.').pop() : '';
+
+      // Determine file type from extension
+      const videoExtensions = ['.mp4', '.mov', '.webm', '.mkv', '.avi', '.m4v', '.aivu'];
+      const type = videoExtensions.includes(extension.toLowerCase()) ? FileType.Video : FileType.Audio;
+
+      return {
+        id: path,
+        name: name.replace(extension, ''),
+        extension,
+        path,
+        type,
+        size: 'Pending...',
+        containerFormat: 'Unknown',
+        duration: '--:--',
+        bitRate: '--',
+        audio: { codec: 'Unknown', sampleRate: 0, bitDepth: 0, channelCount: 0, ambisonicOrder: 0 },
+        loudness: { integrated: 0, range: 0, truePeak: 0 },
+        health: { clippingCount: 0, dcOffsetWarning: false, emptyStreamWarning: false },
+        spatial: {
+          formatPrediction: 'Unknown',
+          normalizationPrediction: 'Unknown',
+          hasAmbisonicGUID: false,
+          hasSA3DAtom: false
+        },
+        isAnalyzing: false,
+        loadedPhases: []
+      };
+    });
+
+    setGlobalFiles(prev => {
+      const existingIds = new Set(prev.map(f => f.id));
+      const uniqueNewFiles = newMediaFiles.filter(f => !existingIds.has(f.id));
+      return [...prev, ...uniqueNewFiles];
+    });
   };
 
   const handleClearFiles = () => {
-    setFiles([]);
+    setGlobalFiles([]);
     setStatusMsg(null);
     setActiveFileIndex(0);
   };
@@ -721,16 +770,9 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     index: i
   }));
 
-  // PERSISTENCE LOGIC FOR AMBIROTATE
-  const [ambiFiles, setAmbiFiles] = useState<File[]>([]);
-  const [ambiActiveIndex, setAmbiActiveIndex] = useState(0);
-
-  useEffect(() => {
-    if (tool.id === ToolId.AmbiRotate) {
-      setAmbiFiles(files);
-      setAmbiActiveIndex(activeFileIndex);
-    }
-  }, [tool.id, files, activeFileIndex]);
+  // PERSISTENCE LOGIC FOR AMBIROTATE - REMOVED (Redundant with global state)
+  // The infinite loop was caused here by syncing 'files' (a new array ref every render) to 'ambiFiles'.
+  // We now pass 'files' directly to AmbiRotateTool.
 
   // SPECIAL CASE: AmbiTrim handles its own full-screen layout (PRP #54/55)
   if (tool.id === ToolId.AmbiTrim) {
@@ -907,14 +949,10 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
             <AmbiRotateTool
               ref={rotatorRef}
               tool={tool}
-              files={ambiFiles}
-              activeIndex={ambiActiveIndex}
+              files={files}
+              activeIndex={activeFileIndex}
               onIndexChange={(idx) => {
-                if (tool.id === ToolId.AmbiRotate) {
-                  setActiveFileIndex(idx);
-                } else {
-                  setAmbiActiveIndex(idx);
-                }
+                setActiveFileIndex(idx);
               }}
               onRun={handleRunTask}
               isProcessing={isProcessing}

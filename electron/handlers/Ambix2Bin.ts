@@ -1,4 +1,4 @@
-import { IpcMainInvokeEvent, app } from 'electron';
+import { IpcMainInvokeEvent, app } from '../shim';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { determineOutputPath } from './common';

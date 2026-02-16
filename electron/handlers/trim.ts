@@ -1,4 +1,4 @@
-import { app } from 'electron';
+import { app } from '../shim';
 import path from 'path';
 import { spawn } from 'child_process';
 import fs from 'fs';

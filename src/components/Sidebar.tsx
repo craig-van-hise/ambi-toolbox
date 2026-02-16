@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ToolId } from '../types';
 import { TOOLS } from '../constants';
-import { Boxes, AudioWaveform, Layers, Repeat, Compass, Headphones, Clapperboard, Settings, Scissors, Package } from 'lucide-react';
+import { Layers, Repeat, Compass, Headphones, Settings, Scissors, Package, Info, Axis3d, RectangleGoggles, Box, Shrink } from 'lucide-react';
 import { SettingsModal } from './SettingsModal';
 
 interface SidebarProps {
@@ -11,16 +11,19 @@ interface SidebarProps {
 
 const getIcon = (id: ToolId) => {
   switch (id) {
-    case ToolId.Ambix2Opus: return <AudioWaveform className="w-5 h-5" />;
-    case ToolId.Ambix2CAF: return <Boxes className="w-5 h-5" />;
+    case ToolId.AmbiData: return <Info className="w-5 h-5" />;
+    case ToolId.Ambix2IAMF: return <Axis3d className="w-5 h-5" />;
+    case ToolId.Ambix2APAC: return <RectangleGoggles className="w-5 h-5" />;
+    case ToolId.Ambix2CAF: return <Box className="w-5 h-5" />;
+    case ToolId.Ambix2Opus: return <Shrink className="w-5 h-5" />;
+    
     case ToolId.AmbiOrder: return <Layers className="w-5 h-5" />;
     case ToolId.AmbiSwap: return <Repeat className="w-5 h-5" />;
     case ToolId.AmbiRotate: return <Compass className="w-5 h-5" />;
     case ToolId.Ambix2Bin: return <Headphones className="w-5 h-5" />;
-    case ToolId.Ambix2IAMF: return <Clapperboard className="w-5 h-5" />;
     case ToolId.Ambix2Ogg: return <Package className="w-5 h-5" />;
     case ToolId.AmbiTrim: return <Scissors className="w-5 h-5" />;
-    default: return <Boxes className="w-5 h-5" />;
+    default: return <Box className="w-5 h-5" />;
   }
 };
 

@@ -1,13 +1,7 @@
 import { ToolDefinition, ToolId, BitrateOption } from './types';
 
+
 export const TOOLS: ToolDefinition[] = [
-  {
-    id: ToolId.AmbiData,
-    label: 'AmbiData',
-    description: 'Analyze and edit spatial audio metadata & technical specs.',
-    colorClass: 'text-indigo-400',
-    btnColorClass: 'bg-indigo-600 hover:bg-indigo-700',
-  },
   {
     id: ToolId.Ambix2Bin,
     label: 'Ambix2Bin',
@@ -49,6 +43,13 @@ export const TOOLS: ToolDefinition[] = [
     description: 'Encodes Ambisonics to Apple Spatial Audio Codec (APAC) for visionOS.',
     colorClass: 'text-cyan-500',
     btnColorClass: 'bg-cyan-600 hover:bg-cyan-700',
+  },
+  {
+    id: ToolId.AmbiData,
+    label: 'AmbiData',
+    description: 'Analyze and edit spatial audio metadata & technical specs.',
+    colorClass: 'text-indigo-400',
+    btnColorClass: 'bg-indigo-600 hover:bg-indigo-700',
   },
   {
     id: ToolId.AmbiOrder,

@@ -5,6 +5,7 @@ import { ToolId } from './types';
 import { TOOLS } from './constants';
 
 import { SettingsProvider, useSettings } from './contexts/SettingsContext';
+import { ToolStateProvider } from './contexts/ToolStateContext';
 
 const AppContent: React.FC = () => {
   const { settings, updateSettings } = useSettings();
@@ -41,7 +42,9 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <SettingsProvider>
-      <AppContent />
+      <ToolStateProvider>
+        <AppContent />
+      </ToolStateProvider>
     </SettingsProvider>
   );
 };
