@@ -6,6 +6,7 @@ import { TOOLS } from './constants';
 
 import { SettingsProvider, useSettings } from './contexts/SettingsContext';
 import { ToolStateProvider } from './contexts/ToolStateContext';
+import { PlaybackProvider } from './contexts/PlaybackContext';
 
 const AppContent: React.FC = () => {
   const { settings, updateSettings } = useSettings();
@@ -43,7 +44,9 @@ const App: React.FC = () => {
   return (
     <SettingsProvider>
       <ToolStateProvider>
-        <AppContent />
+        <PlaybackProvider>
+          <AppContent />
+        </PlaybackProvider>
       </ToolStateProvider>
     </SettingsProvider>
   );

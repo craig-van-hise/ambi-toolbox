@@ -80,3 +80,13 @@ export interface ElectronAPI {
   fileOpen?: (options?: any) => Promise<string[]>;
   selectFiles: (options?: any) => Promise<string[]>;
 }
+
+export interface PlayerState {
+  currentTime: number;
+  duration: number;
+  isPlaying: boolean;
+  isLooping: boolean;
+  isHeadphonesOn: boolean;
+  volume: number;
+  hrtfProfile: string;
+}

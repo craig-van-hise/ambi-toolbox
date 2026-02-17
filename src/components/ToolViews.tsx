@@ -24,7 +24,9 @@ interface ToolViewProps {
 
 import { useSettings } from '../contexts/SettingsContext';
 import { useToolState } from '../contexts/ToolStateContext';
+import { usePlayback } from '../contexts/PlaybackContext';
 import { MediaFile, FileType } from '../tools/AmbiData/types';
+import { Transport } from './Transport';
 
 // ----------------------------------------------------------------------
 // SHARED COMPONENTS
@@ -548,7 +550,19 @@ const Ambix2OggTool: React.FC<{ tool: ToolDefinition, files: File[], onRun: (opt
 // ----------------------------------------------------------------------
 
 export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
-  const { globalFiles, setGlobalFiles } = useToolState();
+  const { globalFiles, setGlobalFiles, selectedFileId, setSelectedFileId } = useToolState();
+  const {
+    state: playerState,
+    togglePlayPause,
+    stop,
+    next,
+    prev,
+    seek,
+    setVolume,
+    toggleLoop,
+    toggleHeadphones,
+    setHrtfProfile
+  } = usePlayback();
   // Map global MediaFile[] back to File[] for compatibility with existing components
   // We create synthetic File objects that have the properties we need
   const files = React.useMemo(() => globalFiles.map(mf => {
@@ -678,8 +692,17 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     };
   }, [tool.id]);
 
-  // standard "active file" selection (lifted for AmbiRotate)
-  const [activeFileIndex, setActiveFileIndex] = useState(0);
+  // active file selection (linked to global context)
+  const activeFileIndex = React.useMemo(() => {
+    const idx = globalFiles.findIndex(f => f.id === selectedFileId);
+    return idx === -1 ? 0 : idx;
+  }, [globalFiles, selectedFileId]);
+
+  const setActiveFileIndex = (index: number) => {
+    if (globalFiles[index]) {
+      setSelectedFileId(globalFiles[index].id);
+    }
+  };
 
   // PRO FEATURE: Collapsible Input Section
   const [isInputExpanded, setInputExpanded] = useState(true);
@@ -947,7 +970,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
                           onClick={() => handleSelectFile(i)}
                           className={`
                                       flex items-center justify-between text-xs py-1.5 px-2 rounded cursor-pointer transition-colors
-                                      ${i === activeFileIndex && tool.id === ToolId.AmbiRotate ? 'bg-blue-900/40 text-blue-200 border border-blue-800/50' : 'hover:bg-gray-800 text-gray-400'}
+                                      ${f.path === selectedFileId ? 'bg-blue-900/40 text-blue-200 border border-blue-800/50' : 'hover:bg-gray-800 text-gray-400'}
                                   `}
                         >
                           <span className="truncate font-mono">{f.name}</span>
@@ -956,6 +979,22 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
                       ))}
                     </div>
                   </div>
+                )}
+
+                {/* Transport Section */}
+                {files.length > 0 && (
+                  <Transport
+                    state={playerState}
+                    onPlayPause={togglePlayPause}
+                    onStop={stop}
+                    onNext={next}
+                    onPrev={prev}
+                    onSeek={seek}
+                    onVolumeChange={setVolume}
+                    onToggleLoop={toggleLoop}
+                    onToggleHeadphones={toggleHeadphones}
+                    onSetHrtfProfile={setHrtfProfile}
+                  />
                 )}
               </div>
             </div>

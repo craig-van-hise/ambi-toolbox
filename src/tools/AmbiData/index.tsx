@@ -6,6 +6,8 @@ import { Inspector } from './components/Inspector';
 import { MediaFile, FileType } from './types';
 import { SmartDropZone } from '../../components/SmartDropZone';
 import { ToolDefinition } from '../../types';
+import { usePlayback } from '../../contexts/PlaybackContext';
+import { Transport } from '../../components/Transport';
 
 interface AmbiDataToolProps {
     tool: ToolDefinition;
@@ -31,8 +33,19 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
     // State
     const [topHeightPercent, setTopHeightPercent] = useState(60);
     const [isDragging, setIsDragging] = useState(false);
-    const { globalFiles: files, setGlobalFiles: setFiles } = useToolState();
-    const [selectedFileId, setSelectedFileId] = useState<string>('');
+    const { globalFiles: files, setGlobalFiles: setFiles, selectedFileId, setSelectedFileId } = useToolState();
+    const {
+        state: playerState,
+        togglePlayPause,
+        stop,
+        next,
+        prev,
+        seek,
+        setVolume,
+        toggleLoop,
+        toggleHeadphones,
+        setHrtfProfile
+    } = usePlayback();
     const [activeEdits, setActiveEdits] = useState<Record<string, any>>({});
 
     // Refs for dragging calculation
@@ -333,6 +346,22 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                                     }}
                                 />
                             </div>
+
+                            {/* Transport Section */}
+                            {files.length > 0 && (
+                                <Transport
+                                    state={playerState}
+                                    onPlayPause={togglePlayPause}
+                                    onStop={stop}
+                                    onNext={next}
+                                    onPrev={prev}
+                                    onSeek={seek}
+                                    onVolumeChange={setVolume}
+                                    onToggleLoop={toggleLoop}
+                                    onToggleHeadphones={toggleHeadphones}
+                                    onSetHrtfProfile={setHrtfProfile}
+                                />
+                            )}
                         </div>
 
                         {/* Spacer for bottom scrolling */}

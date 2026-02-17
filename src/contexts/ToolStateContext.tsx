@@ -4,15 +4,18 @@ import { MediaFile } from '../tools/AmbiData/types';
 interface ToolStateContextType {
     globalFiles: MediaFile[];
     setGlobalFiles: React.Dispatch<React.SetStateAction<MediaFile[]>>;
+    selectedFileId: string;
+    setSelectedFileId: (id: string) => void;
 }
 
 const ToolStateContext = createContext<ToolStateContextType | undefined>(undefined);
 
 export const ToolStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [globalFiles, setGlobalFiles] = useState<MediaFile[]>([]);
+    const [selectedFileId, setSelectedFileId] = useState<string>('');
 
     return (
-        <ToolStateContext.Provider value={{ globalFiles, setGlobalFiles }}>
+        <ToolStateContext.Provider value={{ globalFiles, setGlobalFiles, selectedFileId, setSelectedFileId }}>
             {children}
         </ToolStateContext.Provider>
     );
