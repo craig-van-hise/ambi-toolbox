@@ -33,7 +33,8 @@ This suite eliminates those bottlenecks, allowing audio engineers to process, co
 
 
 2. **Ambix2Bin**: Render Ambisonics to Binaural Stereo using SOFA HRTF files.
-* Built-in Neumann KU100 and KEMAR profiles.
+* Built-in Neumann KU100 and KEMAR profiles (fixed path resolution).
+* Powered by custom FFmpeg build with `sofalizer` support.
 
 
 3. **Ambix2IAMF**: Encode Ambisonics to IAMF (Immersive Audio Model and Formats).

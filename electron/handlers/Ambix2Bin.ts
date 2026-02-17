@@ -15,14 +15,14 @@ function getScriptPath(scriptName: string): string {
 // Helper to get asset path
 function getSofaPath(filename: string): string {
     if (app.isPackaged) {
-        return path.join(process.resourcesPath, 'sofa', filename);
+        return path.join(process.resourcesPath, 'hrtf', filename);
     }
-    return path.join(process.cwd(), 'assets', 'sofa', filename);
+    return path.join(process.cwd(), 'assets', 'hrtf', filename);
 }
 
 export async function handleAmbix2Bin(event: IpcMainInvokeEvent, options: {
     files: string[];
-    hrtfProfile: string; // "Neumann", "Kemar", or custom path
+    hrtfProfile: string; // "Generic (Neumann KU100)", "Generic (KEMAR)", or custom path
     settings?: { outputDir?: string; autoCreateFolder?: boolean };
 }): Promise<{ success: boolean; error?: string; data?: any }> {
     const { files, hrtfProfile, settings } = options;
@@ -34,10 +34,10 @@ export async function handleAmbix2Bin(event: IpcMainInvokeEvent, options: {
         let sofaPath = '';
         console.log(`[Ambix2Bin] Profile requested: ${hrtfProfile}`);
 
-        if (hrtfProfile === 'Neumann') {
-            sofaPath = getSofaPath('HRIR_L2702.sofa');
-        } else if (hrtfProfile === 'Kemar') {
-            sofaPath = getSofaPath('mit_kemar_normal_pinna.sofa');
+        if (hrtfProfile === 'Generic (Neumann KU100)') {
+            sofaPath = getSofaPath('Neumann_KU100_48k.sofa');
+        } else if (hrtfProfile === 'Generic (KEMAR)') {
+            sofaPath = getSofaPath('MIT_KEMAR_Normal.sofa');
         } else { // Assume hrtfProfile is the custom path
             if (fs.existsSync(hrtfProfile)) {
                 sofaPath = hrtfProfile;
