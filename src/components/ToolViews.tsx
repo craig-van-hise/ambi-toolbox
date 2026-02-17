@@ -561,7 +561,8 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     setVolume,
     toggleLoop,
     toggleHeadphones,
-    setHrtfProfile
+    setHrtfProfile,
+    setCurrentFile
   } = usePlayback();
   // Map global MediaFile[] back to File[] for compatibility with existing components
   // We create synthetic File objects that have the properties we need
@@ -703,6 +704,17 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
       setSelectedFileId(globalFiles[index].id);
     }
   };
+
+  // Sync Current File to Playback Context
+  useEffect(() => {
+    const file = files[activeFileIndex];
+    if (file) {
+      // We cast to any because .path is a custom property we defined
+      setCurrentFile((file as any).path);
+    } else {
+      setCurrentFile(null);
+    }
+  }, [activeFileIndex, files, setCurrentFile]);
 
   // PRO FEATURE: Collapsible Input Section
   const [isInputExpanded, setInputExpanded] = useState(true);

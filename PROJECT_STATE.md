@@ -13,7 +13,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 | Component | Status | Backend Implementation | Notes |
 | :--- | :--- | :--- | :--- |
 | **Frontend UI** | 🟢 Ready | React + Tailwind | Scoped Progress, Auto-Scroll, Drag & Drop. |
-| **Transport UI** | 🟡 Partial | `src/components/Transport.tsx` | **Frontend Complete**: Condensed UI, Icons, Settings Modal. **Backend Pending**: Playback logic not yet fully wired to audio output. |
+| **Transport UI** | 🟢 Ready | `src/components/Transport.tsx` | **Frontend Complete**: Condensed UI, Icons, Settings Modal. **Backend Ready**: Playback logic wired to `electron/main.ts` streaming server with real-time binaural rendering. |
 | **Ambix2Opus** | 🟢 Ready | `electron/handlers/Ambix2Opus.ts` | Uses `ffprobe` for robust channel detection. |
 | **Ambix2Bin** | 🟢 Ready | `electron/handlers/Ambix2Bin.ts` | Uses **Neumann KU100 (CC-BY)** & **MIT KEMAR** HRTFs. Fixed static path resolution and enum alignment. |
 | **Ambix2IAMF** | 🟢 Ready | `electron/handlers/Ambix2IAMF.ts` | Generates textproto config and runs `iamf-enc`. |
@@ -46,7 +46,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 -   **Transport Component Integration**:
     -   Added a compact, sticky footer for audio playback controls (`Transport.tsx`).
     -   Detailed UI features: Play/Pause/Stop/Seek, Volume Slider, **Settings Cog** (HRTF Profile), and **Headphones** toggle (Blue highlight).
-    -   **Backend Note**: While the UI and `PlaybackContext` (WaveSurfer) are implemented, the robust backend audio routing for full playback support is **pending implementation**.
+    -   **Backend Ready**: `PlaybackContext` (Audio Element) streams from `http://localhost:45455/stream`. Supports real-time binaural rendering (HRTF) and custom SOFA loading.
 -   **Global Playback Context**: Created `PlaybackContext` to manage audio state (playing, looping, time, volume, hrtf) across the entire application.
 -   **Global File Queue (Context)**: Implemented `ToolStateContext` to manage a unified file queue. Files dropped in AmbiData are now accessible in other tools and vice-versa.
 -   **AmbiRotate Stability**: Fixed a critical infinite loop in `ToolViews.tsx` caused by redundant state updates. Memoized file array references for stability.

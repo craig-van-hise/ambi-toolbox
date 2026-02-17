@@ -14,6 +14,13 @@ export function getBinaryPath(name: string): string {
 export function getFfmpegPath() { return getBinaryPath('ffmpeg'); }
 export function getFfprobePath() { return getBinaryPath('ffprobe'); }
 
+export function getSofaAssetPath(filename: string): string {
+    if (app.isPackaged) {
+        return path.join(process.resourcesPath, 'hrtf', filename);
+    }
+    return path.join(process.cwd(), 'assets', 'hrtf', filename);
+}
+
 export interface AudioProbeResult {
     duration: number; // seconds
     channels: number;

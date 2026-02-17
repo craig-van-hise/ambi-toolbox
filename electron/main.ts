@@ -7,6 +7,11 @@ import { probeAudio } from './handlers/common'
 import { generateProxy, executeTrim } from './handlers/trim'
 
 import { spawn } from 'child_process';
+import http from 'http';
+import fs from 'node:fs';
+import { getPanFilter } from './handlers/matrix_utils';
+import { getFfmpegPath, getSofaAssetPath } from './handlers/common';
+
 
 // const require = createRequire(import.meta.url) // Unused
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -65,6 +70,103 @@ app.on('activate', () => {
 })
 
 app.whenReady().then(() => {
+
+  // ------------------------------------------------------------------
+  // BINAURAL STREAMING SERVER (PRP #72)
+  // ------------------------------------------------------------------
+  const server = http.createServer((req, res) => {
+    // Only handle /stream
+    if (!req.url?.startsWith('/stream')) {
+      res.writeHead(404);
+      res.end('Not Found');
+      return;
+    }
+
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const filePath = url.searchParams.get('file');
+    const binaural = url.searchParams.get('binaural') === 'true';
+    let sofaPath = url.searchParams.get('sofaPath');
+    const hrtfProfile = url.searchParams.get('hrtfProfile');
+
+    // Resolve Preset Paths if sofaPath is missing but profile is known
+    if (binaural && !sofaPath && hrtfProfile) {
+      if (hrtfProfile.includes('Neumann')) {
+        sofaPath = getSofaAssetPath('Neumann_KU100_48k.sofa');
+      } else if (hrtfProfile.includes('KEMAR')) {
+        sofaPath = getSofaAssetPath('MIT_KEMAR_Normal.sofa');
+      }
+    }
+
+    if (!filePath || !fs.existsSync(filePath)) {
+      res.writeHead(400);
+      res.end('Invalid File Path');
+      return;
+    }
+
+    console.log(`[Stream] Request: ${path.basename(filePath)}, Binaural: ${binaural}, SOFA: ${path.basename(sofaPath || '')}`);
+
+    // Headers for WebM/Opus Stream
+    res.writeHead(200, {
+      'Content-Type': 'audio/webm',
+      'Transfer-Encoding': 'chunked',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive'
+    });
+
+    // Construct FFmpeg Arguments
+    const ffmpegPath = getFfmpegPath();
+    const args: string[] = [
+      '-re', // Real-time reading
+      '-i', filePath
+    ];
+
+    // Filter Logic
+    if (binaural && sofaPath && fs.existsSync(sofaPath)) {
+      try {
+        const filterComplex = getPanFilter(3, sofaPath); // Hardcoded 3rd Order
+        args.push('-filter_complex', filterComplex);
+      } catch (err) {
+        console.error(`[Stream] Filter Generation Error:`, err);
+        args.push('-ac', '2'); // Fallback
+      }
+    } else {
+      args.push('-ac', '2'); // Stereo Downmix
+    }
+
+    // Output Format: WebM / Opus
+    args.push(
+      '-f', 'webm',
+      '-c:a', 'libopus',
+      '-b:a', '192k',
+      '-ac', '2',
+      'pipe:1'
+    );
+
+    console.log(`[Stream] Spawning FFmpeg...`);
+
+    const ffmpeg = spawn(ffmpegPath, args);
+
+    // Pipe Stdout to Response
+    ffmpeg.stdout.pipe(res);
+
+    // Handle Client Disconnect
+    req.on('close', () => {
+      console.log(`[Stream] Client disconnected. Killing...`);
+      ffmpeg.kill();
+    });
+
+    ffmpeg.on('close', (_code) => {
+      if (!res.writableEnded) res.end();
+    });
+
+    ffmpeg.stderr.on('data', (_d) => {
+      // Optional: console.log(`[Stream Log]: ${d}`);
+    });
+  });
+
+  server.listen(45455, '127.0.0.1', () => {
+    console.log('[Stream] Server listening on http://127.0.0.1:45455/stream');
+  });
 
   // 2. HANDLE MEDIA REQUESTS
   protocol.handle('media', (request) => {
