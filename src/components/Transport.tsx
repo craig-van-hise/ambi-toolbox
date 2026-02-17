@@ -1,6 +1,6 @@
 import React from 'react';
 import { PlayerState, HrtfProfile } from '../types';
-import { formatTime } from '../utils/formatters';
+import { formatTime } from '../utils/time-formatters';
 import { Modal } from './Modal';
 import { Settings, Headphones, ChevronDown } from 'lucide-react';
 

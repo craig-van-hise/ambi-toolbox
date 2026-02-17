@@ -23,7 +23,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 | **Ambix2CAF** | 🟢 Ready | `electron/handlers/Ambix2CAF.ts` | Supports Discrete & HOA Layouts. |
 | **Ambix2Ogg** | 🟢 Ready | `electron/handlers/Ambix2Ogg.ts` | Smart Transcode/Remux. Permission Checks. |
 | **AmbiTrim** | 🟢 Ready | `electron/handlers/trim.ts` | Proxy Workflow (Mid-Side), Lossless Cut (`-c copy`), WaveSurfer Regions. |
-| **AmbiData** | 🟢 Ready | `electron/handlers/AmbiData.ts` | Complete Recovery. Fully aligned with ToolViews UI. Flicker Kill-Switch implemented. |
+| **AmbiData** | 🟡 In Progress | `electron/handlers/AmbiData.ts` | **Expansion Required**: Backend logic needs significant work to accommodate complex containers (MP4/MOV) and diverse spatial audio file types. Flicker Kill-Switch implemented. |
 | **Persistence** | 🟢 Ready | `src/contexts/SettingsContext.tsx` | Saves active tool, bitrates, layouts, and rotation values. |
 | **Global Queue** | 🟢 New | `src/contexts/ToolStateContext.tsx` | Files persist across tools (AmbiData <-> Others). |
 
