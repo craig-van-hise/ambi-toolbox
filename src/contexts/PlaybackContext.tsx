@@ -5,6 +5,8 @@ import { useSettings } from './SettingsContext';
 interface PlaybackContextType {
     state: PlayerState;
     togglePlayPause: () => void;
+    play: () => void;
+    pause: () => void;
     stop: () => void;
     next: () => void;
     prev: () => void;
@@ -27,7 +29,7 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         duration: 0,
         isPlaying: false,
         isLooping: false,
-        isHeadphonesOn: false, // Default off (listen to raw/stereo first)
+        isHeadphonesOn: true, // Default ON (Binaural)
         volume: 0.8,
         hrtfProfile: HrtfProfile.Neumann,
         currentFile: null,
@@ -42,8 +44,9 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
 
     // 1. Initialize Audio Element
     useEffect(() => {
+        console.log('[PlaybackProvider] MOUNTED. Default State:', state);
         const audio = new Audio();
-        audio.preload = 'metadata';
+        audio.preload = 'none'; // Prevent auto-pipeline start
         audioRef.current = audio;
 
         // Event Listeners
@@ -197,15 +200,20 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         // Update Source
         if (audio.src !== newSrc) {
             console.log(`[Audio] Switching stream: ${newSrc}`);
-            const wasPlaying = !audio.paused;
-            const currentTime = audio.currentTime;
+            const wasPlaying = stateRef.current.isPlaying; // Use ref for latest state
 
+            // --- SOURCE PURGE PATTERN (PRP #91) ---
+            audio.pause();
+            audio.currentTime = 0; // Reset BEFORE changing src
             audio.src = newSrc;
-            audio.load();
-            audio.currentTime = currentTime;
+            audio.load(); // Force re-initialization of demuxer
 
             if (wasPlaying) {
-                audio.play().catch(e => console.error("Resume failed after switch", e));
+                audio.play().catch(e => {
+                    if (e.name !== 'AbortError') {
+                        console.warn("[Audio] Playback prevented during switch:", e);
+                    }
+                });
             }
         }
 
@@ -281,6 +289,8 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         <PlaybackContext.Provider value={{
             state,
             togglePlayPause,
+            play: () => setState(prev => ({ ...prev, isPlaying: true })),
+            pause: () => setState(prev => ({ ...prev, isPlaying: false })),
             stop,
             next,
             prev,

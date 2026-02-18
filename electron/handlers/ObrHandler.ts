@@ -44,6 +44,7 @@ export function createObrPipeline(
   // 1. Decode
   // Input: File -> Output: stdout (f32le)
   const decoder = spawn(ffmpegPath, [
+    '-ss', '0',
     '-re',
     '-i', inputPath,
     '-f', 'f32le',
@@ -79,7 +80,14 @@ export function createObrPipeline(
   // Decoder -> OBR
   if (decoder.stdout && obr.stdin) {
     decoder.stdout.pipe(obr.stdin);
-    decoder.stdout.on('error', e => console.error('[Dec->OBR] Pipe Error:', e));
+
+    // Squashing EPIPE and other pipe errors
+    decoder.stdout.on('error', e => console.error('[Dec-Stdout] Pipe Error:', e));
+    obr.stdin.on('error', e => {
+      // @ts-ignore
+      if (e.code === 'EPIPE') return; // Expected when decoder finished or obr killed
+      console.error('[OBR-Stdin] Pipe Error:', e);
+    });
   } else {
     console.error('[Pipeline] Failed to pipe Decoder -> OBR');
   }
@@ -87,7 +95,13 @@ export function createObrPipeline(
   // OBR -> Encoder
   if (obr.stdout && encoder.stdin) {
     obr.stdout.pipe(encoder.stdin);
-    obr.stdout.on('error', e => console.error('[OBR->Enc] Pipe Error:', e));
+
+    obr.stdout.on('error', e => console.error('[OBR-Stdout] Pipe Error:', e));
+    encoder.stdin.on('error', e => {
+      // @ts-ignore
+      if (e.code === 'EPIPE') return;
+      console.error('[Enc-Stdin] Pipe Error:', e);
+    });
   } else {
     console.error('[Pipeline] Failed to pipe OBR -> Encoder');
   }
@@ -105,7 +119,13 @@ export function createObrPipeline(
 
   // --- CLEANUP & ERROR HANDLING ---
   const killAll = () => {
-    console.log('[Pipeline] Killing all processes...');
+    console.log('[Pipeline] Killing all processes and cleaning up pipes...');
+
+    // Explicitly unpipe to prevent EPIPE writes during shutdown
+    try { if (decoder.stdout) decoder.stdout.unpipe(); } catch (e) { }
+    try { if (obr.stdout) obr.stdout.unpipe(); } catch (e) { }
+    try { if (encoder.stdout) encoder.stdout.unpipe(); } catch (e) { }
+
     try {
       if (!decoder.killed) decoder.kill('SIGKILL');
     } catch (e) { }

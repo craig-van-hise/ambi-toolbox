@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { AmbiTrim } from '../components/tools/AmbiTrim';
 import { AmbiDataTool } from '../tools/AmbiData';
+import { FileQueue } from './FileQueue';
 
 interface ToolViewProps {
   tool: ToolDefinition;
@@ -554,6 +555,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
   const {
     state: playerState,
     togglePlayPause,
+    play,
     stop,
     next,
     prev,
@@ -861,7 +863,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
 
   // SPECIAL CASE: AmbiData has its own layout (PRP #76)
   if (tool.id === ToolId.AmbiData) {
-    return <AmbiDataTool tool={tool} files={files} isProcessing={isProcessing} />;
+    return <AmbiDataTool tool={tool} files={files as any[]} isProcessing={isProcessing} />;
   }
 
   return (
@@ -970,26 +972,30 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
 
                 {/* Queue */}
                 {files.length > 0 && (
-                  <div ref={queueRef} className="max-h-48 overflow-y-auto bg-[#1E1E1E] rounded-lg border border-studio-border flex flex-col shadow-lg p-2">
-                    <div className="flex justify-between items-center mb-2 px-2 pt-1 flex-none">
-                      <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Queue</h3>
-                      <button onClick={handleClearFiles} className="text-[10px] text-red-500 hover:text-red-400">CLEAR</button>
-                    </div>
-                    <div className="flex-1 overflow-y-auto px-1 custom-scrollbar space-y-1">
-                      {processedFiles.map((f, i) => (
-                        <div
-                          key={i}
-                          onClick={() => handleSelectFile(i)}
-                          className={`
-                                      flex items-center justify-between text-xs py-1.5 px-2 rounded cursor-pointer transition-colors
-                                      ${f.path === selectedFileId ? 'bg-blue-900/40 text-blue-200 border border-blue-800/50' : 'hover:bg-gray-800 text-gray-400'}
-                                  `}
-                        >
-                          <span className="truncate font-mono">{f.name}</span>
-                          {/* REMOVED: Local/Mem tag */}
-                        </div>
-                      ))}
-                    </div>
+                  <div ref={queueRef} className="mt-4">
+                    <FileQueue
+                      files={processedFiles}
+                      selectedId={selectedFileId}
+                      onSelect={(id) => {
+                        // Handle selection mapping
+                        const idx = processedFiles.findIndex(f => f.path === id);
+                        if (idx >= 0) handleSelectFile(idx);
+                      }}
+                      onPlay={(id) => {
+                        const idx = processedFiles.findIndex(f => f.path === id);
+                        if (idx >= 0) {
+                          handleSelectFile(idx);
+                          setCurrentFile(id);
+                          // We need to access the 'play' function from usePlayback but we only destructured state/actions
+                          // Let's ensure play is destructured or accessible.
+                          // Since we are inside ToolView which uses usePlayback, we can just call it.
+                          play();
+                        }
+                      }}
+                      onClear={handleClearFiles}
+                      playingFileId={playerState.currentFile}
+                      isPlaying={playerState.isPlaying}
+                    />
                   </div>
                 )}
 

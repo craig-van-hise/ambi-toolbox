@@ -1,9 +1,10 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { flushSync } from 'react-dom';
 import { useToolState } from '../../contexts/ToolStateContext';
-import { FileQueue } from './components/FileQueue';
+// import { FileQueue } from './components/FileQueue'; // Deprecated
+import { FileQueue } from '../../components/FileQueue';
 import { Inspector } from './components/Inspector';
-import { MediaFile, FileType } from './types';
+import { MediaFile, FileType } from './types'; // Restore this
 import { SmartDropZone } from '../../components/SmartDropZone';
 import { ToolDefinition } from '../../types';
 import { usePlayback } from '../../contexts/PlaybackContext';
@@ -11,7 +12,7 @@ import { Transport } from '../../components/Transport';
 
 interface AmbiDataToolProps {
     tool: ToolDefinition;
-    files: any[];
+    files: MediaFile[]; // Changed to MediaFile[]
     isProcessing: boolean;
 }
 
@@ -36,6 +37,8 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
     const { globalFiles: files, setGlobalFiles: setFiles, selectedFileId, setSelectedFileId } = useToolState();
     const {
         state: playerState,
+        setCurrentFile,
+        play,
         togglePlayPause,
         stop,
         next,
@@ -56,6 +59,7 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
 
     // Debug: Log when selectedFile changes
     useEffect(() => {
+        console.log('[AmbiData] Component Rendered/Updated. props:', { filesLen: files.length, selectedFileId });
         if (selectedFile) {
             console.log('[AmbiData] selectedFile updated:', {
                 name: selectedFile.name,
@@ -63,7 +67,7 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                 isAnalyzing: selectedFile.isAnalyzing
             });
         }
-    }, [selectedFile]);
+    }, [selectedFile, files.length, selectedFileId]);
 
     const hasChanges = Object.keys(activeEdits).length > 0;
 
@@ -170,8 +174,8 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
         });
 
 
-        // Auto-select the first file if none selected
-        if (!selectedFileId && newFiles.length > 0) {
+        // Auto-select the first NEW file (UX improvement)
+        if (newFiles.length > 0) {
             setSelectedFileId(newFiles[0].id);
         }
 
@@ -340,10 +344,17 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                                     files={files}
                                     selectedId={selectedFileId}
                                     onSelect={setSelectedFileId}
+                                    onPlay={(id) => {
+                                        setSelectedFileId(id);
+                                        setCurrentFile(id);
+                                        play();
+                                    }}
                                     onClear={() => {
                                         setFiles([]);
                                         setSelectedFileId('');
                                     }}
+                                    playingFileId={playerState.currentFile}
+                                    isPlaying={playerState.isPlaying}
                                 />
                             </div>
 

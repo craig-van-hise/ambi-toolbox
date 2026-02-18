@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pencil, ChevronDown, ChevronRight, AlertTriangle, CheckCircle2, AlertOctagon } from './Icons';
+import { Pencil, ChevronDown, ChevronRight, AlertTriangle, CheckCircle2, AlertOctagon } from 'lucide-react';
 
 // --- Card Component ---
 // --- Card Component ---
