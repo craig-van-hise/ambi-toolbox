@@ -57,7 +57,7 @@ This suite eliminates those bottlenecks, allowing audio engineers to process, co
 * **Order >1 (Ch 4+)**: Infinite-Order Sectorial Yaw (Optimized).
 
 
-* *Monitoring*: Real-time Binaural 3D preview via internal HTTP streaming server. Supports Neumann/KEMAR and Custom HRTF profiles.
+* *Monitoring*: Real-time **Stereo Downmix** preview via internal HTTP streaming server.
 
 
 9. **AmbiTrim**: Lossless trimming for high-channel-count files.

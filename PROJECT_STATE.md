@@ -13,7 +13,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 | Component | Status | Backend Implementation | Notes |
 | :--- | :--- | :--- | :--- |
 | **Frontend UI** | 🟢 Ready | React + Tailwind | Scoped Progress, Auto-Scroll, Drag & Drop. |
-| **Transport UI** | 🟢 Ready | `src/components/Transport.tsx` | **Frontend Complete**: Condensed UI, Icons, Settings Modal. **Backend Ready**: Playback logic wired to `electron/main.ts` streaming server with real-time binaural rendering. |
+| **Transport UI** | 🟢 Ready | `src/components/Transport.tsx` | **Frontend Complete**: Condensed UI, Icons, Settings Modal. **Backend Ready**: Playback logic wired to `electron/main.ts` streaming server (Stereo Downmix). |
 | **Ambix2Opus** | 🟢 Ready | `electron/handlers/Ambix2Opus.ts` | Uses `ffprobe` for robust channel detection. |
 | **Ambix2Bin** | 🟢 Ready | `electron/handlers/Ambix2Bin.ts` | Uses **Neumann KU100 (CC-BY)** & **MIT KEMAR** HRTFs. Fixed static path resolution and enum alignment. |
 | **Ambix2IAMF** | 🟢 Ready | `electron/handlers/Ambix2IAMF.ts` | Generates textproto config and runs `iamf-enc`. |
@@ -38,7 +38,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
     -   `main.ts`: Application entry point and IPC router.
     -   `shim.ts`: Bridge imports for handlers.
 -   **`resources/scripts/`**: Python Subsystem.
-    -   `rotator.py`: Ambisonic Rotation Script (NumPy + Scipy + SoundFile).
+    -   `ambi_rotate.py`: Ambisonic Rotation Script (NumPy + Scipy + SoundFile).
 -   **`assets/`**: Static Resources (`bin/`, `hrtf/`).
 -   **`xCleanup/`**: Quantined legacy files (Gitignored).
 
@@ -46,7 +46,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 -   **Transport Component Integration**:
     -   Added a compact, sticky footer for audio playback controls (`Transport.tsx`).
     -   Detailed UI features: Play/Pause/Stop/Seek, Volume Slider, **Settings Cog** (HRTF Profile), and **Headphones** toggle (Blue highlight).
-    -   **Backend Ready**: `PlaybackContext` (Audio Element) streams from `http://localhost:45455/stream`. Supports real-time binaural rendering (HRTF) and custom SOFA loading.
+    -   **Backend Ready**: `PlaybackContext` (Audio Element) streams from `http://localhost:45455/stream`. Currently provides robust **Stereo Downmix** (FFmpeg Native) for monitoring.
 -   **Global Playback Context**: Created `PlaybackContext` to manage audio state (playing, looping, time, volume, hrtf) across the entire application.
 -   **Global File Queue (Context)**: Implemented `ToolStateContext` to manage a unified file queue. Files dropped in AmbiData are now accessible in other tools and vice-versa.
 -   **AmbiRotate Stability**: Fixed a critical infinite loop in `ToolViews.tsx` caused by redundant state updates. Memoized file array references for stability.
@@ -68,4 +68,6 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
     -   Implemented robust OBU (Open Bitstream Unit) parser for IAMF files.
     -   **Adaptive UI**: Stream Selector now lists parsed OBU IDs (e.g. ID 108) instead of generic streams.
     -   **Data Binding**: Core specs (Channels, Order) now bind directly to the selected OBU's metadata, resolving "0 channel" bugs.
--   **File Type Audit**: Conducted comprehensive audit of all backend handlers to determine exact file support, resulting in the "Accepted File Types by Tool.md" documentation.
+-   **Backend Demolition (PRP #81)**:
+    -   **Removed**: Custom DSP matrix generation (`matrix_utils.ts`) and complex FFmpeg filter graphs (`pan`, `sofalizer`).
+    -   **Simplified**: Streaming server now provides a safe, standard **Stereo Downmix** for all channel layouts to ensure stability.

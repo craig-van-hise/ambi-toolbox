@@ -9,7 +9,6 @@ import { generateProxy, executeTrim } from './handlers/trim'
 import { spawn } from 'child_process';
 import http from 'http';
 import fs from 'node:fs';
-import { getPanFilter } from './handlers/matrix_utils';
 import { getFfmpegPath, getSofaAssetPath } from './handlers/common';
 
 
@@ -74,8 +73,28 @@ app.whenReady().then(() => {
   // ------------------------------------------------------------------
   // BINAURAL STREAMING SERVER (PRP #72)
   // ------------------------------------------------------------------
-  const server = http.createServer((req, res) => {
-    // Only handle /stream
+  const server = http.createServer(async (req, res) => {
+    // PROBE DURATION ENDPOINT
+    if (req.url?.startsWith('/probe-duration')) {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const filePath = url.searchParams.get('file');
+
+      if (!filePath || !fs.existsSync(filePath)) {
+        res.writeHead(400);
+        res.end(JSON.stringify({ error: 'Invalid File' }));
+        return;
+      }
+
+      const info = await probeAudio(filePath).catch(() => null);
+      res.writeHead(200, {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      });
+      res.end(JSON.stringify({ duration: info?.duration || 0 }));
+      return;
+    }
+
+    // STREAM ENDPOINT
     if (!req.url?.startsWith('/stream')) {
       res.writeHead(404);
       res.end('Not Found');
@@ -110,37 +129,21 @@ app.whenReady().then(() => {
       'Content-Type': 'audio/webm',
       'Transfer-Encoding': 'chunked',
       'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive'
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*'
     });
 
     // Construct FFmpeg Arguments
     const ffmpegPath = getFfmpegPath();
     const args: string[] = [
       '-re', // Real-time reading
-      '-i', filePath
-    ];
-
-    // Filter Logic
-    if (binaural && sofaPath && fs.existsSync(sofaPath)) {
-      try {
-        const filterComplex = getPanFilter(3, sofaPath); // Hardcoded 3rd Order
-        args.push('-filter_complex', filterComplex);
-      } catch (err) {
-        console.error(`[Stream] Filter Generation Error:`, err);
-        args.push('-ac', '2'); // Fallback
-      }
-    } else {
-      args.push('-ac', '2'); // Stereo Downmix
-    }
-
-    // Output Format: WebM / Opus
-    args.push(
+      '-i', filePath,
+      '-ac', '2', // Stereo Downmix
       '-f', 'webm',
       '-c:a', 'libopus',
       '-b:a', '192k',
-      '-ac', '2',
       'pipe:1'
-    );
+    ];
 
     console.log(`[Stream] Spawning FFmpeg...`);
 
@@ -159,8 +162,8 @@ app.whenReady().then(() => {
       if (!res.writableEnded) res.end();
     });
 
-    ffmpeg.stderr.on('data', (_d) => {
-      // Optional: console.log(`[Stream Log]: ${d}`);
+    ffmpeg.stderr.on('data', (d) => {
+      console.log(`[FFmpeg]: ${d.toString()}`);
     });
   });
 
@@ -175,9 +178,6 @@ app.whenReady().then(() => {
 
     // Decoding is crucial for paths with spaces or special chars
     const decodedPath = decodeURIComponent(filePath);
-
-    // Normalize path just in case (optional but safe)
-    // const normalizedPath = path.normalize(decodedPath);
 
     // Return the file response safely
     return net.fetch(pathToFileURL(decodedPath).toString());

@@ -33,6 +33,12 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         currentFile: null
     });
 
+    // Solve Stale Closure for Event Listeners
+    const stateRef = useRef(state);
+    useEffect(() => {
+        stateRef.current = state;
+    }, [state]);
+
     // 1. Initialize Audio Element
     useEffect(() => {
         const audio = new Audio();
@@ -43,10 +49,28 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         const onTimeUpdate = () => {
             setState(prev => ({ ...prev, currentTime: audio.currentTime }));
         };
-        const onLoadedMetadata = () => {
+        const onLoadedMetadata = async () => {
+            let duration = audio.duration;
+            if (isNaN(duration) || duration === Infinity) {
+                // If stream duration is unknown, try to probe the file directly via backend
+                // We need access to the current file path from stateRef or similar.
+                // Since this closure captures initial state, we need a ref to current file.
+                const currentFile = stateRef.current.currentFile;
+                if (currentFile) {
+                    try {
+                        const response = await fetch(`http://127.0.0.1:45455/probe-duration?file=${encodeURIComponent(currentFile)}`);
+                        const data = await response.json();
+                        if (data.duration !== undefined && !isNaN(data.duration)) {
+                            duration = data.duration;
+                        }
+                    } catch (error) {
+                        console.error("Failed to probe duration:", error);
+                    }
+                }
+            }
             setState(prev => ({
                 ...prev,
-                duration: isNaN(audio.duration) ? 0 : audio.duration
+                duration: (isNaN(duration) || duration === Infinity) ? 0 : duration
             }));
         };
         const onEnded = () => {
