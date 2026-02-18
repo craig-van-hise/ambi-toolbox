@@ -20,6 +20,8 @@ This suite eliminates those bottlenecks, allowing audio engineers to process, co
 * **Asset Downscaling:** Use **AmbiOrder** to reduce a 3rd Order master file into 1st Order for mobile game engines (Unity/Unreal) or hardware with limited channel counts.
 * **Orientation Correction:** Fix recordings made with a misaligned or upside-down microphone by applying 3-axis rotation (Yaw/Pitch/Roll) in real-time with **AmbiRotate** before committing to a new file.
 * **Lossless Trimming:** Use **AmbiTrim** to cut unwanted sections from massive multi-channel master files without re-encoding, preserving the original audio data bit-for-bit.
+* **Unified Transport Flow:** Seamlessly switch between tracks with **"Double-Click to Play"** across all tools, backed by a surgical transport reset logic that ensures absolute zero-accurate starts.
+
 
 ---
 
@@ -118,7 +120,8 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 * **Bridge**: `electron/preload.ts` (Unified Bridge: `window.electron` and `window.electronAPI`)
 * **Sidecars**: `src/cpp/` (C++ Native Addons/Binaries - Google OBR)
 * **Python Subsystem**: `resources/scripts/` (NumPy/Audio Processing scripts)
-* **Unified UI Pattern**: All tools (except AmbiTrim) use a shared resizable partition system in `src/components/ToolViews.tsx`.
+* **Unified UI Pattern**: All tools use a shared resizable partition system in `src/components/ToolViews.tsx` and a consolidated **Unified FileQueue** in `src/components/FileQueue.tsx`.
+* **Streaming Engine**: Precise 3-stage OBR pipeline (`Decoder` -> `OBR` -> `Encoder`) with EPIPE-hardened inter-process piping.
 
 * **Cleanup**: Legacy/Vestigial files moved to `xCleanup/` (Gitignored).
 

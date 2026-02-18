@@ -23,16 +23,17 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 | **Ambix2CAF** | 🟢 Ready | `electron/handlers/Ambix2CAF.ts` | Supports Discrete & HOA Layouts. |
 | **Ambix2Ogg** | 🟢 Ready | `electron/handlers/Ambix2Ogg.ts` | Smart Transcode/Remux. Permission Checks. |
 | **AmbiTrim** | 🟢 Ready | `electron/handlers/trim.ts` | Proxy Workflow (Mid-Side), Lossless Cut (`-c copy`), WaveSurfer Regions. |
-| **AmbiData** | 🟡 In Progress | `electron/handlers/AmbiData.ts` | **Expansion Required**: Backend logic needs significant work to accommodate complex containers (MP4/MOV) and diverse spatial audio file types. Flicker Kill-Switch implemented. |
+| **AmbiData** | � Ready | `electron/handlers/AmbiData.ts` | **Enhanced**: Now uses unified `FileQueue` and precise `ObrHandler` streaming. |
 | **Persistence** | 🟢 Ready | `src/contexts/SettingsContext.tsx` | Saves active tool, bitrates, layouts, and rotation values. |
-| **Global Queue** | 🟢 New | `src/contexts/ToolStateContext.tsx` | Files persist across tools (AmbiData <-> Others). |
+| **Global Queue** | 🟢 Ready | `src/components/FileQueue.tsx` | **Unified**: Single shared component for all tools with folding/play indicators. |
 
 ## 3. Directory Structure (Key Paths)
 
 -   **`src/`**: Frontend Source (React/Vite).
     -   `components/ToolViews.tsx`: Main UI for all tools (Consumes Global State).
+    -   `components/FileQueue.tsx`: **Unified Queue** component (Merged Styles & Interaction).
     -   `components/Transport.tsx`: Audio transport controls (Play/Pause, Seek, Volume).
-    -   `contexts/PlaybackContext.tsx`: Global audio state management (WaveSurfer).
+    -   `contexts/PlaybackContext.tsx`: Global audio state management.
 -   **`electron/`**: Main Process Source.
     -   `handlers/`: Individual tool backend logic (Modular Handler Pattern).
     -   `main.ts`: Application entry point and IPC router.
@@ -76,3 +77,9 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
     -   **Pipeline**: Implemented robust 3-stage pipeline (`Decoder` -> `OBR` -> `Encoder`) in `ObrHandler.ts`.
     -   **Stability**: Fixed deadlocks via `stdio` management and strict process cleanup.
     -   **Integration**: Wired `PlaybackContext` to use dynamic metadata probing for correct stream configuration.
+-   **Unified Queue & Stability (PRP #89 - #91)**:
+    -   **Unified FileQueue**: Consolidated generic and AmbiData queues into a single `src/components/FileQueue.tsx` with folding, file type icons, and live play indicators.
+    -   **Interaction**: Implemented "Double-Click to Play" and auto-selection logic across all tools.
+    -   **EPIPE Hardening**: Resolved fatal process crashes by adding robust error handlers to inter-process pipes and ensuring explicit unpiping during teardown.
+    -   **Surgical Reset**: Eliminated track-switching lag and the "starting mid-file" bug by forcing FFmpeg seek (`-ss 0`) and implementing the "Source Purge" lifecycle in `PlaybackContext`.
+    -   **TDD Verification**: Added `scripts/test-server.ts` and `scripts/test-stream-start.ts` for automated pipeline verification.
