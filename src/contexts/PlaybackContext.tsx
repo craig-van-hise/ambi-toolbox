@@ -30,7 +30,8 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         isHeadphonesOn: false, // Default off (listen to raw/stereo first)
         volume: 0.8,
         hrtfProfile: HrtfProfile.Neumann,
-        currentFile: null
+        currentFile: null,
+        channels: 0
     });
 
     // Solve Stale Closure for Event Listeners
@@ -50,27 +51,18 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
             setState(prev => ({ ...prev, currentTime: audio.currentTime }));
         };
         const onLoadedMetadata = async () => {
-            let duration = audio.duration;
-            if (isNaN(duration) || duration === Infinity) {
-                // If stream duration is unknown, try to probe the file directly via backend
-                // We need access to the current file path from stateRef or similar.
-                // Since this closure captures initial state, we need a ref to current file.
-                const currentFile = stateRef.current.currentFile;
-                if (currentFile) {
-                    try {
-                        const response = await fetch(`http://127.0.0.1:45455/probe-duration?file=${encodeURIComponent(currentFile)}`);
-                        const data = await response.json();
-                        if (data.duration !== undefined && !isNaN(data.duration)) {
-                            duration = data.duration;
-                        }
-                    } catch (error) {
-                        console.error("Failed to probe duration:", error);
-                    }
-                }
-            }
+            // Duration is now handled by the probe effect mostly, 
+            // but the element might update it more accurately for the decoded stream?
+            // Actually, we trust the probe for the *file* duration. 
+            // The audio element duration might depend on the stream (infinity for chunks?).
+            // Let's keep updating duration from audio.duration if it's valid, 
+            // but we don't need to probe channels here anymore.
+
+            const duration = audio.duration;
             setState(prev => ({
                 ...prev,
-                duration: (isNaN(duration) || duration === Infinity) ? 0 : duration
+                // Prefer probe duration if audio.duration is Infinity (stream)
+                duration: (isNaN(duration) || duration === Infinity) ? prev.duration : duration
             }));
         };
         const onEnded = () => {
@@ -109,78 +101,122 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         };
     }, []);
 
-    // 2. Stream URL Construction & Safety
+
+    // 2. Probe Metadata (Decoupled from Audio Element)
+    useEffect(() => {
+        const currentFile = state.currentFile;
+        // Reset channels/duration when file changes
+        // Note: setCurrentFile already resets them, but we ensure consistency here if needed.
+
+        if (!currentFile) return;
+
+        let isMounted = true;
+
+        const probe = async () => {
+            console.log(`[Playback] Probing: ${currentFile}`);
+            try {
+                // TODO: Port to configurable backend URL if needed
+                const response = await fetch(`http://127.0.0.1:45455/probe-metadata?file=${encodeURIComponent(currentFile)}`);
+                if (!response.ok) throw new Error("Probe failed");
+                const data = await response.json();
+
+                if (isMounted) {
+                    console.log(`[Playback] Probe Success: ${data.channels}ch`);
+                    setState(prev => ({
+                        ...prev,
+                        duration: (data.duration && !isNaN(data.duration)) ? data.duration : prev.duration,
+                        channels: data.channels || 0
+                    }));
+                }
+            } catch (error) {
+                console.error("Failed to probe metadata:", error);
+                // Fallback? If probe fails, maybe default to 2 or 16? 
+                // Leaving as 0 might block playback if we enforce >0 checks.
+                // Let's set a safe fallback if we must, or let user handle it.
+                // For now, we log error. State remains 0 (or whatever it was).
+                // If we want to force playback even if probe fails, we could set channels=4 here.
+                if (isMounted) {
+                    setState(prev => ({ ...prev, channels: 4 })); // Fallback
+                }
+            }
+        };
+
+        probe();
+
+        return () => { isMounted = false; };
+    }, [state.currentFile]);
+
+
+    // 3. Stream URL Construction
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio) return;
-        if (!state.currentFile) {
-            // No file loaded
+
+        const { currentFile, hrtfProfile, channels } = state;
+
+        if (!currentFile) {
             return;
         }
 
-        // Determine SOFA Path
-        // If Custom, get from Settings (persisted per tool? Or generally from settings?)
-        // The PlaybackContext is general. The ToolView saves custom paths to toolSettings.
-        // We probably need to check `Ambix2Bin` settings specifically?
-        // Or assume Playback uses a global setting?
-        // Actually, ToolView updates settings. 
-        // We can access `settings.toolSettings?.['ambix2bin']?.customSofaPath`.
-        // This is coupled, but fine for now.
-        let sofaPath = '';
-        if (state.hrtfProfile === HrtfProfile.Custom) {
-            sofaPath = settings.toolSettings?.['ambix2bin']?.customSofaPath || '';
-        } else {
-            // For presets, we pass the profile string directly?
-            // Backend currently checks `fs.existsSync(sofaPath)`.
-            // If I pass "Generic (Neumann...)", fs.exists will fail.
-            // I need to update backend to handle presets if I want this to work.
-            // OR I assume backend handles it.
-            // Let's pass the profile string as `hrtfProfile` param, and `sofaPath` as empty/null.
-            // Backend doesn't support `hrtfProfile` param logic yet (except logging).
-            // I will update backend later. For now, let's pass it.
+        // Wait for probe to complete (channels > 0)
+        // This prevents requesting the stream with incorrect default channels
+        if (!channels) {
+            console.log('[Playback] Waiting for channels probe...');
+            return;
         }
 
-        // Construct URL
-        const params = new URLSearchParams();
-        params.append('file', state.currentFile);
-        params.append('binaural', state.isHeadphonesOn ? 'true' : 'false');
-        if (sofaPath) params.append('sofaPath', sofaPath);
-        params.append('hrtfProfile', state.hrtfProfile);
+        // Map frontend profile to backend 'profile' enum (ambient, direct, reverberant)
+        let backendProfile = 'ambient';
+        if (hrtfProfile === HrtfProfile.Neumann || hrtfProfile === 'Neumann') backendProfile = 'ambient';
+        if (hrtfProfile === 'Direct') backendProfile = 'direct';
 
-        // Add timestamp to prevent caching if settings change
+        const params = new URLSearchParams();
+        params.append('file', currentFile);
+        params.append('channels', channels.toString());
+        params.append('profile', backendProfile);
+
+        // Add timestamp to prevent caching
         params.append('_t', Date.now().toString());
 
-        const newSrc = `http://127.0.0.1:45455/stream?${params.toString()}`;
+        const newSrc = `http://127.0.0.1:45455/obr-stream?${params.toString()}`;
 
-        // Only reload if valid changes
-        // Optimization: Don't reload if just toggling loop/volume.
-        // But binaural/hrtf toggle REQUIRES reload.
+        // Stream Health / Reconnection Logic
+        const onStalled = () => console.warn('[Audio] Stream stalled');
+        const onWaiting = () => console.log('[Audio] Buffering...');
+        const onPlaying = () => console.log('[Audio] Resumed/Playing');
+        const onStreamError = (_e: Event) => {
+            console.error('[Audio] Stream Error', audio.error);
+            setState(prev => ({ ...prev, isPlaying: false }));
+        };
 
-        // Save current time to restore after reload
-        const ct = audio.currentTime;
-        const wasPlaying = !audio.paused;
+        audio.addEventListener('stalled', onStalled);
+        audio.addEventListener('waiting', onWaiting);
+        audio.addEventListener('playing', onPlaying);
+        audio.addEventListener('error', onStreamError);
 
-        // Ideally check if meaningful params changed. 
-        // For simplicity, we assume this effect runs on dependencies.
-        // But we need to handle Play/Pause separately to avoid reloading on play.
+        // Update Source
+        if (audio.src !== newSrc) {
+            console.log(`[Audio] Switching stream: ${newSrc}`);
+            const wasPlaying = !audio.paused;
+            const currentTime = audio.currentTime;
 
-        // This effect depends on: currentFile, isHeadphonesOn, hrtfProfile.
-        // It does NOT depend on isPlaying, volume, loop.
-
-        if (audio.src !== newSrc) { // Basic check? No, src usually resolves to full URL.
-            // Simple heuristic
-            // If we rely on _t, it will ALWAYS change.
-            // We should store 'lastParams' ref?
-            // Let's rely on React dependency array for now.
-
-            // Check if we are actually loading a new file or changing processing
             audio.src = newSrc;
-            audio.currentTime = ct; // Restore time
+            audio.load();
+            audio.currentTime = currentTime;
+
             if (wasPlaying) {
-                audio.play().catch(e => console.warn("Auto-resume failed", e));
+                audio.play().catch(e => console.error("Resume failed after switch", e));
             }
         }
-    }, [state.currentFile, state.isHeadphonesOn, state.hrtfProfile, settings.toolSettings]);
+
+        return () => {
+            audio.removeEventListener('stalled', onStalled);
+            audio.removeEventListener('waiting', onWaiting);
+            audio.removeEventListener('playing', onPlaying);
+            audio.removeEventListener('error', onStreamError);
+        };
+    }, [state.currentFile, state.hrtfProfile, state.channels, settings.toolSettings]);
+
 
     // 3. Playback Control Effects
     useEffect(() => {
@@ -237,7 +273,7 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         // Only update if changed to avoid resets
         setState(prev => {
             if (prev.currentFile === filePath) return prev;
-            return { ...prev, currentFile: filePath, currentTime: 0, isPlaying: false };
+            return { ...prev, currentFile: filePath, currentTime: 0, isPlaying: false, channels: 0 };
         });
     };
 

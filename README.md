@@ -55,9 +55,7 @@ This suite eliminates those bottlenecks, allowing audio engineers to process, co
 * **Hybrid Native Engine**:
 * **Order 1 (Ch 1-3)**: Full 3-Axis Matrix (Yaw/Pitch/Roll).
 * **Order >1 (Ch 4+)**: Infinite-Order Sectorial Yaw (Optimized).
-
-
-* *Monitoring*: Real-time **Stereo Downmix** preview via internal HTTP streaming server.
+* *Monitoring*: Real-time **Binaural Rendering** (Google OBR) via internal HTTP streaming server.
 
 
 9. **AmbiTrim**: Lossless trimming for high-channel-count files.
@@ -102,7 +100,7 @@ npm run dev
 
 ```
 
-(Binaries for ffmpeg/ffprobe/iamf-enc are expected in `assets/bin/`)
+(Binaries for ffmpeg/ffprobe/iamf-enc/obr_stream are expected in `assets/bin/`)
 
 ### Building for Production
 
@@ -118,6 +116,7 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 * **Backend**: Electron Main Process (`electron/`)
 * **Handlers**: `electron/handlers/` (Modular Handler Pattern)
 * **Bridge**: `electron/preload.ts` (Unified Bridge: `window.electron` and `window.electronAPI`)
+* **Sidecars**: `src/cpp/` (C++ Native Addons/Binaries - Google OBR)
 * **Python Subsystem**: `resources/scripts/` (NumPy/Audio Processing scripts)
 * **Unified UI Pattern**: All tools (except AmbiTrim) use a shared resizable partition system in `src/components/ToolViews.tsx`.
 

@@ -10,6 +10,7 @@ import { spawn } from 'child_process';
 import http from 'http';
 import fs from 'node:fs';
 import { getFfmpegPath, getSofaAssetPath } from './handlers/common';
+import { createObrPipeline } from './handlers/ObrHandler';
 
 
 // const require = createRequire(import.meta.url) // Unused
@@ -74,8 +75,8 @@ app.whenReady().then(() => {
   // BINAURAL STREAMING SERVER (PRP #72)
   // ------------------------------------------------------------------
   const server = http.createServer(async (req, res) => {
-    // PROBE DURATION ENDPOINT
-    if (req.url?.startsWith('/probe-duration')) {
+    // PROBE METADATA ENDPOINT
+    if (req.url?.startsWith('/probe-metadata') || req.url?.startsWith('/probe-duration')) {
       const url = new URL(req.url, `http://${req.headers.host}`);
       const filePath = url.searchParams.get('file');
 
@@ -90,81 +91,149 @@ app.whenReady().then(() => {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
       });
-      res.end(JSON.stringify({ duration: info?.duration || 0 }));
+      res.end(JSON.stringify({
+        duration: info?.duration || 0,
+        channels: info?.channels || 0,
+        sampleRate: info?.sampleRate || 0
+      }));
       return;
     }
 
-    // STREAM ENDPOINT
-    if (!req.url?.startsWith('/stream')) {
+    // STREAM ENDPOINT HANDLING (Restructured for Exclusive Routing)
+    const isLegacyStream = req.url?.startsWith('/stream');
+    const isObrStream = req.url?.startsWith('/obr-stream');
+
+    if (isLegacyStream) {
+      // ... (Legacy /stream logic) ...
+      const url = new URL(req.url!, `http://${req.headers.host}`);
+      const filePath = url.searchParams.get('file');
+      const binaural = url.searchParams.get('binaural') === 'true';
+      let sofaPath = url.searchParams.get('sofaPath');
+      const hrtfProfile = url.searchParams.get('hrtfProfile');
+
+      // Resolve Preset Paths if sofaPath is missing but profile is known
+      if (binaural && !sofaPath && hrtfProfile) {
+        if (hrtfProfile.includes('Neumann')) {
+          sofaPath = getSofaAssetPath('Neumann_KU100_48k.sofa');
+        } else if (hrtfProfile.includes('KEMAR')) {
+          sofaPath = getSofaAssetPath('MIT_KEMAR_Normal.sofa');
+        }
+      }
+
+      if (!filePath || !fs.existsSync(filePath)) {
+        res.writeHead(400);
+        res.end('Invalid File Path');
+        return;
+      }
+
+      console.log(`[Stream] Request: ${path.basename(filePath)}, Binaural: ${binaural}, SOFA: ${path.basename(sofaPath || '')}`);
+
+      // Headers for WebM/Opus Stream
+      res.writeHead(200, {
+        'Content-Type': 'audio/webm',
+        'Transfer-Encoding': 'chunked',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Access-Control-Allow-Origin': '*'
+      });
+
+      // Construct FFmpeg Arguments
+      const ffmpegPath = getFfmpegPath();
+      const args: string[] = [
+        '-re', // Real-time reading
+        '-i', filePath,
+        '-ac', '2', // Stereo Downmix
+        '-f', 'webm',
+        '-c:a', 'libopus',
+        '-b:a', '192k',
+        'pipe:1'
+      ];
+
+      console.log(`[Stream] Spawning FFmpeg...`);
+
+      const ffmpeg = spawn(ffmpegPath, args);
+
+      // Pipe Stdout to Response
+      ffmpeg.stdout.pipe(res);
+
+      // Handle Client Disconnect
+      req.on('close', () => {
+        console.log(`[Stream] Client disconnected. Killing...`);
+        ffmpeg.kill();
+      });
+
+      ffmpeg.on('close', (_code) => {
+        if (!res.writableEnded) res.end();
+      });
+
+      ffmpeg.stderr.on('data', (d) => {
+        console.log(`[FFmpeg]: ${d.toString()}`);
+      });
+      return;
+
+    } else if (isObrStream) {
+      // ... (OBR /obr-stream logic) ...
+      const url = new URL(req.url!, `http://${req.headers.host}`);
+      const filePath = url.searchParams.get('file');
+      const channels = parseInt(url.searchParams.get('channels') || '0', 10);
+      const profile = url.searchParams.get('profile') || 'ambient';
+
+      if (!filePath || !fs.existsSync(filePath) || !channels) {
+        res.writeHead(400);
+        res.end('Invalid Parameters');
+        return;
+      }
+
+      console.log(`[OBR] Request: ${path.basename(filePath)} (${channels}ch, ${profile})`);
+
+      res.writeHead(200, {
+        'Content-Type': 'audio/webm',
+        'Transfer-Encoding': 'chunked',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Access-Control-Allow-Origin': '*'
+      });
+
+      try {
+        const [decoder, obr, encoder] = createObrPipeline(filePath, channels, profile);
+
+        if (!encoder.stdout) {
+          throw new Error("Encoder stdout is null");
+        }
+
+        // Pipe Final Output (Encoder) to Response
+        encoder.stdout.pipe(res);
+
+        // Handle Client Disconnect
+        req.on('close', () => {
+          console.log(`[OBR] Client disconnected. Killing pipeline...`);
+          decoder.kill();
+          obr.kill();
+          encoder.kill();
+        });
+
+        encoder.on('close', () => {
+          if (!res.writableEnded) res.end();
+        });
+
+      } catch (err: any) {
+        console.error(`[OBR] Pipeline Error:`, err);
+        // Too late to writeHead 500 if 200 was sent? 
+        // We should just destroy if headers sent.
+        if (!res.headersSent) {
+          res.writeHead(500);
+          res.end('Pipeline Error');
+        } else {
+          res.destroy();
+        }
+      }
+      return;
+    } else {
+      // 404
       res.writeHead(404);
       res.end('Not Found');
       return;
     }
-
-    const url = new URL(req.url, `http://${req.headers.host}`);
-    const filePath = url.searchParams.get('file');
-    const binaural = url.searchParams.get('binaural') === 'true';
-    let sofaPath = url.searchParams.get('sofaPath');
-    const hrtfProfile = url.searchParams.get('hrtfProfile');
-
-    // Resolve Preset Paths if sofaPath is missing but profile is known
-    if (binaural && !sofaPath && hrtfProfile) {
-      if (hrtfProfile.includes('Neumann')) {
-        sofaPath = getSofaAssetPath('Neumann_KU100_48k.sofa');
-      } else if (hrtfProfile.includes('KEMAR')) {
-        sofaPath = getSofaAssetPath('MIT_KEMAR_Normal.sofa');
-      }
-    }
-
-    if (!filePath || !fs.existsSync(filePath)) {
-      res.writeHead(400);
-      res.end('Invalid File Path');
-      return;
-    }
-
-    console.log(`[Stream] Request: ${path.basename(filePath)}, Binaural: ${binaural}, SOFA: ${path.basename(sofaPath || '')}`);
-
-    // Headers for WebM/Opus Stream
-    res.writeHead(200, {
-      'Content-Type': 'audio/webm',
-      'Transfer-Encoding': 'chunked',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': '*'
-    });
-
-    // Construct FFmpeg Arguments
-    const ffmpegPath = getFfmpegPath();
-    const args: string[] = [
-      '-re', // Real-time reading
-      '-i', filePath,
-      '-ac', '2', // Stereo Downmix
-      '-f', 'webm',
-      '-c:a', 'libopus',
-      '-b:a', '192k',
-      'pipe:1'
-    ];
-
-    console.log(`[Stream] Spawning FFmpeg...`);
-
-    const ffmpeg = spawn(ffmpegPath, args);
-
-    // Pipe Stdout to Response
-    ffmpeg.stdout.pipe(res);
-
-    // Handle Client Disconnect
-    req.on('close', () => {
-      console.log(`[Stream] Client disconnected. Killing...`);
-      ffmpeg.kill();
-    });
-
-    ffmpeg.on('close', (_code) => {
-      if (!res.writableEnded) res.end();
-    });
-
-    ffmpeg.stderr.on('data', (d) => {
-      console.log(`[FFmpeg]: ${d.toString()}`);
-    });
   });
 
   server.listen(45455, '127.0.0.1', () => {

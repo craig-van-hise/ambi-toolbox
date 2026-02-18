@@ -90,4 +90,5 @@ export interface PlayerState {
   volume: number;
   hrtfProfile: string;
   currentFile: string | null;
+  channels: number;
 }

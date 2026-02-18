@@ -71,3 +71,8 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 -   **Backend Demolition (PRP #81)**:
     -   **Removed**: Custom DSP matrix generation (`matrix_utils.ts`) and complex FFmpeg filter graphs (`pan`, `sofalizer`).
     -   **Simplified**: Streaming server now provides a safe, standard **Stereo Downmix** for all channel layouts to ensure stability.
+-   **OBR Integration (PRP #82 - #89)**:
+    -   **New Sidecar**: Integrated `obr_stream` (C++ binary based on Google OBR) for real-time binaural rendering.
+    -   **Pipeline**: Implemented robust 3-stage pipeline (`Decoder` -> `OBR` -> `Encoder`) in `ObrHandler.ts`.
+    -   **Stability**: Fixed deadlocks via `stdio` management and strict process cleanup.
+    -   **Integration**: Wired `PlaybackContext` to use dynamic metadata probing for correct stream configuration.
