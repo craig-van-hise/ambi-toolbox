@@ -24,7 +24,8 @@ export function getObrStreamPath(): string {
 export function createObrPipeline(
   inputPath: string,
   channels: number,
-  profile: string
+  profile: string,
+  start: number = 0
 ): ChildProcess[] {
   console.log('[ObrHandler] Entered createObrPipeline');
 
@@ -44,7 +45,7 @@ export function createObrPipeline(
   // 1. Decode
   // Input: File -> Output: stdout (f32le)
   const decoder = spawn(ffmpegPath, [
-    '-ss', '0',
+    '-ss', start.toString(),
     '-re',
     '-i', inputPath,
     '-f', 'f32le',

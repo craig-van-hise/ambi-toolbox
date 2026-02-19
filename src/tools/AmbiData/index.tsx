@@ -38,7 +38,6 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
     const {
         state: playerState,
         setCurrentFile,
-        play,
         togglePlayPause,
         stop,
         next,
@@ -344,10 +343,9 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                                     files={files}
                                     selectedId={selectedFileId}
                                     onSelect={setSelectedFileId}
-                                    onPlay={(id) => {
+                                    onPlay={(id, shouldPlay) => {
                                         setSelectedFileId(id);
-                                        setCurrentFile(id);
-                                        play();
+                                        setCurrentFile(id, shouldPlay ?? true);
                                     }}
                                     onClear={() => {
                                         setFiles([]);

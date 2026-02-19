@@ -20,7 +20,7 @@ This suite eliminates those bottlenecks, allowing audio engineers to process, co
 * **Asset Downscaling:** Use **AmbiOrder** to reduce a 3rd Order master file into 1st Order for mobile game engines (Unity/Unreal) or hardware with limited channel counts.
 * **Orientation Correction:** Fix recordings made with a misaligned or upside-down microphone by applying 3-axis rotation (Yaw/Pitch/Roll) in real-time with **AmbiRotate** before committing to a new file.
 * **Lossless Trimming:** Use **AmbiTrim** to cut unwanted sections from massive multi-channel master files without re-encoding, preserving the original audio data bit-for-bit.
-* **Unified Transport Flow:** Seamlessly switch between tracks with **"Double-Click to Play"** across all tools, backed by a surgical transport reset logic that ensures absolute zero-accurate starts.
+* **Unified Transport Flow:** Seamlessly switch between tracks with **"Double-Click to Play"** and **Previous/Next** navigation. Features a surgical transport reset logic and **Scrubber Auto-Resume** to ensure a fluid monitoring experience.
 
 
 ---

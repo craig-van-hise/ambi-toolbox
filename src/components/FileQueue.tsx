@@ -7,7 +7,7 @@ interface FileQueueProps {
     files: any[]; // Using any[] to accept both MediaFile and the ad-hoc objects in ToolViews until types are unified
     selectedId: string;
     onSelect: (id: string) => void;
-    onPlay?: (id: string) => void;
+    onPlay?: (id: string, shouldPlay?: boolean) => void;
     onClear: () => void;
     playingFileId?: string | null;
     isPlaying?: boolean;
@@ -84,7 +84,7 @@ export const FileQueue: React.FC<FileQueueProps> = ({
                             onClick={() => onSelect(id)}
                             onDoubleClick={(e) => {
                                 e.stopPropagation();
-                                if (onPlay) onPlay(id);
+                                if (onPlay) onPlay(id, true);
                             }}
                             className={`
                                 flex items-center justify-between text-xs py-1.5 px-2 rounded cursor-pointer transition-colors select-none

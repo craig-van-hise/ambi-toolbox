@@ -555,10 +555,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
   const {
     state: playerState,
     togglePlayPause,
-    play,
     stop,
-    next,
-    prev,
     seek,
     setVolume,
     toggleLoop,
@@ -566,6 +563,27 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     setHrtfProfile,
     setCurrentFile
   } = usePlayback();
+
+  // Navigation Logic (moved from Context to break circularity)
+  const currentIndex = globalFiles.findIndex(f => f.id === selectedFileId);
+  const canNext = currentIndex >= 0 && currentIndex < globalFiles.length - 1;
+  const canPrev = currentIndex > 0;
+
+  const handleNext = () => {
+    if (canNext) {
+      const nextId = globalFiles[currentIndex + 1].id;
+      setSelectedFileId(nextId);
+      setCurrentFile(nextId, true);
+    }
+  };
+
+  const handlePrev = () => {
+    if (canPrev) {
+      const prevId = globalFiles[currentIndex - 1].id;
+      setSelectedFileId(prevId);
+      setCurrentFile(prevId, true);
+    }
+  };
   // Map global MediaFile[] back to File[] for compatibility with existing components
   // We create synthetic File objects that have the properties we need
   const files = React.useMemo(() => globalFiles.map(mf => {
@@ -718,6 +736,13 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     }
   }, [activeFileIndex, files, setCurrentFile]);
 
+  // Auto-selection logic: select first file if none selected
+  useEffect(() => {
+    if (!selectedFileId && globalFiles.length > 0) {
+      setSelectedFileId(globalFiles[0].id);
+    }
+  }, [globalFiles.length, selectedFileId, setSelectedFileId]);
+
   // PRO FEATURE: Collapsible Input Section
   const [isInputExpanded, setInputExpanded] = useState(true);
 
@@ -768,6 +793,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
 
   const handleClearFiles = () => {
     setGlobalFiles([]);
+    setSelectedFileId('');
     setStatusMsg(null);
     setActiveFileIndex(0);
   };
@@ -981,15 +1007,11 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
                         const idx = processedFiles.findIndex(f => f.path === id);
                         if (idx >= 0) handleSelectFile(idx);
                       }}
-                      onPlay={(id) => {
+                      onPlay={(id, shouldPlay) => {
                         const idx = processedFiles.findIndex(f => f.path === id);
                         if (idx >= 0) {
                           handleSelectFile(idx);
-                          setCurrentFile(id);
-                          // We need to access the 'play' function from usePlayback but we only destructured state/actions
-                          // Let's ensure play is destructured or accessible.
-                          // Since we are inside ToolView which uses usePlayback, we can just call it.
-                          play();
+                          setCurrentFile(id, shouldPlay ?? true);
                         }
                       }}
                       onClear={handleClearFiles}
@@ -1005,13 +1027,15 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
                     state={playerState}
                     onPlayPause={togglePlayPause}
                     onStop={stop}
-                    onNext={next}
-                    onPrev={prev}
+                    onNext={handleNext}
+                    onPrev={handlePrev}
                     onSeek={seek}
                     onVolumeChange={setVolume}
                     onToggleLoop={toggleLoop}
                     onToggleHeadphones={toggleHeadphones}
                     onSetHrtfProfile={setHrtfProfile}
+                    canNext={canNext}
+                    canPrev={canPrev}
                   />
                 )}
               </div>

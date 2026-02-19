@@ -91,4 +91,6 @@ export interface PlayerState {
   hrtfProfile: string;
   currentFile: string | null;
   channels: number;
+  requestedSeekTime?: number;
+  streamOffset?: number;
 }

@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useRef, useEffect } from 'react';
 import { PlayerState, HrtfProfile } from '../types';
-import { useSettings } from './SettingsContext';
 
 interface PlaybackContextType {
     state: PlayerState;
@@ -15,13 +14,12 @@ interface PlaybackContextType {
     toggleLoop: () => void;
     toggleHeadphones: () => void;
     setHrtfProfile: (profile: string) => void;
-    setCurrentFile: (filePath: string | null) => void;
+    setCurrentFile: (filePath: string | null, shouldPlay?: boolean) => void;
 }
 
 const PlaybackContext = createContext<PlaybackContextType | undefined>(undefined);
 
 export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const { settings } = useSettings();
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const [state, setState] = useState<PlayerState>({
@@ -33,8 +31,12 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         volume: 0.8,
         hrtfProfile: HrtfProfile.Neumann,
         currentFile: null,
-        channels: 0
+        channels: 0,
+        streamOffset: 0
     });
+
+    const seekTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const playbackIntentRef = useRef(false);
 
     // Solve Stale Closure for Event Listeners
     const stateRef = useRef(state);
@@ -51,7 +53,9 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
 
         // Event Listeners
         const onTimeUpdate = () => {
-            setState(prev => ({ ...prev, currentTime: audio.currentTime }));
+            if (seekTimerRef.current) return; // PRP #93: Don't let old stream update UI while seeking
+            const virtualTime = (stateRef.current.streamOffset || 0) + audio.currentTime;
+            setState(prev => ({ ...prev, currentTime: virtualTime }));
         };
         const onLoadedMetadata = async () => {
             // Duration is now handled by the probe effect mostly, 
@@ -77,8 +81,21 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
                 return prev;
             });
         };
-        const onPlay = () => setState(prev => ({ ...prev, isPlaying: true }));
-        const onPause = () => setState(prev => ({ ...prev, isPlaying: false }));
+        const onPlay = () => {
+            if (!stateRef.current.isPlaying) {
+                console.log('[Audio] onPlay event detected - Syncing React state');
+                setState(prev => ({ ...prev, isPlaying: true }));
+            }
+        };
+        const onPause = () => {
+            if (stateRef.current.isPlaying) {
+                console.log('[Audio] onPause event detected - Syncing React state');
+                setState(prev => ({ ...prev, isPlaying: false }));
+            }
+        };
+        const onCanPlay = () => {
+            // No reset needed anymore
+        };
         const onError = (_e: Event) => {
             console.error("Audio Playback Error:", audio.error);
             setState(prev => ({ ...prev, isPlaying: false }));
@@ -89,6 +106,7 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         audio.addEventListener('ended', onEnded);
         audio.addEventListener('play', onPlay);
         audio.addEventListener('pause', onPause);
+        audio.addEventListener('canplay', onCanPlay);
         audio.addEventListener('error', onError);
 
         return () => {
@@ -99,32 +117,30 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
             audio.removeEventListener('ended', onEnded);
             audio.removeEventListener('play', onPlay);
             audio.removeEventListener('pause', onPause);
+            audio.removeEventListener('canplay', onCanPlay);
             audio.removeEventListener('error', onError);
             audioRef.current = null;
         };
     }, []);
 
 
-    // 2. Probe Metadata (Decoupled from Audio Element)
+    // 2. Step 2: The Probe (Decoupled from Audio Element)
+    // Triggered when currentFile changes
     useEffect(() => {
         const currentFile = state.currentFile;
-        // Reset channels/duration when file changes
-        // Note: setCurrentFile already resets them, but we ensure consistency here if needed.
-
         if (!currentFile) return;
 
         let isMounted = true;
 
         const probe = async () => {
-            console.log(`[Playback] Probing: ${currentFile}`);
+            console.log(`[Playback] [Step 2] Probing: ${currentFile}`);
             try {
-                // TODO: Port to configurable backend URL if needed
                 const response = await fetch(`http://127.0.0.1:45455/probe-metadata?file=${encodeURIComponent(currentFile)}`);
                 if (!response.ok) throw new Error("Probe failed");
                 const data = await response.json();
 
                 if (isMounted) {
-                    console.log(`[Playback] Probe Success: ${data.channels}ch`);
+                    console.log(`[Playback] [Step 2] Probe Success: ${data.channels}ch`);
                     setState(prev => ({
                         ...prev,
                         duration: (data.duration && !isNaN(data.duration)) ? data.duration : prev.duration,
@@ -132,111 +148,74 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
                     }));
                 }
             } catch (error) {
-                console.error("Failed to probe metadata:", error);
-                // Fallback? If probe fails, maybe default to 2 or 16? 
-                // Leaving as 0 might block playback if we enforce >0 checks.
-                // Let's set a safe fallback if we must, or let user handle it.
-                // For now, we log error. State remains 0 (or whatever it was).
-                // If we want to force playback even if probe fails, we could set channels=4 here.
-                if (isMounted) {
-                    setState(prev => ({ ...prev, channels: 4 })); // Fallback
-                }
+                console.error("[Playback] [Step 2] Probe failed:", error);
             }
         };
 
         probe();
-
         return () => { isMounted = false; };
     }, [state.currentFile]);
 
 
-    // 3. Stream URL Construction
+    // 3. Step 3: The Commit (Construction & Playback)
+    // Triggered when channels or seek update, but ONLY if we have a file.
     useEffect(() => {
         const audio = audioRef.current;
-        if (!audio) return;
+        if (!audio || !state.currentFile || state.channels === 0) return;
 
-        const { currentFile, hrtfProfile, channels } = state;
-
-        if (!currentFile) {
-            return;
-        }
-
-        // Wait for probe to complete (channels > 0)
-        // This prevents requesting the stream with incorrect default channels
-        if (!channels) {
-            console.log('[Playback] Waiting for channels probe...');
-            return;
-        }
-
-        // Map frontend profile to backend 'profile' enum (ambient, direct, reverberant)
-        let backendProfile = 'ambient';
-        if (hrtfProfile === HrtfProfile.Neumann || hrtfProfile === 'Neumann') backendProfile = 'ambient';
-        if (hrtfProfile === 'Direct') backendProfile = 'direct';
+        const { currentFile, channels, requestedSeekTime, isHeadphonesOn } = state;
+        const start = requestedSeekTime !== undefined ? requestedSeekTime : 0;
 
         const params = new URLSearchParams();
-        params.append('file', currentFile);
+        if (currentFile) params.append('file', currentFile);
         params.append('channels', channels.toString());
-        params.append('profile', backendProfile);
-
-        // Add timestamp to prevent caching
+        params.append('profile', 'ambient');
+        params.append('start', start.toString());
+        if (!isHeadphonesOn) params.append('render', 'stereo'); // Ensure channels handled in OBR
         params.append('_t', Date.now().toString());
 
         const newSrc = `http://127.0.0.1:45455/obr-stream?${params.toString()}`;
 
-        // Stream Health / Reconnection Logic
-        const onStalled = () => console.warn('[Audio] Stream stalled');
-        const onWaiting = () => console.log('[Audio] Buffering...');
-        const onPlaying = () => console.log('[Audio] Resumed/Playing');
-        const onStreamError = (_e: Event) => {
-            console.error('[Audio] Stream Error', audio.error);
-            setState(prev => ({ ...prev, isPlaying: false }));
-        };
-
-        audio.addEventListener('stalled', onStalled);
-        audio.addEventListener('waiting', onWaiting);
-        audio.addEventListener('playing', onPlaying);
-        audio.addEventListener('error', onStreamError);
-
-        // Update Source
         if (audio.src !== newSrc) {
-            console.log(`[Audio] Switching stream: ${newSrc}`);
-            const wasPlaying = stateRef.current.isPlaying; // Use ref for latest state
+            console.log(`[Playback] [Step 3] Committing Stream: ${newSrc}`);
 
-            // --- SOURCE PURGE PATTERN (PRP #91) ---
-            audio.pause();
-            audio.currentTime = 0; // Reset BEFORE changing src
             audio.src = newSrc;
-            audio.load(); // Force re-initialization of demuxer
+            audio.load();
 
-            if (wasPlaying) {
-                audio.play().catch(e => {
+            // Apply intent
+            if (playbackIntentRef.current) {
+                console.log('[Playback] [Step 3] Playback Intent detected - executing play()');
+                audio.play().catch((e: any) => {
                     if (e.name !== 'AbortError') {
-                        console.warn("[Audio] Playback prevented during switch:", e);
+                        console.error("[Playback] [Step 3] Play blocked:", e);
                     }
                 });
+                // ONLY clear intentional playback. Don't let passive updates clear it.
+                playbackIntentRef.current = false;
             }
+
+            // Sync streamOffset state
+            setState(prev => ({ ...prev, streamOffset: start }));
         }
 
-        return () => {
-            audio.removeEventListener('stalled', onStalled);
-            audio.removeEventListener('waiting', onWaiting);
-            audio.removeEventListener('playing', onPlaying);
-            audio.removeEventListener('error', onStreamError);
-        };
-    }, [state.currentFile, state.hrtfProfile, state.channels, settings.toolSettings]);
+    }, [state.currentFile, state.channels, state.requestedSeekTime, state.isHeadphonesOn]);
 
 
-    // 3. Playback Control Effects
+    // 4. Command Dispatcher Hooks
+    // Watch isPlaying state and trigger native methods only if necessary
     useEffect(() => {
         const audio = audioRef.current;
-        if (!audio) return;
+        if (!audio || !audio.src) return;
 
         if (state.isPlaying && audio.paused) {
+            console.log('[Playback] Dispatcher: Play triggered');
             audio.play().catch(e => {
-                console.warn("Play failed", e);
-                setState(prev => ({ ...prev, isPlaying: false }));
+                if (e.name !== 'AbortError') {
+                    console.error("[Playback] Dispatcher: Play failed:", e);
+                }
             });
         } else if (!state.isPlaying && !audio.paused) {
+            console.log('[Playback] Dispatcher: Pause triggered');
             audio.pause();
         }
     }, [state.isPlaying]);
@@ -256,34 +235,96 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
 
     // Handlers
     const togglePlayPause = () => setState(prev => ({ ...prev, isPlaying: !prev.isPlaying }));
+
     const stop = () => {
-        setState(prev => ({ ...prev, isPlaying: false, currentTime: 0 }));
+        setState(prev => ({ ...prev, isPlaying: false, currentTime: 0, streamOffset: 0, requestedSeekTime: undefined }));
         if (audioRef.current) {
             audioRef.current.pause();
             audioRef.current.currentTime = 0;
+            // Force reset src to stop backend pipeline
+            const oldSrc = audioRef.current.src;
+            audioRef.current.src = '';
+            audioRef.current.src = oldSrc;
         }
     };
+
     const next = () => console.log('Next track (stub)');
     const prev = () => console.log('Previous track (stub)');
 
     const seek = (time: number) => {
-        if (audioRef.current) {
-            audioRef.current.currentTime = time;
-            setState(prev => ({ ...prev, currentTime: time }));
-        }
-    };
+        const audio = audioRef.current;
+        if (!audio) return;
 
+        // 1. UI Optimism: Update playhead immediately
+        setState(prev => ({ ...prev, currentTime: time }));
+
+        // 2. Capture and Pause audio element while dragging/seeking to prevent ghost audio
+        const wasPlaying = !audio.paused;
+        console.log(`Seek initiated. Was playing: ${wasPlaying}`);
+
+        if (wasPlaying) {
+            playbackIntentRef.current = true;
+            audio.pause();
+        }
+
+        // 3. Debounce the actual backend fetch (PRP #93)
+        if (seekTimerRef.current) {
+            clearTimeout(seekTimerRef.current);
+        }
+
+        seekTimerRef.current = setTimeout(() => {
+            setState(prev => ({ ...prev, requestedSeekTime: time }));
+            seekTimerRef.current = null;
+        }, 400); // 400ms buffer to prevent "Scrubber DDOS"
+    };
     const setVolume = (vol: number) => setState(prev => ({ ...prev, volume: vol }));
     const toggleLoop = () => setState(prev => ({ ...prev, isLooping: !prev.isLooping }));
     const toggleHeadphones = () => setState(prev => ({ ...prev, isHeadphonesOn: !prev.isHeadphonesOn }));
     const setHrtfProfile = (profile: string) => setState(prev => ({ ...prev, hrtfProfile: profile }));
-    const setCurrentFile = (filePath: string | null) => {
+    const setCurrentFile = (filePath: string | null, shouldPlay = false) => {
+        console.log(`[Playback] [Step 1] Intent: ${filePath}, shouldPlay: ${shouldPlay}`);
+
+        // PRP #100: Only update the ref if the intent is TRUE.
+        // This prevents passive selection updates (which pass false) 
+        // from clearing a previously set double-click intent.
+        if (shouldPlay) {
+            playbackIntentRef.current = true;
+        }
+
         // Only update if changed to avoid resets
         setState(prev => {
-            if (prev.currentFile === filePath) return prev;
-            return { ...prev, currentFile: filePath, currentTime: 0, isPlaying: false, channels: 0 };
+            if (prev.currentFile === filePath) {
+                // PRP #99: If already on this file and we WANT to play, 
+                // but we are currently paused, force isPlaying: true 
+                // to trigger the dispatcher hook.
+                if (shouldPlay && !prev.isPlaying && prev.channels > 0) {
+                    console.log('[Playback] [Step 1] Path identical but play intent received. Forcing play.');
+                    return { ...prev, isPlaying: true };
+                }
+                return prev;
+            }
+
+            if (audioRef.current) {
+                const audio = audioRef.current;
+                audio.pause();
+                audio.currentTime = 0;
+            }
+
+            // Capture intent in ref (Step 1)
+            playbackIntentRef.current = shouldPlay;
+
+            return {
+                ...prev,
+                currentFile: filePath,
+                currentTime: 0,
+                isPlaying: false, // UI remains paused during probe
+                channels: 0, // Reset to trigger Step 2 -> Step 3 cascade
+                requestedSeekTime: undefined,
+                streamOffset: 0
+            };
         });
     };
+
 
     return (
         <PlaybackContext.Provider value={{

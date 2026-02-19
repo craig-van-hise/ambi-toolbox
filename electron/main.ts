@@ -177,6 +177,7 @@ app.whenReady().then(() => {
             const filePath = url.searchParams.get('file');
             const channels = parseInt(url.searchParams.get('channels') || '0', 10);
             const profile = url.searchParams.get('profile') || 'ambient';
+            const start = parseFloat(url.searchParams.get('start') || '0');
 
             if (!filePath || !fs.existsSync(filePath) || !channels) {
                 res.writeHead(400);
@@ -184,7 +185,7 @@ app.whenReady().then(() => {
                 return;
             }
 
-            console.log(`[OBR] Request: ${path.basename(filePath)} (${channels}ch, ${profile})`);
+            console.log(`[OBR] Request: ${path.basename(filePath)} (${channels}ch, ${profile}, start: ${start}s)`);
 
             res.writeHead(200, {
                 'Content-Type': 'audio/webm',
@@ -195,7 +196,7 @@ app.whenReady().then(() => {
             });
 
             try {
-                const [decoder, obr, encoder] = createObrPipeline(filePath, channels, profile);
+                const [decoder, obr, encoder] = createObrPipeline(filePath, channels, profile, start);
 
                 if (!encoder.stdout) {
                     throw new Error("Encoder stdout is null");

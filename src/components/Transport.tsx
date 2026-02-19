@@ -15,6 +15,8 @@ interface TransportProps {
     onToggleLoop: () => void;
     onToggleHeadphones: () => void;
     onSetHrtfProfile: (profile: string) => void;
+    canNext: boolean;
+    canPrev: boolean;
 }
 
 // -- Custom Rounded Icons --
@@ -85,7 +87,9 @@ export const Transport: React.FC<TransportProps> = ({
     onVolumeChange,
     onToggleLoop,
     onToggleHeadphones,
-    onSetHrtfProfile
+    onSetHrtfProfile,
+    canNext,
+    canPrev
 }) => {
     const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
     const progressPercent = state.duration > 0 ? (state.currentTime / state.duration) * 100 : 0;
@@ -104,15 +108,19 @@ export const Transport: React.FC<TransportProps> = ({
                     <div className="absolute w-full h-1.5 bg-[#27272a] rounded-lg overflow-hidden group-hover:bg-[#323235] transition-colors">
                         {/* Progress Fill - Rounded */}
                         <div
-                            className="h-full bg-brand-green rounded-lg"
+                            className="h-full bg-blue-400 rounded-lg"
                             style={{ width: `${progressPercent}%` }}
                         />
                     </div>
 
-                    {/* Handle - Rounded Rect */}
+                    {/* Handle - Circle (Always Visible) */}
                     <div
-                        className="absolute top-1/2 -translate-y-1/2 w-3 h-4 bg-white rounded-md shadow-md scale-0 group-hover:scale-100 transition-transform duration-100 pointer-events-none z-20"
-                        style={{ left: `${progressPercent}%`, transform: 'translate(-50%, -50%)' }}
+                        className="absolute w-3 h-3 bg-blue-400 rounded-full shadow-md z-20 pointer-events-none"
+                        style={{
+                            left: `${progressPercent}%`,
+                            top: '50%',
+                            transform: 'translate(-50%, -50%)'
+                        }}
                     />
 
                     {/* Input */}
@@ -134,7 +142,11 @@ export const Transport: React.FC<TransportProps> = ({
                 <div className="flex items-center gap-2">
                     <button
                         onClick={onPrev}
-                        className="w-9 h-9 flex items-center justify-center bg-[#27272a] hover:bg-[#3f3f46] text-gray-400 hover:text-white rounded-md transition-all active:scale-95"
+                        disabled={!canPrev}
+                        className={`w-9 h-9 flex items-center justify-center rounded-md transition-all active:scale-95 ${!canPrev
+                            ? 'bg-[#1E1E1E] text-gray-700 cursor-not-allowed'
+                            : 'bg-[#27272a] hover:bg-[#3f3f46] text-gray-400 hover:text-white'
+                            }`}
                         title="Previous"
                     >
                         <div className="w-5 h-5">
@@ -167,7 +179,11 @@ export const Transport: React.FC<TransportProps> = ({
 
                     <button
                         onClick={onNext}
-                        className="w-9 h-9 flex items-center justify-center bg-[#27272a] hover:bg-[#3f3f46] text-gray-400 hover:text-white rounded-md transition-all active:scale-95"
+                        disabled={!canNext}
+                        className={`w-9 h-9 flex items-center justify-center rounded-md transition-all active:scale-95 ${!canNext
+                            ? 'bg-[#1E1E1E] text-gray-700 cursor-not-allowed'
+                            : 'bg-[#27272a] hover:bg-[#3f3f46] text-gray-400 hover:text-white'
+                            }`}
                         title="Next"
                     >
                         <div className="w-5 h-5">
@@ -219,7 +235,7 @@ export const Transport: React.FC<TransportProps> = ({
                             step={0.01}
                             value={state.volume}
                             onChange={(e) => onVolumeChange(Number(e.target.value))}
-                            className="w-16 accent-brand-green h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                            className="w-16 accent-blue-400 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
                         />
                     </div>
                 </div>

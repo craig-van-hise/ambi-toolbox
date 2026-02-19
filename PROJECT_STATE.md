@@ -83,3 +83,9 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
     -   **EPIPE Hardening**: Resolved fatal process crashes by adding robust error handlers to inter-process pipes and ensuring explicit unpiping during teardown.
     -   **Surgical Reset**: Eliminated track-switching lag and the "starting mid-file" bug by forcing FFmpeg seek (`-ss 0`) and implementing the "Source Purge" lifecycle in `PlaybackContext`.
     -   **TDD Verification**: Added `scripts/test-server.ts` and `scripts/test-stream-start.ts` for automated pipeline verification.
+- **Linear State Machine & Scrubber Sync (PRP #98 - #102)**:
+    - **3-Step Pipeline**: Refactored playback into a linear state machine (`Step 1: Intent` -> `Step 2: Probe` -> `Step 3: Commit`). This decoupling prevents race conditions and ensures metadata is valid before the stream starts.
+    - **Intent Persistence**: Introduced `playbackIntentRef` to preserve user play intent across asynchronous probing phases, ensuring reliable auto-play after track swaps.
+    - **Scrubber Auto-Resume**: The `seek` handler now captures `wasPlaying` state and automatically resumes playback once the new stream offset is loaded.
+    - **Queue Navigation**: Implemented Previous/Next track navigation.
+    - **Circular Dependency Resolution**: De-coupled `PlaybackContext` from `ToolStateContext` by moving queue-aware logic to `ToolViews.tsx`. This resolved a critical module execution error ("black screen") and improved architectural cleanliness.
