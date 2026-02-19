@@ -23,7 +23,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 | **Ambix2CAF** | 🟢 Ready | `electron/handlers/Ambix2CAF.ts` | Supports Discrete & HOA Layouts. |
 | **Ambix2Ogg** | 🟢 Ready | `electron/handlers/Ambix2Ogg.ts` | Smart Transcode/Remux. Permission Checks. |
 | **AmbiTrim** | 🟢 Ready | `electron/handlers/trim.ts` | Proxy Workflow (Mid-Side), Lossless Cut (`-c copy`), WaveSurfer Regions. |
-| **AmbiData** | � Ready | `electron/handlers/AmbiData.ts` | **Enhanced**: Now uses unified `FileQueue` and precise `ObrHandler` streaming. |
+| **AmbiData** | 🟡 In Dev | `electron/handlers/AmbiData.ts` | **Active Development**: Requires extensive work on progressive reporting and UI stability. |
 | **Persistence** | 🟢 Ready | `src/contexts/SettingsContext.tsx` | Saves active tool, bitrates, layouts, and rotation values. |
 | **Global Queue** | 🟢 Ready | `src/components/FileQueue.tsx` | **Unified**: Single shared component for all tools with folding/play indicators. |
 
