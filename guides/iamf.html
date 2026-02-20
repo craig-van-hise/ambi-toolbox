@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        :root {
+            --iamf-primary: #FF8C00;
+            --bg-dark: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-sub: #b0b0b0;
+            --badge-struct: #FFD700;
+            --badge-complex: #FF1493;
+            --badge-primitive: #00CED1;
+            --link-accent: #4da6ff;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            padding: 40px;
+        }
+
+        details.container-card {
+            width: 600px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            margin-bottom: 20px;
+        }
+
+        summary.card-header {
+            background: var(--iamf-primary);
+            padding: 20px 24px;
+            color: #000;
+            cursor: pointer;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            list-style: none;
+        }
+
+        summary.card-header::-webkit-details-marker {
+            display: none;
+        }
+
+        summary.card-header::before {
+            content: "";
+            display: inline-block;
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 12px solid #000;
+            margin-right: 18px;
+            transition: transform 0.2s;
+        }
+
+        details[open].container-card>summary.card-header::before {
+            transform: rotate(90deg);
+        }
+
+        .header-text-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-main-title {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 4px;
+            letter-spacing: -0.05em;
+        }
+
+        .header-sub-title {
+            font-size: 0.9rem;
+            font-weight: 400;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Deep Dive Link Styling */
+        .spec-link {
+            color: var(--link-accent);
+            text-decoration: none;
+            margin-left: 6px;
+            font-size: 0.85rem;
+            transition: opacity 0.2s;
+        }
+
+        .spec-link:hover {
+            opacity: 0.7;
+        }
+
+        .content-area {
+            padding: 20px;
+            border-top: 2px solid #000;
+        }
+
+        details.nested-node {
+            margin: 8px 0;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.02);
+            transition: background 0.2s;
+        }
+
+        details.nested-node:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        summary.nested-summary {
+            cursor: pointer;
+            padding: 10px 14px;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        summary.nested-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary.nested-summary::before {
+            content: "";
+            display: inline-block;
+            width: 0;
+            height: 0;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 8px solid var(--iamf-primary);
+            margin-right: 12px;
+            transition: transform 0.2s;
+        }
+
+        details[open].nested-node>summary.nested-summary::before {
+            transform: rotate(90deg);
+        }
+
+        .node-content {
+            padding: 0 16px 14px 32px;
+            border-left: 1px solid #444;
+            margin-left: 18px;
+        }
+
+        .badge {
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-left: auto;
+            text-transform: uppercase;
+            font-weight: 900;
+            color: #000;
+        }
+
+        .b-struct {
+            background: var(--badge-struct);
+        }
+
+        .b-complex {
+            background: var(--badge-complex);
+        }
+
+        .b-primitive {
+            background: var(--badge-primitive);
+        }
+
+        .description {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            line-height: 1.4;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <details class="container-card">
+        <summary class="card-header">
+            <div class="header-text-group">
+                <span class="header-main-title">.iamf</span>
+                <span class="header-sub-title">Immersive Audio Model & Formats <a
+                        href="https://aomedia.org/specifications/iamf/" target="_blank"
+                        title="View Official AOMedia IAMF Specification" class="spec-link">🔗</a></span>
+            </div>
+        </summary>
+
+        <div class="content-area">
+
+            <details class="nested-node">
+                <summary class="nested-summary">OBU_IA_Sequence_Header <span class="badge b-struct">OBU Type 31</span>
+                </summary>
+                <div class="node-content">
+                    <div class="description">The global configuration for the entire IAMF stream, defining profiles and
+                        versioning[cite: 318]. <a href="https://av2.aomedia.org/v13-public/index.html" target="_blank"
+                            title="View AV2 Bitstream & Decoding Process Specification" class="spec-link">🔗</a></div>
+
+                    <details class="nested-node">
+                        <summary class="nested-summary">primary_profile <span class="badge b-primitive">Value</span>
+                        </summary>
+                        <div class="node-content">
+                            <div class="description">Dictates the complexity tier of the stream (e.g., Simple, Base, or
+                                Base-Enhanced)[cite: 340, 341, 342].</div>
+                        </div>
+                    </details>
+                </div>
+            </details>
+
+            <details class="nested-node">
+                <summary class="nested-summary">OBU_IA_Codec_Config <span class="badge b-struct">OBU Type 0</span>
+                </summary>
+                <div class="node-content">
+                    <div class="description">Defines the specific codec initialization data. Essential for setting up
+                        the audio decoder[cite: 317, 351]. <a href="https://aomediacodec.github.io/iamf/"
+                            target="_blank" title="View Codec Config Specifications" class="spec-link">🔗</a></div>
+
+                    <details class="nested-node">
+                        <summary class="nested-summary">codec_id <span class="badge b-primitive">4 Bytes</span>
+                        </summary>
+                        <div class="node-content">
+                            <div class="description">A FourCC code identifying the format, such as Opus, mp4a, fLaC, or
+                                ipcm[cite: 353, 355, 356, 357, 358].</div>
+                        </div>
+                    </details>
+
+                    <details class="nested-node">
+                        <summary class="nested-summary">audio_roll_distance <span class="badge b-primitive">Value</span>
+                        </summary>
+                        <div class="node-content">
+                            <div class="description">Critical for random access; specifies how many samples prior to the
+                                target timestamp must be decoded to prime the decoder's internal state[cite: 362, 363].
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </details>
+
+            <details class="nested-node">
+                <summary class="nested-summary">OBU_IA_Audio_Element <span class="badge b-struct">OBU Type 1</span>
+                </summary>
+                <div class="node-content">
+                    <div class="description">Describes the structure of an audio object, channel bed, or Ambisonics
+                        scene, defining how substreams are combined[cite: 317, 367].</div>
+
+                    <details class="nested-node">
+                        <summary class="nested-summary">audio_element_type <span class="badge b-primitive">Value</span>
+                        </summary>
+                        <div class="node-content">
+                            <div class="description">Fundamentally changes how the decoder interprets the subsequent
+                                data (0=Channel Based, 1=Scene Based, 2=Object Based)[cite: 369, 370, 371].</div>
+                        </div>
+                    </details>
+
+                    <details class="nested-node">
+                        <summary class="nested-summary">ScalableChannelLayoutConfig <span
+                                class="badge b-complex">Struct</span></summary>
+                        <div class="node-content">
+                            <div class="description">Allows a decoder to download/decode only the channels it needs.
+                                Triggered by Type 0[cite: 370, 373, 374].</div>
+                            <div class="description" style="margin-top:8px;">Includes <strong>num_layers</strong>
+                                (hierarchy depth) and <strong>loudspeaker_layout</strong> (channel config)[cite: 376,
+                                377].</div>
+
+                            <details class="nested-node">
+                                <summary class="nested-summary">expanded_loudspeaker_layout <span
+                                        class="badge b-primitive">8-Bit</span></summary>
+                                <div class="node-content">
+                                    <div class="description">Parsed when layout is set to 15. Supports ultra-immersive
+                                        setups like 9.1.6ch or 10.2.9.3ch[cite: 384, 385, 386]. <a
+                                            href="https://www.svconline.com/proav-today/samsung-google-iamf-spatial-audio"
+                                            target="_blank" title="Read about Eclipsa Audio expanded arrays"
+                                            class="spec-link">🔗</a></div>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+                </div>
+            </details>
+
+            <details class="nested-node">
+                <summary class="nested-summary">OBU_IA_Mix_Presentation <span class="badge b-struct">OBU Type 2</span>
+                </summary>
+                <div class="node-content">
+                    <div class="description">Contains the rendering and mixing rules (loudness, gain, layout targeting)
+                        for the final output[cite: 317, 398].</div>
+
+                    <details class="nested-node">
+                        <summary class="nested-summary">Loudness Info (ITU-R BS.1770-4) <span
+                                class="badge b-complex">Struct</span></summary>
+                        <div class="node-content">
+                            <div class="description">Mandatory loudness compliance data. Carries
+                                <strong>integrated_loudness</strong> and maximum <strong>true_peak</strong> (dBTP)[cite:
+                                411, 412, 418, 420]. <a
+                                    href="https://www.gaudiolab.com/blog/213_from_lkfs_to_true_peak_the_complete_guide_to_loudness"
+                                    target="_blank" title="View Guide to Loudness and True Peak"
+                                    class="spec-link">🔗</a></div>
+
+                            <details class="nested-node">
+                                <summary class="nested-summary">anchor_element <span
+                                        class="badge b-primitive">Value</span></summary>
+                                <div class="node-content">
+                                    <div class="description">Allows content normalization based on a specific perceptual
+                                        element (1=Dialogue Anchor, 2=Album Anchor)[cite: 423, 425, 428].</div>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+
+                    <details class="nested-node">
+                        <summary class="nested-summary">rendering_config <span class="badge b-complex">Struct</span>
+                        </summary>
+                        <div class="node-content">
+                            <div class="description">Instructs the renderer on algorithmic application, including
+                                <strong>headphones_rendering_mode</strong> (Stereo vs Binaural)[cite: 430, 432, 435].
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </details>
+
+            <details class="nested-node">
+                <summary class="nested-summary">OBU_IA_Parameter_Block <span class="badge b-struct">OBU Type 3</span>
+                </summary>
+                <div class="node-content">
+                    <div class="description">Carries time-varying dynamic metadata (demixing coefficients, spatial
+                        positions) for a specific duration[cite: 317, 442].</div>
+
+                    <details class="nested-node">
+                        <summary class="nested-summary">DemixingInfoParameterData <span
+                                class="badge b-complex">Struct</span></summary>
+                        <div class="node-content">
+                            <div class="description">Provides the mathematical key to unfold a downmix back into a
+                                high-channel-count mix[cite: 449].</div>
+                            <div class="description" style="margin-top:8px;">Uses <strong>dmixp_mode</strong> to define
+                                parametric combinations (α, β, γ, δ)[cite: 451, 452].</div>
+                        </div>
+                    </details>
+
+                    <details class="nested-node">
+                        <summary class="nested-summary">SinglePositionParameterData <span
+                                class="badge b-complex">Struct</span></summary>
+                        <div class="node-content">
+                            <div class="description">Carries the 3D coordinates moving objects through space[cite: 446,
+                                468].</div>
+                            <div class="description" style="margin-top:8px;">Includes <strong>animation_type</strong>,
+                                <strong>azimuth</strong>, <strong>elevation</strong>, and
+                                <strong>distance</strong>[cite: 472, 474, 476, 478]. <a
+                                    href="https://news.samsung.com/global/interview-movie-quality-audio-from-the-comfort-of-your-home-meet-the-leaders-of-next-generation-3d-audio-technology"
+                                    target="_blank" title="Read about 3D Spatial and Vertical Audio Tracking"
+                                    class="spec-link">🔗</a></div>
+                        </div>
+                    </details>
+                </div>
+            </details>
+
+        </div>
+    </details>
+
+</body>
+
+</html>

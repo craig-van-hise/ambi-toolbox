@@ -89,7 +89,7 @@ describe('Backend Handlers', () => {
             expect(result.success).toBe(true);
 
             // Check Spawn Args
-            expect(spawnMock).toHaveBeenCalledWith('/mock/ffmpeg', expect.arrayContaining(['-b:a', '1536k', '-mapping_family', '2']));
+            expect(spawnMock).toHaveBeenCalledWith('/mock/bin/ffmpeg', expect.arrayContaining(['-b:a', '1536k', '-mapping_family', '2']));
         });
 
         it('should use mapping family 255 for stereo (non-ambisonics)', async () => {
@@ -106,7 +106,7 @@ describe('Backend Handlers', () => {
                 bitrate: 'Medium (64kbps)'
             });
 
-            expect(spawnMock).toHaveBeenCalledWith('/mock/ffmpeg', expect.arrayContaining(['-b:a', '128k', '-mapping_family', '255']));
+            expect(spawnMock).toHaveBeenCalledWith('/mock/bin/ffmpeg', expect.arrayContaining(['-b:a', '128k', '-mapping_family', '255']));
         });
     });
 

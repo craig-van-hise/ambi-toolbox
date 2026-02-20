@@ -1,5 +1,6 @@
 import { spawn, ChildProcess } from 'child_process';
 import path from 'path';
+import { PassThrough } from 'stream';
 import { getFfmpegPath, getBinaryPath } from './common';
 
 // Helper to find the OBR sidecar binary
@@ -46,12 +47,12 @@ export function createObrPipeline(
   // Input: File -> Output: stdout (f32le)
   const decoder = spawn(ffmpegPath, [
     '-ss', start.toString(),
-    '-re',
     '-i', inputPath,
     '-f', 'f32le',
     '-acodec', 'pcm_f32le',
     '-ar', '48000',
     '-ac', channels.toString(),
+    '-max_muxing_queue_size', '9999',
     'pipe:1'
   ], { stdio: ['ignore', 'pipe', 'pipe'] }); // ignore stdin for decoder (file input)
 
@@ -64,40 +65,47 @@ export function createObrPipeline(
   ], { stdio: ['pipe', 'pipe', 'pipe'] });
 
   // 3. Encode 
-  // Input: stdin (f32le) -> Output: stdout (webm/opus)
+  // Input: stdin (f32le) -> Output: stdout (ogg/opus)
   const encoder = spawn(ffmpegPath, [
     '-f', 'f32le',
     '-ar', '48000',
     '-ac', '2',
+    '-fflags', '+genpts',
     '-i', 'pipe:0',
     '-c:a', 'libopus',
-    '-b:a', '192k',
-    '-f', 'webm',
+    '-b:a', '256k',
+    '-vbr', 'on',
+    '-max_muxing_queue_size', '9999',
+    '-f', 'ogg',
     'pipe:1'
   ], { stdio: ['pipe', 'pipe', 'pipe'] });
 
-  // --- PIPING ---
+  // --- PIPING WITH DEEP BUFFERS (PRP #111) ---
 
-  // Decoder -> OBR
+  const pcmBuffer1 = new PassThrough({ highWaterMark: 1024 * 1024 * 10 }); // 10MB
+  const pcmBuffer2 = new PassThrough({ highWaterMark: 1024 * 1024 * 10 }); // 10MB
+
+  // Decoder -> pcmBuffer1 -> OBR
   if (decoder.stdout && obr.stdin) {
-    decoder.stdout.pipe(obr.stdin);
+    decoder.stdout.pipe(pcmBuffer1).pipe(obr.stdin);
 
-    // Squashing EPIPE and other pipe errors
     decoder.stdout.on('error', e => console.error('[Dec-Stdout] Pipe Error:', e));
+    pcmBuffer1.on('error', e => console.error('[PCM-Buf1] Error:', e));
     obr.stdin.on('error', e => {
       // @ts-ignore
-      if (e.code === 'EPIPE') return; // Expected when decoder finished or obr killed
+      if (e.code === 'EPIPE') return;
       console.error('[OBR-Stdin] Pipe Error:', e);
     });
   } else {
     console.error('[Pipeline] Failed to pipe Decoder -> OBR');
   }
 
-  // OBR -> Encoder
+  // OBR -> pcmBuffer2 -> Encoder
   if (obr.stdout && encoder.stdin) {
-    obr.stdout.pipe(encoder.stdin);
+    obr.stdout.pipe(pcmBuffer2).pipe(encoder.stdin);
 
     obr.stdout.on('error', e => console.error('[OBR-Stdout] Pipe Error:', e));
+    pcmBuffer2.on('error', e => console.error('[PCM-Buf2] Error:', e));
     encoder.stdin.on('error', e => {
       // @ts-ignore
       if (e.code === 'EPIPE') return;
@@ -122,9 +130,11 @@ export function createObrPipeline(
   const killAll = () => {
     console.log('[Pipeline] Killing all processes and cleaning up pipes...');
 
-    // Explicitly unpipe to prevent EPIPE writes during shutdown
+    // Explicitly unpipe and destroy buffers to prevent memory leaks (PRP #111)
     try { if (decoder.stdout) decoder.stdout.unpipe(); } catch (e) { }
+    try { pcmBuffer1.destroy(); } catch (e) { }
     try { if (obr.stdout) obr.stdout.unpipe(); } catch (e) { }
+    try { pcmBuffer2.destroy(); } catch (e) { }
     try { if (encoder.stdout) encoder.stdout.unpipe(); } catch (e) { }
 
     try {

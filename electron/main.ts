@@ -9,8 +9,43 @@ import { generateProxy, executeTrim } from './handlers/trim'
 import { spawn } from 'child_process';
 import http from 'http';
 import fs from 'node:fs';
+import { PassThrough, Transform } from 'stream';
 import { getFfmpegPath, getSofaAssetPath } from './handlers/common';
 import { createObrPipeline } from './handlers/ObrHandler';
+
+// ------------------------------------------------------------------
+// PRIME BUFFER (PRP #113)
+// ------------------------------------------------------------------
+class PrimeBuffer extends Transform {
+    private chunks: Buffer[] = [];
+    private totalSize = 0;
+    private primed = false;
+    private primeThreshold = 48 * 1024; // 48KB (~1.5s of 256kbps Opus)
+
+    _transform(chunk: any, encoding: BufferEncoding, callback: Function) {
+        const bufferChunk = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding);
+
+        if (this.primed) {
+            this.push(bufferChunk);
+        } else {
+            this.chunks.push(bufferChunk);
+            this.totalSize += bufferChunk.length;
+            if (this.totalSize >= this.primeThreshold) {
+                this.primed = true;
+                this.push(Buffer.concat(this.chunks));
+                this.chunks = []; // Free memory
+            }
+        }
+        callback();
+    }
+
+    _flush(callback: Function) {
+        if (!this.primed && this.chunks.length > 0) {
+            this.push(Buffer.concat(this.chunks));
+        }
+        callback();
+    }
+}
 
 
 // const require = createRequire(import.meta.url) // Unused
@@ -70,6 +105,7 @@ app.on('activate', () => {
 })
 
 app.whenReady().then(() => {
+
 
     // ------------------------------------------------------------------
     // BINAURAL STREAMING SERVER (PRP #72)
@@ -131,9 +167,9 @@ app.whenReady().then(() => {
 
             console.log(`[Stream] Request: ${path.basename(filePath)}, Binaural: ${binaural}, SOFA: ${path.basename(sofaPath || '')}`);
 
-            // Headers for WebM/Opus Stream
+            // Headers for Ogg/Opus Stream
             res.writeHead(200, {
-                'Content-Type': 'audio/webm',
+                'Content-Type': 'audio/ogg',
                 'Transfer-Encoding': 'chunked',
                 'Cache-Control': 'no-cache',
                 'Connection': 'keep-alive',
@@ -146,7 +182,7 @@ app.whenReady().then(() => {
             const ffmpegPath = getFfmpegPath();
             const args: string[] = [
                 '-ss', start, // Seek to requested offset
-                '-re', // Real-time reading
+                '-fflags', '+genpts',
                 '-i', filePath,
             ];
 
@@ -160,22 +196,28 @@ app.whenReady().then(() => {
             }
 
             args.push(
-                '-f', 'webm',
+                '-max_muxing_queue_size', '9999',
+                '-f', 'ogg',
                 '-c:a', 'libopus',
-                '-b:a', '192k',
+                '-b:a', '256k',
+                '-vbr', 'on',
                 'pipe:1'
             );
 
             console.log(`[Stream] Spawning FFmpeg...`);
 
             const ffmpeg = spawn(ffmpegPath, args);
+            const httpBuffer = new PassThrough({ highWaterMark: 1024 * 1024 * 10 }); // 10MB (PRP #111)
+            const primeBuffer = new PrimeBuffer();
 
-            // Pipe Stdout to Response
-            ffmpeg.stdout.pipe(res);
+            // Pipe Stdout to Response via Deep Buffer
+            ffmpeg.stdout.pipe(primeBuffer).pipe(httpBuffer).pipe(res);
 
             // Handle Client Disconnect
             req.on('close', () => {
                 console.log(`[Stream] Client disconnected. Killing...`);
+                primeBuffer.destroy();
+                httpBuffer.destroy();
                 ffmpeg.kill();
             });
 
@@ -205,7 +247,7 @@ app.whenReady().then(() => {
             console.log(`[OBR] Request: ${path.basename(filePath)} (${channels}ch, ${profile}, start: ${start}s)`);
 
             res.writeHead(200, {
-                'Content-Type': 'audio/webm',
+                'Content-Type': 'audio/ogg',
                 'Transfer-Encoding': 'chunked',
                 'Cache-Control': 'no-cache',
                 'Connection': 'keep-alive',
@@ -219,8 +261,11 @@ app.whenReady().then(() => {
                     throw new Error("Encoder stdout is null");
                 }
 
-                // Pipe Final Output (Encoder) to Response
-                encoder.stdout.pipe(res);
+                const httpBuffer = new PassThrough({ highWaterMark: 1024 * 1024 * 10 }); // 10MB (PRP #111)
+                const primeBuffer = new PrimeBuffer();
+
+                // Pipe Final Output (Encoder) to Response via Deep Buffer
+                encoder.stdout.pipe(primeBuffer).pipe(httpBuffer).pipe(res);
 
                 // Handle Encoder Stdout errors (specifically EPIPE)
                 encoder.stdout.on('error', (err: any) => {
@@ -235,6 +280,8 @@ app.whenReady().then(() => {
                 req.on('close', () => {
                     console.log(`[OBR] Client disconnected. Cleaning up pipeline...`);
                     try { if (encoder.stdout) encoder.stdout.unpipe(); } catch (e) { }
+                    primeBuffer.destroy();
+                    httpBuffer.destroy();
                     decoder.kill('SIGKILL');
                     obr.kill('SIGKILL');
                     encoder.kill('SIGKILL');

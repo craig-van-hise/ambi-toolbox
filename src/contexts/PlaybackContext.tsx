@@ -182,6 +182,16 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
             }
         };
 
+        const onWaiting = () => {
+            console.log('[Playback] Native waiting event (buffering).');
+            setState(prev => ({ ...prev, isRebuilding: true }));
+        };
+
+        const onPlaying = () => {
+            console.log('[Playback] Native playing event (clear buffering).');
+            setState(prev => ({ ...prev, isRebuilding: false }));
+        };
+
         const onError = () => {
             console.error('Audio Playback Error:', audio.error);
             setState(prev => ({ ...prev, isPlaying: false, isRebuilding: false }));
@@ -192,6 +202,8 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         audio.addEventListener('ended', onEnded);
         audio.addEventListener('play', onPlay);
         audio.addEventListener('pause', onPause);
+        audio.addEventListener('waiting', onWaiting);
+        audio.addEventListener('playing', onPlaying);
         audio.addEventListener('error', onError);
 
         return () => {
@@ -202,6 +214,8 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
             audio.removeEventListener('ended', onEnded);
             audio.removeEventListener('play', onPlay);
             audio.removeEventListener('pause', onPause);
+            audio.removeEventListener('waiting', onWaiting);
+            audio.removeEventListener('playing', onPlaying);
             audio.removeEventListener('error', onError);
             audioRef.current = null;
             if (rebuildTimeoutRef.current) clearTimeout(rebuildTimeoutRef.current);
