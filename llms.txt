@@ -1,0 +1,19 @@
+# AmbiToolbox Knowledge Base
+
+AmbiToolbox is a unified spatial audio utility suite for macOS, built with Electron, React, and TypeScript.
+
+## Core Documentation
+- [README.md](./README.md): Overview, Features, and Getting Started.
+- [PROJECT_STATE.md](./PROJECT_STATE.md): Current development status, component breakdown, and recent logic changes.
+
+## Architecture
+- **Frontend**: React + TypeScript + TailwindCSS.
+- **Backend**: Electron Main Process with Modular Handler Pattern.
+- **Sidecars**: C++ (Google OBR) and Python (NumPy) for audio processing.
+
+## Tech Stack
+- **Electron**: v30.0.1
+- **Vite**: v5.1.6
+- **Wavesurfer.js**: v7.12.1
+- **React**: v18.2.0
+- **TailwindCSS**: v4.1.18

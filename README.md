@@ -124,6 +124,47 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 * **Streaming Engine**: Precise 3-stage OBR pipeline (`Decoder` -> `OBR` -> `Encoder`) with EPIPE-hardened inter-process piping.
 
 * **Cleanup**: Legacy/Vestigial files moved to `xCleanup/` (Gitignored).
+* **Workflows**: Extensive automation workflows available in `.agent/workflows/` for project management and CI tasks.
+
+## 📂 Project Structure
+
+```text
+|  ├── main.tsx
+|  ├── tools
+|  ├── types.ts
+|  ├── utils
+|  └── vite-env.d.ts
+├── tailwind.config.js
+├── test_000007.iamf
+├── test_iamf_parser.py
+├── test_output
+|  └── trim_tests
+├── test_output.webm
+├── tests
+|  ├── 3rd Order Ambi Clock Test.wav
+|  ├── check_hrtf_delay.py
+|  ├── check_hrtf_energy.py
+|  ├── check_netcdf_clean.py
+|  ├── debug_rotation_sweep.py
+|  ├── gen_test_signal.py
+|  ├── handlers.test.ts
+|  ├── manual_test_out.wav
+|  ├── sweep_in.wav
+|  ├── sweep_out.wav
+|  ├── test_16ch.wav
+|  ├── test_coords.py
+|  ├── test_math.py
+|  ├── test_saf.py
+|  ├── transport_sm.test.ts
+|  └── trim.test.ts
+├── tsconfig.json
+├── tsconfig.node.json
+├── vite.config.ts
+├── vitest.config.ts
+└── xCleanup
+   ├── legacy_apps
+   └── legacy_libs
+```
 
 ## 🧪 Testing
 

@@ -40,9 +40,9 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
         setCurrentFile,
         togglePlayPause,
         stop,
-        next,
-        prev,
         seek,
+        commitSeek,
+        setLoopPoints,
         setVolume,
         toggleLoop,
         toggleHeadphones,
@@ -362,13 +362,17 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                                     state={playerState}
                                     onPlayPause={togglePlayPause}
                                     onStop={stop}
-                                    onNext={next}
-                                    onPrev={prev}
+                                    onNext={() => { }}
+                                    onPrev={() => { }}
                                     onSeek={seek}
+                                    onCommitSeek={commitSeek}
                                     onVolumeChange={setVolume}
                                     onToggleLoop={toggleLoop}
                                     onToggleHeadphones={toggleHeadphones}
                                     onSetHrtfProfile={setHrtfProfile}
+                                    onSetLoopPoints={setLoopPoints}
+                                    canNext={false}
+                                    canPrev={false}
                                 />
                             )}
                         </div>

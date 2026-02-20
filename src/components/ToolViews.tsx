@@ -12,8 +12,7 @@ import { SmartDropZone } from './SmartDropZone';
 import { AmbiRotateTool, AmbiRotateHandle } from '../tools/AmbiRotate';
 import {
   ArrowRight,
-  ChevronDown,
-  ChevronRight
+  ChevronDown
 } from 'lucide-react';
 import { AmbiTrim } from '../components/tools/AmbiTrim';
 import { AmbiDataTool } from '../tools/AmbiData';
@@ -557,8 +556,10 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     togglePlayPause,
     stop,
     seek,
+    commitSeek,
     setVolume,
     toggleLoop,
+    setLoopPoints,
     toggleHeadphones,
     setHrtfProfile,
     setCurrentFile
@@ -743,8 +744,6 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     }
   }, [globalFiles.length, selectedFileId, setSelectedFileId]);
 
-  // PRO FEATURE: Collapsible Input Section
-  const [isInputExpanded, setInputExpanded] = useState(true);
 
   // Ref for Rotator (to trigger render from footer)
   const rotatorRef = useRef<AmbiRotateHandle>(null);
@@ -805,12 +804,6 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     // but we can keep or remove. The effect is safer.
   };
 
-  // Auto-collapse Input on File Change (Covers Queue Click & Transport Next/Prev)
-  useEffect(() => {
-    if (tool.id === ToolId.AmbiRotate && files.length > 0) {
-      setInputExpanded(false);
-    }
-  }, [activeFileIndex, tool.id]);
 
   const { settings } = useSettings();
 
@@ -916,33 +909,8 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
 
             {/* INPUT SECTION (Collapsible for AmbiRotate) */}
             <div className="px-8 flex-none flex flex-col gap-4 relative z-10">
-              {/* Collapse Header for AmbiRotate */}
-              {tool.id === ToolId.AmbiRotate && files.length > 0 && (
-                <div
-                  onClick={() => setInputExpanded(!isInputExpanded)}
-                  className="flex items-center justify-between bg-gray-600/20 p-2 rounded-t-lg cursor-pointer hover:bg-gray-600/40 transition select-none border border-white/10"
-                >
-                  <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                    {isInputExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                    <span>Input Files ({files.length})</span>
-                  </div>
-                  {!isInputExpanded && (
-                    <span className="text-xs text-gray-500 font-mono">
-                      Active: {files[activeFileIndex]?.name}
-                    </span>
-                  )}
-                </div>
-              )}
-
               {/* The Actual Input Body */}
-              <div className={`
-                    flex flex-col gap-4 overflow-hidden transition-all duration-300 ease-in-out
-                    ${tool.id === ToolId.AmbiRotate && files.length > 0
-                  ? (isInputExpanded ? 'opacity-100 max-h-[500px]' : 'opacity-0 max-h-0 border-none m-0 p-0')
-                  : 'opacity-100'
-                }
-                    ${tool.id === ToolId.AmbiRotate && files.length > 0 && isInputExpanded ? 'bg-gray-900/30 p-4 rounded-b-lg border border-t-0 border-white/10' : ''}
-                `}>
+              <div className="flex flex-col gap-4">
                 {/* Drop Zone */}
                 <div className={`${files.length > 0 ? 'h-20' : (tool.id === ToolId.AmbiRotate ? 'h-32' : 'h-48')} transition-all duration-300`}>
                   {(() => {
@@ -1030,10 +998,12 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
                     onNext={handleNext}
                     onPrev={handlePrev}
                     onSeek={seek}
+                    onCommitSeek={commitSeek}
                     onVolumeChange={setVolume}
                     onToggleLoop={toggleLoop}
                     onToggleHeadphones={toggleHeadphones}
                     onSetHrtfProfile={setHrtfProfile}
+                    onSetLoopPoints={setLoopPoints}
                     canNext={canNext}
                     canPrev={canPrev}
                   />

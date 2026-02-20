@@ -11,10 +11,12 @@ interface TransportProps {
     onNext: () => void;
     onPrev: () => void;
     onSeek: (time: number) => void;
+    onCommitSeek: (time: number) => void;
     onVolumeChange: (vol: number) => void;
     onToggleLoop: () => void;
     onToggleHeadphones: () => void;
     onSetHrtfProfile: (profile: string) => void;
+    onSetLoopPoints: (inTime: number, outTime: number) => void;
     canNext: boolean;
     canPrev: boolean;
 }
@@ -84,15 +86,52 @@ export const Transport: React.FC<TransportProps> = ({
     onNext,
     onPrev,
     onSeek,
+    onCommitSeek,
     onVolumeChange,
     onToggleLoop,
     onToggleHeadphones,
     onSetHrtfProfile,
+    onSetLoopPoints,
     canNext,
     canPrev
 }) => {
     const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+    const [dragging, setDragging] = React.useState<'in' | 'out' | null>(null);
+    const trackRef = React.useRef<HTMLDivElement>(null);
+
     const progressPercent = state.duration > 0 ? (state.currentTime / state.duration) * 100 : 0;
+    const loopInPercent = state.duration > 0 ? (state.loopIn / state.duration) * 100 : 0;
+    const loopOutPercent = state.duration > 0 ? (state.loopOut / state.duration) * 100 : 100;
+
+    const getTimeFromEvent = (e: MouseEvent | React.MouseEvent) => {
+        if (!trackRef.current) return 0;
+        const rect = trackRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const pct = Math.max(0, Math.min(1, x / rect.width));
+        return pct * state.duration;
+    };
+
+    React.useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!dragging) return;
+            const time = getTimeFromEvent(e);
+            if (dragging === 'in') {
+                onSetLoopPoints(Math.min(time, state.loopOut - 0.1), state.loopOut);
+            } else if (dragging === 'out') {
+                onSetLoopPoints(state.loopIn, Math.max(time, state.loopIn + 0.1));
+            }
+        };
+        const handleMouseUp = () => setDragging(null);
+
+        if (dragging) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+        }
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [dragging, state.loopIn, state.loopOut, state.duration, onSetLoopPoints]);
 
     return (
         <div className="border border-brand-border rounded-lg p-3 bg-[#18181b] flex flex-col gap-2.5 shadow-lg select-none">
@@ -105,7 +144,17 @@ export const Transport: React.FC<TransportProps> = ({
                 </div>
                 <div className="relative w-full h-5 flex items-center group">
                     {/* Visual Track Background - Rounded */}
-                    <div className="absolute w-full h-1.5 bg-[#27272a] rounded-lg overflow-hidden group-hover:bg-[#323235] transition-colors">
+                    <div ref={trackRef} className="absolute w-full h-1.5 bg-[#27272a] rounded-lg overflow-hidden group-hover:bg-[#323235] transition-colors">
+                        {/* Loop Region Highlight */}
+                        {state.isLooping && (
+                            <div
+                                className="absolute top-0 h-full bg-green-500/20"
+                                style={{
+                                    left: `${loopInPercent}%`,
+                                    width: `${loopOutPercent - loopInPercent}%`
+                                }}
+                            />
+                        )}
                         {/* Progress Fill - Rounded */}
                         <div
                             className="h-full bg-blue-400 rounded-lg"
@@ -113,9 +162,29 @@ export const Transport: React.FC<TransportProps> = ({
                         />
                     </div>
 
+                    {/* Loop Locators */}
+                    {state.isLooping && (
+                        <>
+                            {/* Left Locator (In) - Inward pointing triangle */}
+                            <div
+                                className="absolute top-[-8px] w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[10px] border-l-green-500 cursor-ew-resize hover:scale-125 transition-transform z-30"
+                                style={{ left: `calc(${loopInPercent}% - 0px)` }}
+                                onMouseDown={(e) => { e.stopPropagation(); setDragging('in'); }}
+                                title="Loop Start"
+                            />
+                            {/* Right Locator (Out) - Inward pointing triangle */}
+                            <div
+                                className="absolute top-[-8px] w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-r-[10px] border-r-green-500 cursor-ew-resize hover:scale-125 transition-transform z-30"
+                                style={{ left: `calc(${loopOutPercent}% - 10px)` }}
+                                onMouseDown={(e) => { e.stopPropagation(); setDragging('out'); }}
+                                title="Loop End"
+                            />
+                        </>
+                    )}
+
                     {/* Handle - Circle (Always Visible) */}
                     <div
-                        className="absolute w-3 h-3 bg-blue-400 rounded-full shadow-md z-20 pointer-events-none"
+                        className="absolute w-3 h-3 bg-white rounded-full shadow-md z-20 pointer-events-none"
                         style={{
                             left: `${progressPercent}%`,
                             top: '50%',
@@ -123,16 +192,31 @@ export const Transport: React.FC<TransportProps> = ({
                         }}
                     />
 
-                    {/* Input */}
+                    {/* Input — onChange = visual only, onMouseUp = commit to backend */}
                     <input
                         type="range"
                         min={0}
-                        max={state.duration}
+                        max={state.duration || 1}
+                        step={0.01}
                         value={state.currentTime}
                         onChange={(e) => onSeek(Number(e.target.value))}
-                        className="absolute w-full h-full opacity-0 cursor-pointer z-10"
+                        onMouseUp={(e) => onCommitSeek(Number((e.target as HTMLInputElement).value))}
+                        onTouchEnd={(e) => onCommitSeek(Number((e.target as HTMLInputElement).value))}
+                        disabled={state.isRebuilding}
+                        className={`absolute w-full h-full opacity-0 z-10 ${state.isRebuilding ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                     />
                 </div>
+
+                {/* BUFFERING Indicator */}
+                {state.isRebuilding && (
+                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-amber-400 font-bold tracking-widest animate-pulse mt-0.5">
+                        <svg className="w-2.5 h-2.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        BUFFERING
+                    </div>
+                )}
             </div>
 
             {/* Bottom Row: Controls */}
@@ -142,8 +226,8 @@ export const Transport: React.FC<TransportProps> = ({
                 <div className="flex items-center gap-2">
                     <button
                         onClick={onPrev}
-                        disabled={!canPrev}
-                        className={`w-9 h-9 flex items-center justify-center rounded-md transition-all active:scale-95 ${!canPrev
+                        disabled={!canPrev || state.isRebuilding}
+                        className={`w-9 h-9 flex items-center justify-center rounded-md transition-all active:scale-95 ${(!canPrev || state.isRebuilding)
                             ? 'bg-[#1E1E1E] text-gray-700 cursor-not-allowed'
                             : 'bg-[#27272a] hover:bg-[#3f3f46] text-gray-400 hover:text-white'
                             }`}
@@ -165,12 +249,14 @@ export const Transport: React.FC<TransportProps> = ({
                     </button>
 
                     <button
-                        onClick={onPlayPause}
-                        className={`w-11 h-9 flex items-center justify-center rounded-md transition-all active:scale-95 shadow-md ${state.isPlaying
-                            ? 'bg-brand-green text-black hover:bg-[#00b35a]'
-                            : 'bg-white text-black hover:bg-gray-200'
+                        onClick={state.isRebuilding ? undefined : onPlayPause}
+                        className={`w-11 h-9 flex items-center justify-center rounded-md transition-all active:scale-95 shadow-md ${state.isRebuilding
+                                ? 'bg-amber-900/30 text-amber-500 cursor-not-allowed'
+                                : state.isPlaying
+                                    ? 'bg-green-500 text-black hover:bg-green-400'
+                                    : 'bg-white text-black hover:bg-gray-200'
                             }`}
-                        title={state.isPlaying ? "Pause" : "Play"}
+                        title={state.isRebuilding ? 'Buffering...' : (state.isPlaying ? 'Pause' : 'Play')}
                     >
                         <div className="w-6 h-6">
                             {state.isPlaying ? <IconPause /> : <IconPlay />}
@@ -179,8 +265,8 @@ export const Transport: React.FC<TransportProps> = ({
 
                     <button
                         onClick={onNext}
-                        disabled={!canNext}
-                        className={`w-9 h-9 flex items-center justify-center rounded-md transition-all active:scale-95 ${!canNext
+                        disabled={!canNext || state.isRebuilding}
+                        className={`w-9 h-9 flex items-center justify-center rounded-md transition-all active:scale-95 ${(!canNext || state.isRebuilding)
                             ? 'bg-[#1E1E1E] text-gray-700 cursor-not-allowed'
                             : 'bg-[#27272a] hover:bg-[#3f3f46] text-gray-400 hover:text-white'
                             }`}

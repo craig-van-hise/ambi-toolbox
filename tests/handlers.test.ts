@@ -26,13 +26,15 @@ vi.mock('node:child_process', () => ({
 // Mock common utilities
 vi.mock('../electron/handlers/common', async (importOriginal) => {
     return {
-        getFfmpegPath: () => '/mock/ffmpeg',
-        getFfprobePath: () => '/mock/ffprobe',
+        getBinaryPath: (name: string) => `/mock/bin/${name}`,
+        getFfmpegPath: () => '/mock/bin/ffmpeg',
+        getFfprobePath: () => '/mock/bin/ffprobe',
         probeAudio: vi.fn().mockResolvedValue({
             duration: 10,
             channels: 16,
             sampleRate: 48000
-        })
+        }),
+        determineOutputPath: (input: string, _settings: any, _format: string, suffix: string) => input.replace(/\.[^/.]+$/, "") + suffix
     };
 });
 
@@ -80,7 +82,7 @@ describe('Backend Handlers', () => {
     describe('Ambix2Opus', () => {
         it('should generate correct FFmpeg args for High Quality 3rd Order', async () => {
             const result = await handleAmbix2Opus(mockEvent, {
-                inputPath: '/test/input.wav',
+                files: ['/test/input.wav'],
                 bitrate: 'High (96kbps)'
             });
 
@@ -100,7 +102,7 @@ describe('Backend Handlers', () => {
             });
 
             await handleAmbix2Opus(mockEvent, {
-                inputPath: '/test/stereo.wav',
+                files: ['/test/stereo.wav'],
                 bitrate: 'Medium (64kbps)'
             });
 
@@ -111,7 +113,7 @@ describe('Backend Handlers', () => {
     describe('Ambix2Bin', () => {
         it('should spawn python script with correct args for Neumann profile', async () => {
             await handleAmbix2Bin(mockEvent, {
-                inputPath: '/test/input.wav',
+                files: ['/test/input.wav'],
                 hrtfProfile: 'Generic (Neumann KU100)'
             });
 
@@ -128,7 +130,7 @@ describe('Backend Handlers', () => {
     describe('Ambix2IAMF', () => {
         it('should generate config and spawn iamf-enc', async () => {
             await handleAmbix2IAMF(mockEvent, {
-                inputPath: '/test/input.wav',
+                files: ['/test/input.wav'],
                 bitrate: 'High (96kbps)'
             });
 
@@ -144,7 +146,7 @@ describe('Backend Handlers', () => {
     describe('AmbiOrder', () => {
         it('should generate correct pan filter for 2nd Order (9ch)', async () => {
             const result = await handleAmbiOrder(mockEvent, {
-                inputPath: '/test/input.wav',
+                files: ['/test/input.wav'],
                 targetOrder: '2nd Order'
             });
 
@@ -154,7 +156,7 @@ describe('Backend Handlers', () => {
             const args = call[1];
             // Expect channelmap=0|1|...|8
             const filter = args[args.indexOf('-filter_complex') + 1];
-            expect(filter).toContain('channelmap=0|1|2');
+            expect(filter).toContain('channelmap=map=0|1|2');
             expect(filter).toContain('|8');
             // Should NOT contain c9=c9
             expect(filter).not.toContain('c9=c9');
@@ -162,10 +164,10 @@ describe('Backend Handlers', () => {
 
         it('should generate correct pan filter for 1st Order (4ch)', async () => {
             const result = await handleAmbiOrder(mockEvent, {
-                inputPath: '/test/input.wav',
+                files: ['/test/input.wav'],
                 targetOrder: '1st Order'
             });
-            const call = spawnMock.mock.calls.find((c: any) => c[1].some((arg: string) => arg.includes('channelmap=0|1|2|3')));
+            const call = spawnMock.mock.calls.find((c: any) => c[1].some((arg: string) => arg.includes('channelmap=map=0|1|2|3')));
             expect(call).toBeDefined();
         });
     });
@@ -173,7 +175,7 @@ describe('Backend Handlers', () => {
     describe('Ambix2CAF', () => {
         it('should spawn ffmpeg with pcm_s24le and caf format', async () => {
             const result = await handleAmbix2CAF(mockEvent, {
-                inputPath: '/test/input.wav',
+                files: ['/test/input.wav'],
                 layout: 'discrete',
                 bitDepth: '24'
             });
@@ -189,7 +191,7 @@ describe('Backend Handlers', () => {
 
         it('should use pcm_f32le for 32-bit float', async () => {
             await handleAmbix2CAF(mockEvent, {
-                inputPath: '/test/input.wav',
+                files: ['/test/input.wav'],
                 layout: 'discrete',
                 bitDepth: '32'
             });
@@ -208,7 +210,7 @@ describe('Backend Handlers', () => {
             });
 
             const result = await handleAmbiSwap(mockEvent, {
-                inputPath: '/test/input.wav',
+                files: ['/test/input.wav'],
                 direction: 'AmbixToFuMa'
             });
 
@@ -236,7 +238,7 @@ describe('Backend Handlers', () => {
             });
 
             const result = await handleAmbiSwap(mockEvent, {
-                inputPath: '/test/input.wav',
+                files: ['/test/input.wav'],
                 direction: 'FuMaToAmbix'
             });
 
@@ -260,12 +262,12 @@ describe('Backend Handlers', () => {
             });
 
             const result = await handleAmbiSwap(mockEvent, {
-                inputPath: '/test/input.wav',
+                files: ['/test/input.wav'],
                 direction: 'AmbixToFuMa'
             });
 
             expect(result.success).toBe(false);
-            expect(result.error).toContain('maximum of 3rd Order');
+            expect(result.error).toContain('max 16 channels');
         });
     });
 });

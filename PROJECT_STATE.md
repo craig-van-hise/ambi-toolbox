@@ -1,6 +1,6 @@
 # AmbiToolbox - Project State Report
 
-**Date:** February 16, 2026 (Updated 14:15)
+**Date:** February 20, 2026 (Updated 11:05)
 **Architecture:** Electron Modular Monolith
 
 ## 1. Executive Summary
@@ -27,7 +27,45 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 | **Persistence** | 🟢 Ready | `src/contexts/SettingsContext.tsx` | Saves active tool, bitrates, layouts, and rotation values. |
 | **Global Queue** | 🟢 Ready | `src/components/FileQueue.tsx` | **Unified**: Single shared component for all tools with folding/play indicators. |
 
-## 3. Directory Structure (Key Paths)
+## 3. Directory Structure (Architecture)
+
+```text
+|  ├── main.tsx
+|  ├── tools
+|  ├── types.ts
+|  ├── utils
+|  └── vite-env.d.ts
+├── tailwind.config.js
+├── test_000007.iamf
+├── test_iamf_parser.py
+├── test_output
+|  └── trim_tests
+├── test_output.webm
+├── tests
+|  ├── 3rd Order Ambi Clock Test.wav
+|  ├── check_hrtf_delay.py
+|  ├── check_hrtf_energy.py
+|  ├── check_netcdf_clean.py
+|  ├── debug_rotation_sweep.py
+|  ├── gen_test_signal.py
+|  ├── handlers.test.ts
+|  ├── manual_test_out.wav
+|  ├── sweep_in.wav
+|  ├── sweep_out.wav
+|  ├── test_16ch.wav
+|  ├── test_coords.py
+|  ├── test_math.py
+|  ├── test_saf.py
+|  ├── transport_sm.test.ts
+|  └── trim.test.ts
+├── tsconfig.json
+├── tsconfig.node.json
+├── vite.config.ts
+├── vitest.config.ts
+└── xCleanup
+   ├── legacy_apps
+   └── legacy_libs
+```
 
 -   **`src/`**: Frontend Source (React/Vite).
     -   `components/ToolViews.tsx`: Main UI for all tools (Consumes Global State).
@@ -42,6 +80,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
     -   `ambi_rotate.py`: Ambisonic Rotation Script (NumPy + Scipy + SoundFile).
 -   **`assets/`**: Static Resources (`bin/`, `hrtf/`).
 -   **`xCleanup/`**: Quantined legacy files (Gitignored).
+-   **`PRPs/`**: Project Rollout Proposals and historical logs.
 
 ## 4. Recent Logic Changes
 -   **Transport Component Integration**:
@@ -89,3 +128,10 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
     - **Scrubber Auto-Resume**: The `seek` handler now captures `wasPlaying` state and automatically resumes playback once the new stream offset is loaded.
     - **Queue Navigation**: Implemented Previous/Next track navigation.
     - **Circular Dependency Resolution**: De-coupled `PlaybackContext` from `ToolStateContext` by moving queue-aware logic to `ToolViews.tsx`. This resolved a critical module execution error ("black screen") and improved architectural cleanliness.
+- **Transport State Machine V3 & Cleanups (PRP #105, #106, #104, #102)**:
+    - **Transport V3**: Implemented decoupling of visual scrubbing from backend seek commands for smoother UI.
+    - **LOCKED_REBUILDING State**: Added logic to handle audio pipeline resets during critical parameter changes.
+    - **Deterministic Looping (PRP #106)**: Implemented `seekNonce` (cache-busting) mechanism in `PlayerState` to force React state machine rebuilds on loop iterations, fixing the "second loop failure" bug.
+    - **AmbiData Status**: Corrected documentation and tool status to reflect active development status.
+    - **General Cleanup**: Removed vestigial logic and fixed test suites for `AmbiSwap`, `AmbiOrder`, and `Ambix2Opus` handlers.
+

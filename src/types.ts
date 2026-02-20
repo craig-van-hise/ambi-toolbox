@@ -93,4 +93,8 @@ export interface PlayerState {
   channels: number;
   requestedSeekTime?: number;
   streamOffset?: number;
+  loopIn: number;
+  loopOut: number;
+  isRebuilding: boolean;
+  seekNonce: number;
 }
