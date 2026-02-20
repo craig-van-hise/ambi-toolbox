@@ -110,6 +110,9 @@ app.whenReady().then(() => {
             const binaural = url.searchParams.get('binaural') === 'true';
             let sofaPath = url.searchParams.get('sofaPath');
             const hrtfProfile = url.searchParams.get('hrtfProfile');
+            const start = url.searchParams.get('start') || '0';
+            const channels = parseInt(url.searchParams.get('channels') || '0', 10);
+            const render = url.searchParams.get('render');
 
             // Resolve Preset Paths if sofaPath is missing but profile is known
             if (binaural && !sofaPath && hrtfProfile) {
@@ -137,17 +140,31 @@ app.whenReady().then(() => {
                 'Access-Control-Allow-Origin': '*'
             });
 
+            const useCardioid = render === 'stereo' && channels >= 4;
+
             // Construct FFmpeg Arguments
             const ffmpegPath = getFfmpegPath();
             const args: string[] = [
+                '-ss', start, // Seek to requested offset
                 '-re', // Real-time reading
                 '-i', filePath,
-                '-ac', '2', // Stereo Downmix
+            ];
+
+            if (useCardioid) {
+                // M/S Stereo Folddown: Ignores X (c3) to prevent rear-hemisphere attenuation.
+                // Left = 0.707 * W + 0.707 * Y
+                // Right = 0.707 * W - 0.707 * Y
+                args.push('-af', 'pan=stereo|c0=0.707*c0+0.707*c1|c1=0.707*c0-0.707*c1');
+            } else {
+                args.push('-ac', '2'); // Standard Stereo Downmix
+            }
+
+            args.push(
                 '-f', 'webm',
                 '-c:a', 'libopus',
                 '-b:a', '192k',
                 'pipe:1'
-            ];
+            );
 
             console.log(`[Stream] Spawning FFmpeg...`);
 

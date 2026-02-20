@@ -252,18 +252,23 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         const audio = audioRef.current;
         if (!audio || !state.currentFile || state.channels === 0) return;
 
-        const { currentFile, channels, requestedSeekTime, isHeadphonesOn } = state;
+        const { currentFile, channels, requestedSeekTime, isHeadphonesOn, hrtfProfile } = state;
         const start = requestedSeekTime !== undefined ? requestedSeekTime : 0;
 
         const params = new URLSearchParams();
         params.append('file', currentFile);
         params.append('channels', channels.toString());
         params.append('profile', 'ambient');
+        params.append('hrtfProfile', hrtfProfile);
         params.append('start', start.toString());
-        if (!isHeadphonesOn) params.append('render', 'stereo');
         params.append('_t', Date.now().toString());
 
-        const newSrc = `http://127.0.0.1:45455/obr-stream?${params.toString()}`;
+        if (!isHeadphonesOn) {
+            params.append('render', 'stereo');
+        }
+
+        const endpoint = isHeadphonesOn ? 'obr-stream' : 'stream';
+        const newSrc = `http://127.0.0.1:45455/${endpoint}?${params.toString()}`;
 
         if (audio.src !== newSrc) {
             console.log(`[Playback] [Step 3] Committing Stream: ${newSrc}`);
@@ -280,7 +285,7 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
 
             setState(prev => ({ ...prev, streamOffset: start }));
         }
-    }, [state.currentFile, state.channels, state.requestedSeekTime, state.isHeadphonesOn, state.seekNonce]);
+    }, [state.currentFile, state.channels, state.requestedSeekTime, state.isHeadphonesOn, state.hrtfProfile, state.seekNonce]);
 
     // ------------------------------------------------------------------
     // 4. Dispatcher — keeps native audio element in sync with React state
@@ -396,9 +401,56 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
 
     const toggleLoop = () => setState(prev => ({ ...prev, isLooping: !prev.isLooping }));
 
-    const toggleHeadphones = () => setState(prev => ({ ...prev, isHeadphonesOn: !prev.isHeadphonesOn }));
+    const toggleHeadphones = () => {
+        if (state.isRebuilding) return; // Prevent spamming the pipeline
 
-    const setHrtfProfile = (profile: string) => setState(prev => ({ ...prev, hrtfProfile: profile }));
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        const wasPlaying = !audio.paused;
+        const currentPlayhead = state.currentTime;
+
+        // If it was playing, we must ensure it auto-resumes after the new stream loads
+        if (wasPlaying) {
+            playbackIntentRef.current = true;
+            audio.pause();
+        }
+
+        // Engage the UI lock and failsafe timer
+        enterRebuildLock(wasPlaying);
+
+        // Force Step 3 Commit with the current playhead position and a fresh nonce
+        setState(prev => ({
+            ...prev,
+            isHeadphonesOn: !prev.isHeadphonesOn,
+            requestedSeekTime: currentPlayhead,
+            seekNonce: Date.now()
+        }));
+    };
+
+    const setHrtfProfile = (profile: string) => {
+        if (state.isRebuilding) return;
+
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        const wasPlaying = !audio.paused;
+        const currentPlayhead = state.currentTime;
+
+        if (wasPlaying) {
+            playbackIntentRef.current = true;
+            audio.pause();
+        }
+
+        enterRebuildLock(wasPlaying);
+
+        setState(prev => ({
+            ...prev,
+            hrtfProfile: profile,
+            requestedSeekTime: currentPlayhead,
+            seekNonce: Date.now()
+        }));
+    };
 
     const setCurrentFile = (filePath: string | null, shouldPlay = false) => {
         console.log(`[Playback] [Step 1] Intent: ${filePath}, shouldPlay: ${shouldPlay}`);
