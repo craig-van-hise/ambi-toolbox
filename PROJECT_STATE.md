@@ -1,6 +1,6 @@
 # AmbiToolbox - Project State Report
 
-**Date:** February 20, 2026 (Updated 11:05)
+**Date:** February 20, 2026 (Updated 17:58)
 **Architecture:** Electron Modular Monolith
 
 ## 1. Executive Summary
@@ -30,6 +30,44 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 ## 3. Directory Structure (Architecture)
 
 ```text
+├── package.json
+├── package-lock.json
+├── postcss.config.js
+├── public
+|  ├── ambisonics.js
+|  ├── electron-vite.animate.svg
+|  ├── electron-vite.svg
+|  ├── js
+|  └── vite.svg
+├── py
+|  ├── ambi_data_heuristics.py
+|  └── ambi_rotate.py
+├── repo-map.md
+├── resources
+|  └── scripts
+├── scripts
+|  ├── test-auto-resume.ts
+|  ├── test-binary-paths.ts
+|  ├── test-binaural.js
+|  ├── test-file-switch-autoplay.ts
+|  ├── test-frontend-url.ts
+|  ├── test-hard-swap.ts
+|  ├── test-obr-pipeline.js
+|  ├── test-queue-click.ts
+|  ├── test-seek-accuracy.ts
+|  ├── test-seek-debounce.ts
+|  ├── test-server.ts
+|  ├── test-stream-start.ts
+|  └── verify-stream-endpoint.js
+├── src
+|  ├── App.css
+|  ├── App.tsx
+|  ├── assets
+|  ├── components
+|  ├── constants.ts
+|  ├── contexts
+|  ├── cpp
+|  ├── index.css
 |  ├── main.tsx
 |  ├── tools
 |  ├── types.ts
@@ -50,6 +88,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 |  ├── gen_test_signal.py
 |  ├── handlers.test.ts
 |  ├── manual_test_out.wav
+|  ├── obr_pipeline.test.ts
 |  ├── sweep_in.wav
 |  ├── sweep_out.wav
 |  ├── test_16ch.wav
@@ -134,4 +173,14 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
     - **Deterministic Looping (PRP #106)**: Implemented `seekNonce` (cache-busting) mechanism in `PlayerState` to force React state machine rebuilds on loop iterations, fixing the "second loop failure" bug.
     - **AmbiData Status**: Corrected documentation and tool status to reflect active development status.
     - **General Cleanup**: Removed vestigial logic and fixed test suites for `AmbiSwap`, `AmbiOrder`, and `Ambix2Opus` handlers.
+- **Buffering & Burst Encoding (PRP #111 - #114)**:
+    - **Deep Buffering (PRP #111)**: Implemented 10MB `highWaterMark` allocations for all IPC pipes and the HTTP response stream to eliminate micro-stutters.
+    - **Prime Buffer (PRP #113)**: Introduced a custom `PrimeBuffer` Transform stream that holds 48KB (~1.5s) of encoded Opus data before initial transmission, ensuring the browser's media buffer is never starved at startup.
+    - **Burst Encoding (PRP #114)**: Removed the `-re` (real-time) throttling flag from both OBR and Legacy pipelines, allowing the CPU to burst-fill the buffers instantly on play or seek.
+- **Stereo Monitoring Filter (PRP #108)**:
+    - **M/S Stereo Folddown**: Replaced standard channel-summing with a specialized cardioid-based stereo downmix for Ambisonic previews (monitoring mode). This prevents rear-hemisphere phase cancellation when listening without headphones.
+- **7th-Order Truncation & Pipeline Hardening (PRP #116 - #118)**:
+    - **Robust Truncation**: Implemented discrete `channelmap` filtering in `ObrHandler.ts` to successfully downscale 7th-order (64ch) files to the renderer's 4th-order (25ch) limit. This bypasses FFmpeg's layout constraints.
+    - **Error Hardening**: Enhanced pipeline cleanup logic to explicitly reap child processes and destroy response sockets upon encoder failure, preventing UI "waiting" hangs.
+    - **Buffer Safety**: Capped browser-side `WavDecoder` to 32 channels for UI visualization to ensure stability with high-channel files.
 

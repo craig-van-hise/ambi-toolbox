@@ -41,12 +41,13 @@ export class WavDecoder {
     }
 
     private static extractPCM(view: DataView, offset: number, length: number, channels: number, sampleRate: number, bitDepth: number, ctx: AudioContext): AudioBuffer {
-        console.log(`Manual Decode: ${channels}ch @ ${sampleRate}Hz, ${bitDepth}-bit`);
+        console.log(`Manual Decode: ${channels}ch @ ${sampleRate}Hz, ${bitDepth}-bit (Capping to 32 for visualization)`);
 
+        const renderChannels = Math.min(channels, 32);
         const frameCount = length / ((bitDepth / 8) * channels);
-        const audioBuffer = ctx.createBuffer(channels, frameCount, sampleRate);
+        const audioBuffer = ctx.createBuffer(renderChannels, frameCount, sampleRate);
 
-        for (let ch = 0; ch < channels; ch++) {
+        for (let ch = 0; ch < renderChannels; ch++) {
             const channelData = audioBuffer.getChannelData(ch);
             let readIndex = offset + (ch * (bitDepth / 8)); // Interleaved offset
             const step = (bitDepth / 8) * channels;

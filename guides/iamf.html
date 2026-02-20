@@ -24,7 +24,7 @@
         }
 
         details.container-card {
-            width: 600px;
+            width: 700px;
             background: var(--card-bg);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
@@ -39,7 +39,7 @@
             color: #000;
             cursor: pointer;
             display: flex;
-            justify-content: flex-start;
+            justify-content: space-between;
             align-items: center;
             list-style: none;
         }
@@ -48,7 +48,12 @@
             display: none;
         }
 
-        summary.card-header::before {
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-left::before {
             content: "";
             display: inline-block;
             width: 0;
@@ -60,7 +65,7 @@
             transition: transform 0.2s;
         }
 
-        details[open].container-card>summary.card-header::before {
+        details[open].container-card>summary.card-header .header-left::before {
             transform: rotate(90deg);
         }
 
@@ -70,32 +75,44 @@
         }
 
         .header-main-title {
-            font-size: 2rem;
-            font-weight: 800;
+            font-size: 2.2rem;
+            font-weight: 900;
             line-height: 1;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             letter-spacing: -0.05em;
         }
 
         .header-sub-title {
-            font-size: 0.9rem;
-            font-weight: 400;
-            opacity: 0.8;
+            font-size: 0.95rem;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            opacity: 0.85;
         }
 
-        /* Deep Dive Link Styling */
+        .authority-links {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+        }
+
         .spec-link {
-            color: var(--link-accent);
+            background: rgba(0, 0, 0, 0.15);
+            color: #000;
             text-decoration: none;
-            margin-left: 6px;
-            font-size: 0.85rem;
-            transition: opacity 0.2s;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: background 0.2s, color 0.2s;
+            border: 1px solid rgba(0, 0, 0, 0.2);
         }
 
         .spec-link:hover {
-            opacity: 0.7;
+            background: #000;
+            color: var(--iamf-primary);
         }
 
         .content-area {
@@ -122,6 +139,7 @@
             align-items: center;
             font-weight: 600;
             font-size: 0.95rem;
+            position: relative;
         }
 
         summary.nested-summary::-webkit-details-marker {
@@ -150,14 +168,20 @@
             margin-left: 18px;
         }
 
+        .tooltip-wrap {
+            position: relative;
+            margin-left: auto;
+            display: inline-flex;
+        }
+
         .badge {
             font-size: 0.65rem;
-            padding: 3px 8px;
+            padding: 4px 8px;
             border-radius: 4px;
-            margin-left: auto;
             text-transform: uppercase;
             font-weight: 900;
             color: #000;
+            cursor: help;
         }
 
         .b-struct {
@@ -172,11 +196,123 @@
             background: var(--badge-primitive);
         }
 
-        .description {
+        .tooltip-content {
+            position: absolute;
+            width: 280px;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.8);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 100;
+            color: #eee;
+            text-transform: none;
+            font-weight: 400;
+        }
+
+        .tooltip-up .tooltip-content {
+            bottom: 130%;
+            right: 0;
+            transform: translateY(5px);
+        }
+
+        .tooltip-up:hover .tooltip-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tooltip-down .tooltip-content {
+            top: 130%;
+            right: 0;
+            transform: translateY(-5px);
+        }
+
+        .tooltip-down:hover .tooltip-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tooltip-header {
+            display: flex;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #444;
+            color: #fff;
+        }
+
+        .color-blob {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            display: inline-block;
+        }
+
+        .tooltip-body {
             font-size: 0.8rem;
-            color: var(--text-sub);
             line-height: 1.4;
-            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+
+        .tooltip-example {
+            font-size: 0.75rem;
+            background: #111;
+            padding: 6px 8px;
+            border-radius: 4px;
+            border-left: 2px solid var(--iamf-primary);
+            color: #aaa;
+            font-family: monospace;
+        }
+
+        .description {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            line-height: 1.5;
+            margin-top: 6px;
+        }
+
+        .accepted-values {
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 3px solid var(--iamf-primary);
+            border-radius: 0 4px 4px 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            color: #cfcfcf;
+        }
+
+        .accepted-values strong {
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .val-row {
+            display: flex;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .val-key {
+            color: var(--iamf-primary);
+            font-weight: bold;
+            min-width: 50px;
+            flex-shrink: 0;
+        }
+
+        .val-desc {
+            color: #aaa;
         }
     </style>
 </head>
@@ -185,58 +321,145 @@
 
     <details class="container-card">
         <summary class="card-header">
-            <div class="header-text-group">
-                <span class="header-main-title">.iamf</span>
-                <span class="header-sub-title">Immersive Audio Model & Formats <a
-                        href="https://aomedia.org/specifications/iamf/" target="_blank"
-                        title="View Official AOMedia IAMF Specification" class="spec-link">🔗</a></span>
+            <div class="header-left">
+                <div class="header-text-group">
+                    <span class="header-main-title">.iamf</span>
+                    <span class="header-sub-title">Immersive Audio Model & Formats</span>
+                </div>
+            </div>
+
+            <div class="authority-links">
+                <a href="https://aomedia.org/specifications/iamf/" target="_blank" class="spec-link">Format Overview</a>
+                <a href="https://aomediacodec.github.io/iamf/" target="_blank" class="spec-link">v1.1 Specification</a>
             </div>
         </summary>
 
         <div class="content-area">
 
             <details class="nested-node">
-                <summary class="nested-summary">OBU_IA_Sequence_Header <span class="badge b-struct">OBU Type 31</span>
+                <summary class="nested-summary">OBU_IA_Sequence_Header
+                    <div class="tooltip-wrap tooltip-down">
+                        <span class="badge b-struct">OBU Type 31</span>
+                        <div class="tooltip-content">
+                            <div class="tooltip-header"><span class="color-blob b-struct"></span> Structural Wrapper
+                            </div>
+                            <div class="tooltip-body"><strong>Open Bitstream Unit:</strong> A packetized container that
+                                encapsulates data. Type 31 acts as the global master descriptor.</div>
+                            <div class="tooltip-example"><strong>Example:</strong> Header payload declaring
+                                'Base-Enhanced' profile active.</div>
+                        </div>
+                    </div>
                 </summary>
                 <div class="node-content">
                     <div class="description">The global configuration for the entire IAMF stream, defining profiles and
-                        versioning[cite: 318]. <a href="https://av2.aomedia.org/v13-public/index.html" target="_blank"
-                            title="View AV2 Bitstream & Decoding Process Specification" class="spec-link">🔗</a></div>
+                        versioning.</div>
 
                     <details class="nested-node">
-                        <summary class="nested-summary">primary_profile <span class="badge b-primitive">Value</span>
+                        <summary class="nested-summary">primary_profile
+                            <div class="tooltip-wrap tooltip-down">
+                                <span class="badge b-primitive">Value</span>
+                                <div class="tooltip-content">
+                                    <div class="tooltip-header"><span class="color-blob b-primitive"></span> Primitive
+                                        Variable</div>
+                                    <div class="tooltip-body"><strong>Value:</strong> A numeric selection defining the
+                                        complexity tier of the stream.</div>
+                                    <div class="tooltip-example"><strong>Example:</strong> 2 (Base-Enhanced Profile)
+                                    </div>
+                                </div>
+                            </div>
                         </summary>
                         <div class="node-content">
-                            <div class="description">Dictates the complexity tier of the stream (e.g., Simple, Base, or
-                                Base-Enhanced)[cite: 340, 341, 342].</div>
+                            <div class="description">Dictates the complexity tier of the stream, restricting or
+                                unlocking features like massive channel layouts.</div>
+                            <div class="accepted-values">
+                                <strong>Accepted Parameters:</strong>
+                                <div class="val-row"><span class="val-key">0</span><span class="val-desc">= Simple
+                                        Profile (Channel-based only, limited to 5.1/7.1 layouts, no Ambisonics)</span>
+                                </div>
+                                <div class="val-row"><span class="val-key">1</span><span class="val-desc">= Base Profile
+                                        (Adds up to 1st-order Ambisonics, Binaural, and 7.1.4 layouts)</span></div>
+                                <div class="val-row"><span class="val-key">2</span><span class="val-desc">=
+                                        Base-Enhanced Profile (Unlocks up to 3rd-order Ambisonics and massive 10.2.9.3
+                                        arrays)</span></div>
+                            </div>
                         </div>
                     </details>
                 </div>
             </details>
 
             <details class="nested-node">
-                <summary class="nested-summary">OBU_IA_Codec_Config <span class="badge b-struct">OBU Type 0</span>
+                <summary class="nested-summary">OBU_IA_Codec_Config
+                    <div class="tooltip-wrap tooltip-down">
+                        <span class="badge b-struct">OBU Type 0</span>
+                        <div class="tooltip-content">
+                            <div class="tooltip-header"><span class="color-blob b-struct"></span> Structural Wrapper
+                            </div>
+                            <div class="tooltip-body"><strong>Open Bitstream Unit:</strong> A packet containing
+                                initialization data required to set up the audio decoder.</div>
+                            <div class="tooltip-example"><strong>Example:</strong> Payload containing specific Opus
+                                channel counts and magic signatures.</div>
+                        </div>
+                    </div>
                 </summary>
                 <div class="node-content">
                     <div class="description">Defines the specific codec initialization data. Essential for setting up
-                        the audio decoder[cite: 317, 351]. <a href="https://aomediacodec.github.io/iamf/"
-                            target="_blank" title="View Codec Config Specifications" class="spec-link">🔗</a></div>
+                        the audio decoder.</div>
 
                     <details class="nested-node">
-                        <summary class="nested-summary">codec_id <span class="badge b-primitive">4 Bytes</span>
+                        <summary class="nested-summary">codec_id
+                            <div class="tooltip-wrap tooltip-up">
+                                <span class="badge b-primitive">4 Bytes</span>
+                                <div class="tooltip-content">
+                                    <div class="tooltip-header"><span class="color-blob b-primitive"></span> Primitive
+                                        Variable</div>
+                                    <div class="tooltip-body"><strong>4 Bytes:</strong> A 32-bit integer typically
+                                        represented as a 4-character ASCII string (FourCC). Users generally input the
+                                        exact text string, which software translates to hex.</div>
+                                    <div class="tooltip-example"><strong>Example:</strong> 0x4F707573 (Hex for "Opus")
+                                    </div>
+                                </div>
+                            </div>
                         </summary>
                         <div class="node-content">
-                            <div class="description">A FourCC code identifying the format, such as Opus, mp4a, fLaC, or
-                                ipcm[cite: 353, 355, 356, 357, 358].</div>
+                            <div class="description">A Four-Character Code (FourCC) strictly identifying the
+                                encapsulated audio format.</div>
+                            <div class="accepted-values">
+                                <strong>Accepted Parameters (ASCII Text String):</strong>
+                                <div class="val-row"><span class="val-key">Opus</span><span class="val-desc">= Opus
+                                        Interactive Audio Codec</span></div>
+                                <div class="val-row"><span class="val-key">mp4a</span><span class="val-desc">= Advanced
+                                        Audio Coding (AAC-LC)</span></div>
+                                <div class="val-row"><span class="val-key">fLaC</span><span class="val-desc">= Free
+                                        Lossless Audio Codec</span></div>
+                                <div class="val-row"><span class="val-key">ipcm</span><span class="val-desc">= Linear
+                                        PCM (Uncompressed)</span></div>
+                            </div>
                         </div>
                     </details>
 
                     <details class="nested-node">
-                        <summary class="nested-summary">audio_roll_distance <span class="badge b-primitive">Value</span>
+                        <summary class="nested-summary">audio_roll_distance
+                            <div class="tooltip-wrap tooltip-up">
+                                <span class="badge b-primitive">Value</span>
+                                <div class="tooltip-content">
+                                    <div class="tooltip-header"><span class="color-blob b-primitive"></span> Primitive
+                                        Variable</div>
+                                    <div class="tooltip-body"><strong>Value:</strong> A positive integer instructing the
+                                        decoder how many samples to pre-roll before rendering audio.</div>
+                                    <div class="tooltip-example"><strong>Example:</strong> 3840 (Common pre-roll for
+                                        Opus)</div>
+                                </div>
+                            </div>
                         </summary>
                         <div class="node-content">
                             <div class="description">Critical for random access; specifies how many samples prior to the
-                                target timestamp must be decoded to prime the decoder's internal state[cite: 362, 363].
+                                target timestamp must be decoded to prime the decoder's internal state.</div>
+                            <div class="accepted-values">
+                                <strong>Accepted Parameters:</strong>
+                                <div class="val-row"><span class="val-key">Int</span><span class="val-desc">= Any
+                                        positive integer (e.g., 3840, representing number of samples)</span></div>
+                                <div class="val-row"><span class="val-key">0</span><span class="val-desc">= MUST be
+                                        exactly 0 if codec_id is set to fLaC or ipcm</span></div>
                             </div>
                         </div>
                     </details>
@@ -244,118 +467,373 @@
             </details>
 
             <details class="nested-node">
-                <summary class="nested-summary">OBU_IA_Audio_Element <span class="badge b-struct">OBU Type 1</span>
+                <summary class="nested-summary">OBU_IA_Audio_Element
+                    <div class="tooltip-wrap tooltip-up">
+                        <span class="badge b-struct">OBU Type 1</span>
+                        <div class="tooltip-content">
+                            <div class="tooltip-header"><span class="color-blob b-struct"></span> Structural Wrapper
+                            </div>
+                            <div class="tooltip-body"><strong>Open Bitstream Unit:</strong> A packet describing the
+                                layout of an audio object, channel bed, or Ambisonics scene.</div>
+                            <div class="tooltip-example"><strong>Example:</strong> Payload defining a discrete 7.1.4
+                                channel bed structure.</div>
+                        </div>
+                    </div>
                 </summary>
                 <div class="node-content">
                     <div class="description">Describes the structure of an audio object, channel bed, or Ambisonics
-                        scene, defining how substreams are combined[cite: 317, 367].</div>
+                        scene, defining how substreams are combined.</div>
 
                     <details class="nested-node">
-                        <summary class="nested-summary">audio_element_type <span class="badge b-primitive">Value</span>
+                        <summary class="nested-summary">audio_element_type
+                            <div class="tooltip-wrap tooltip-up">
+                                <span class="badge b-primitive">Value</span>
+                                <div class="tooltip-content">
+                                    <div class="tooltip-header"><span class="color-blob b-primitive"></span> Primitive
+                                        Variable</div>
+                                    <div class="tooltip-body"><strong>Value:</strong> A numeric selection defining the
+                                        structural paradigm of the audio payload.</div>
+                                    <div class="tooltip-example"><strong>Example:</strong> 1 (Scene Based)</div>
+                                </div>
+                            </div>
                         </summary>
                         <div class="node-content">
                             <div class="description">Fundamentally changes how the decoder interprets the subsequent
-                                data (0=Channel Based, 1=Scene Based, 2=Object Based)[cite: 369, 370, 371].</div>
-                        </div>
-                    </details>
-
-                    <details class="nested-node">
-                        <summary class="nested-summary">ScalableChannelLayoutConfig <span
-                                class="badge b-complex">Struct</span></summary>
-                        <div class="node-content">
-                            <div class="description">Allows a decoder to download/decode only the channels it needs.
-                                Triggered by Type 0[cite: 370, 373, 374].</div>
-                            <div class="description" style="margin-top:8px;">Includes <strong>num_layers</strong>
-                                (hierarchy depth) and <strong>loudspeaker_layout</strong> (channel config)[cite: 376,
-                                377].</div>
-
-                            <details class="nested-node">
-                                <summary class="nested-summary">expanded_loudspeaker_layout <span
-                                        class="badge b-primitive">8-Bit</span></summary>
-                                <div class="node-content">
-                                    <div class="description">Parsed when layout is set to 15. Supports ultra-immersive
-                                        setups like 9.1.6ch or 10.2.9.3ch[cite: 384, 385, 386]. <a
-                                            href="https://www.svconline.com/proav-today/samsung-google-iamf-spatial-audio"
-                                            target="_blank" title="Read about Eclipsa Audio expanded arrays"
-                                            class="spec-link">🔗</a></div>
-                                </div>
-                            </details>
-                        </div>
-                    </details>
-                </div>
-            </details>
-
-            <details class="nested-node">
-                <summary class="nested-summary">OBU_IA_Mix_Presentation <span class="badge b-struct">OBU Type 2</span>
-                </summary>
-                <div class="node-content">
-                    <div class="description">Contains the rendering and mixing rules (loudness, gain, layout targeting)
-                        for the final output[cite: 317, 398].</div>
-
-                    <details class="nested-node">
-                        <summary class="nested-summary">Loudness Info (ITU-R BS.1770-4) <span
-                                class="badge b-complex">Struct</span></summary>
-                        <div class="node-content">
-                            <div class="description">Mandatory loudness compliance data. Carries
-                                <strong>integrated_loudness</strong> and maximum <strong>true_peak</strong> (dBTP)[cite:
-                                411, 412, 418, 420]. <a
-                                    href="https://www.gaudiolab.com/blog/213_from_lkfs_to_true_peak_the_complete_guide_to_loudness"
-                                    target="_blank" title="View Guide to Loudness and True Peak"
-                                    class="spec-link">🔗</a></div>
-
-                            <details class="nested-node">
-                                <summary class="nested-summary">anchor_element <span
-                                        class="badge b-primitive">Value</span></summary>
-                                <div class="node-content">
-                                    <div class="description">Allows content normalization based on a specific perceptual
-                                        element (1=Dialogue Anchor, 2=Album Anchor)[cite: 423, 425, 428].</div>
-                                </div>
-                            </details>
-                        </div>
-                    </details>
-
-                    <details class="nested-node">
-                        <summary class="nested-summary">rendering_config <span class="badge b-complex">Struct</span>
-                        </summary>
-                        <div class="node-content">
-                            <div class="description">Instructs the renderer on algorithmic application, including
-                                <strong>headphones_rendering_mode</strong> (Stereo vs Binaural)[cite: 430, 432, 435].
+                                data routing.</div>
+                            <div class="accepted-values">
+                                <strong>Accepted Parameters:</strong>
+                                <div class="val-row"><span class="val-key">0</span><span class="val-desc">=
+                                        CHANNEL_BASED (Traditional speaker targets)</span></div>
+                                <div class="val-row"><span class="val-key">1</span><span class="val-desc">= SCENE_BASED
+                                        (Ambisonics soundfield)</span></div>
+                                <div class="val-row"><span class="val-key">2</span><span class="val-desc">= OBJECT_BASED
+                                        (Discrete items with Cartesian coordinates)</span></div>
+                                <div class="val-row"><span class="val-key">3-7</span><span class="val-desc">= Reserved
+                                        for future use</span></div>
                             </div>
                         </div>
                     </details>
+
+                    <details class="nested-node">
+                        <summary class="nested-summary">ScalableChannelLayoutConfig
+                            <div class="tooltip-wrap tooltip-up">
+                                <span class="badge b-complex">Struct</span>
+                                <div class="tooltip-content">
+                                    <div class="tooltip-header"><span class="color-blob b-complex"></span> Complex Data
+                                        Payload</div>
+                                    <div class="tooltip-body"><strong>Struct (Structure):</strong> A grouping of
+                                        multiple variables (like layer depth and channel config) bundled together.</div>
+                                    <div class="tooltip-example"><strong>Example:</strong> { num_layers: 2,
+                                        loudspeaker_layout: 9 }</div>
+                                </div>
+                            </div>
+                        </summary>
+                        <div class="node-content">
+                            <div class="description">Allows a decoder to download or decode only the channels it needs.
+                                Triggered by Type 0.</div>
+
+                            <details class="nested-node">
+                                <summary class="nested-summary">loudspeaker_layout & num_layers
+                                    <div class="tooltip-wrap tooltip-up">
+                                        <span class="badge b-primitive">Value</span>
+                                        <div class="tooltip-content">
+                                            <div class="tooltip-header"><span class="color-blob b-primitive"></span>
+                                                Primitive Variable</div>
+                                            <div class="tooltip-body"><strong>Value:</strong> Standard mapping
+                                                parameters for the stream geometry.</div>
+                                            <div class="tooltip-example"><strong>Example:</strong> 2 (5.1 surround)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </summary>
+                                <div class="node-content">
+                                    <div class="description">Defines standard channel arrays and scalability.</div>
+                                    <div class="accepted-values">
+                                        <strong>Accepted Parameters:</strong>
+                                        <div class="val-row"><span class="val-key">Layers</span><span class="val-desc">1
+                                                to 7</span></div>
+                                        <div class="val-row"><span class="val-key">0</span><span class="val-desc">=
+                                                Mono</span></div>
+                                        <div class="val-row"><span class="val-key">1</span><span class="val-desc">=
+                                                Stereo</span></div>
+                                        <div class="val-row"><span class="val-key">2</span><span class="val-desc">=
+                                                5.1</span></div>
+                                        <div class="val-row"><span class="val-key">15</span><span class="val-desc">=
+                                                Expanded Layout (Triggers expanded_loudspeaker_layout)</span></div>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <details class="nested-node">
+                                <summary class="nested-summary">expanded_loudspeaker_layout
+                                    <div class="tooltip-wrap tooltip-up">
+                                        <span class="badge b-primitive">8-Bit</span>
+                                        <div class="tooltip-content">
+                                            <div class="tooltip-header"><span class="color-blob b-primitive"></span>
+                                                Primitive Variable</div>
+                                            <div class="tooltip-body"><strong>8-Bit Integer:</strong> A small data size
+                                                used to select highly specific, massive speaker layouts.</div>
+                                            <div class="tooltip-example"><strong>Example:</strong> 8 (Representing
+                                                9.1.6ch)</div>
+                                        </div>
+                                    </div>
+                                </summary>
+                                <div class="node-content">
+                                    <div class="description">Parsed when standard layout is set to 15. Supports
+                                        ultra-immersive, high-density hardware setups.</div>
+                                    <div class="accepted-values">
+                                        <strong>Accepted Parameters:</strong>
+                                        <div class="val-row"><span class="val-key">8</span><span class="val-desc">=
+                                                9.1.6ch (16 Channels)</span></div>
+                                        <div class="val-row"><span class="val-key">13</span><span class="val-desc">=
+                                                10.2.9.3ch (24 Channels)</span></div>
+                                        <div class="val-row"><span class="val-key">18</span><span class="val-desc">=
+                                                Top-1ch (TpC "Voice of God")</span></div>
+                                        <div class="val-row"><span class="val-key">19</span><span class="val-desc">=
+                                                Top-5ch (Full overhead ring)</span></div>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
                 </div>
             </details>
 
             <details class="nested-node">
-                <summary class="nested-summary">OBU_IA_Parameter_Block <span class="badge b-struct">OBU Type 3</span>
+                <summary class="nested-summary">OBU_IA_Mix_Presentation
+                    <div class="tooltip-wrap tooltip-up">
+                        <span class="badge b-struct">OBU Type 2</span>
+                        <div class="tooltip-content">
+                            <div class="tooltip-header"><span class="color-blob b-struct"></span> Structural Wrapper
+                            </div>
+                            <div class="tooltip-body"><strong>Open Bitstream Unit:</strong> A packet containing the
+                                rendering and mixing rules for the final output.</div>
+                            <div class="tooltip-example"><strong>Example:</strong> Payload defining the volume routing
+                                for an English 5.1 mix.</div>
+                        </div>
+                    </div>
                 </summary>
                 <div class="node-content">
-                    <div class="description">Carries time-varying dynamic metadata (demixing coefficients, spatial
-                        positions) for a specific duration[cite: 317, 442].</div>
+                    <div class="description">Contains the rendering and mixing rules (loudness, gain, layout targeting)
+                        for the final output.</div>
 
                     <details class="nested-node">
-                        <summary class="nested-summary">DemixingInfoParameterData <span
-                                class="badge b-complex">Struct</span></summary>
+                        <summary class="nested-summary">Loudness Info (ITU-R BS.1770-4)
+                            <div class="tooltip-wrap tooltip-up">
+                                <span class="badge b-complex">Struct</span>
+                                <div class="tooltip-content">
+                                    <div class="tooltip-header"><span class="color-blob b-complex"></span> Complex Data
+                                        Payload</div>
+                                    <div class="tooltip-body"><strong>Struct:</strong> Bundles several loudness metrics
+                                        together, ensuring the audio meets strict broadcast regulations.</div>
+                                    <div class="tooltip-example"><strong>Example:</strong> { integrated_loudness: -24
+                                        LKFS, true_peak: -1.5 dBTP }</div>
+                                </div>
+                            </div>
+                        </summary>
                         <div class="node-content">
-                            <div class="description">Provides the mathematical key to unfold a downmix back into a
-                                high-channel-count mix[cite: 449].</div>
-                            <div class="description" style="margin-top:8px;">Uses <strong>dmixp_mode</strong> to define
-                                parametric combinations (α, β, γ, δ)[cite: 451, 452].</div>
+                            <div class="description">Mandatory loudness compliance data. Carries
+                                <strong>integrated_loudness</strong> and maximum <strong>true_peak</strong> (dBTP).
+                            </div>
+
+                            <details class="nested-node">
+                                <summary class="nested-summary">anchor_element
+                                    <div class="tooltip-wrap tooltip-up">
+                                        <span class="badge b-primitive">Value</span>
+                                        <div class="tooltip-content">
+                                            <div class="tooltip-header"><span class="color-blob b-primitive"></span>
+                                                Primitive Variable</div>
+                                            <div class="tooltip-body"><strong>Value:</strong> Selection defining
+                                                perceptual leveling targets.</div>
+                                            <div class="tooltip-example"><strong>Example:</strong> 1 (Dialogue Anchor)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </summary>
+                                <div class="node-content">
+                                    <div class="description">Allows content normalization based on a specific perceptual
+                                        element rather than the whole mix.</div>
+                                    <div class="accepted-values">
+                                        <strong>Accepted Parameters:</strong>
+                                        <div class="val-row"><span class="val-key">0</span><span class="val-desc">=
+                                                Unknown Anchor</span></div>
+                                        <div class="val-row"><span class="val-key">1</span><span class="val-desc">=
+                                                Dialogue Anchor</span></div>
+                                        <div class="val-row"><span class="val-key">2</span><span class="val-desc">=
+                                                Album Anchor</span></div>
+                                    </div>
+                                </div>
+                            </details>
                         </div>
                     </details>
 
                     <details class="nested-node">
-                        <summary class="nested-summary">SinglePositionParameterData <span
-                                class="badge b-complex">Struct</span></summary>
+                        <summary class="nested-summary">rendering_config
+                            <div class="tooltip-wrap tooltip-up">
+                                <span class="badge b-complex">Struct</span>
+                                <div class="tooltip-content">
+                                    <div class="tooltip-header"><span class="color-blob b-complex"></span> Complex Data
+                                        Payload</div>
+                                    <div class="tooltip-body"><strong>Struct:</strong> Instructs the renderer on
+                                        algorithmic application.</div>
+                                    <div class="tooltip-example"><strong>Example:</strong> { headphones_rendering_mode:
+                                        1 }</div>
+                                </div>
+                            </div>
+                        </summary>
                         <div class="node-content">
-                            <div class="description">Carries the 3D coordinates moving objects through space[cite: 446,
-                                468].</div>
-                            <div class="description" style="margin-top:8px;">Includes <strong>animation_type</strong>,
-                                <strong>azimuth</strong>, <strong>elevation</strong>, and
-                                <strong>distance</strong>[cite: 472, 474, 476, 478]. <a
-                                    href="https://news.samsung.com/global/interview-movie-quality-audio-from-the-comfort-of-your-home-meet-the-leaders-of-next-generation-3d-audio-technology"
-                                    target="_blank" title="Read about 3D Spatial and Vertical Audio Tracking"
-                                    class="spec-link">🔗</a></div>
+                            <div class="description">Determines the specific mathematical playback engine utilized.
+                            </div>
+
+                            <details class="nested-node">
+                                <summary class="nested-summary">headphones_rendering_mode
+                                    <div class="tooltip-wrap tooltip-up">
+                                        <span class="badge b-primitive">Value</span>
+                                        <div class="tooltip-content">
+                                            <div class="tooltip-header"><span class="color-blob b-primitive"></span>
+                                                Primitive Variable</div>
+                                            <div class="tooltip-body"><strong>Value:</strong> Toggles spatial 3D audio
+                                                for headsets.</div>
+                                            <div class="tooltip-example"><strong>Example:</strong> 1</div>
+                                        </div>
+                                    </div>
+                                </summary>
+                                <div class="node-content">
+                                    <div class="description">Directs how standard layouts should be converted when the
+                                        endpoint is a pair of headphones.</div>
+                                    <div class="accepted-values">
+                                        <strong>Accepted Parameters:</strong>
+                                        <div class="val-row"><span class="val-key">0</span><span class="val-desc">=
+                                                STEREO (Basic Downmix)</span></div>
+                                        <div class="val-row"><span class="val-key">1</span><span class="val-desc">=
+                                                BINAURAL (HRTF 3D Spatialization)</span></div>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+                </div>
+            </details>
+
+            <details class="nested-node">
+                <summary class="nested-summary">OBU_IA_Parameter_Block
+                    <div class="tooltip-wrap tooltip-up">
+                        <span class="badge b-struct">OBU Type 3</span>
+                        <div class="tooltip-content">
+                            <div class="tooltip-header"><span class="color-blob b-struct"></span> Structural Wrapper
+                            </div>
+                            <div class="tooltip-body"><strong>Open Bitstream Unit:</strong> A packet carrying
+                                time-varying dynamic metadata for a specific frame duration.</div>
+                            <div class="tooltip-example"><strong>Example:</strong> Payload updating an object's X, Y, Z
+                                coordinates for frame 1024.</div>
+                        </div>
+                    </div>
+                </summary>
+                <div class="node-content">
+                    <div class="description">Carries time-varying dynamic metadata (demixing coefficients, spatial
+                        positions) for a specific duration.</div>
+
+                    <details class="nested-node">
+                        <summary class="nested-summary">DemixingInfoParameterData
+                            <div class="tooltip-wrap tooltip-up">
+                                <span class="badge b-complex">Struct</span>
+                                <div class="tooltip-content">
+                                    <div class="tooltip-header"><span class="color-blob b-complex"></span> Complex Data
+                                        Payload</div>
+                                    <div class="tooltip-body"><strong>Struct:</strong> Bundles mathematical keys to
+                                        unfold a downmix.</div>
+                                    <div class="tooltip-example"><strong>Example:</strong> { dmixp_mode: 0 }</div>
+                                </div>
+                            </div>
+                        </summary>
+                        <div class="node-content">
+                            <div class="description">Provides the key to unfold a downmix back into a high-channel-count
+                                mix.</div>
+
+                            <details class="nested-node">
+                                <summary class="nested-summary">dmixp_mode
+                                    <div class="tooltip-wrap tooltip-up">
+                                        <span class="badge b-primitive">3-Bit</span>
+                                        <div class="tooltip-content">
+                                            <div class="tooltip-header"><span class="color-blob b-primitive"></span>
+                                                Primitive Variable</div>
+                                            <div class="tooltip-body"><strong>3-Bit Integer:</strong> Selects one of 8
+                                                preset demixing parametric combinations.</div>
+                                            <div class="tooltip-example"><strong>Example:</strong> 0</div>
+                                        </div>
+                                    </div>
+                                </summary>
+                                <div class="node-content">
+                                    <div class="description">Defines the values of alpha, beta, gamma, and delta used in
+                                        the demixing matrix.</div>
+                                    <div class="accepted-values">
+                                        <strong>Accepted Parameters (0-7):</strong>
+                                        <div class="val-row"><span class="val-key">0</span><span class="val-desc">= Mode
+                                                1 (Standard cinematic demixing)</span></div>
+                                        <div class="val-row"><span class="val-key">1</span><span class="val-desc">= Mode
+                                                2 (Flatter energy distribution)</span></div>
+                                        <div class="val-row"><span class="val-key">2</span><span class="val-desc">= Mode
+                                                3 (Front-focused weighting)</span></div>
+                                        <div class="val-row"><span class="val-key">3-7</span><span class="val-desc">=
+                                                Reserved for future matrix configurations</span></div>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+
+                    <details class="nested-node">
+                        <summary class="nested-summary">SinglePositionParameterData
+                            <div class="tooltip-wrap tooltip-up">
+                                <span class="badge b-complex">Struct</span>
+                                <div class="tooltip-content">
+                                    <div class="tooltip-header"><span class="color-blob b-complex"></span> Complex Data
+                                        Payload</div>
+                                    <div class="tooltip-body"><strong>Struct:</strong> Bundles precise 3D mathematical
+                                        coordinates.</div>
+                                    <div class="tooltip-example"><strong>Example:</strong> { animation_type: 1, azimuth:
+                                        45.0 }</div>
+                                </div>
+                            </div>
+                        </summary>
+                        <div class="node-content">
+                            <div class="description">Carries the 3D coordinates moving objects through space. Includes
+                                <strong>azimuth</strong>, <strong>elevation</strong>, and <strong>distance</strong>.
+                            </div>
+
+                            <details class="nested-node">
+                                <summary class="nested-summary">animation_type & coordinates
+                                    <div class="tooltip-wrap tooltip-up">
+                                        <span class="badge b-primitive">Value</span>
+                                        <div class="tooltip-content">
+                                            <div class="tooltip-header"><span class="color-blob b-primitive"></span>
+                                                Primitive Variable</div>
+                                            <div class="tooltip-body"><strong>Value:</strong> Instructions on how to
+                                                calculate position vectors over time.</div>
+                                            <div class="tooltip-example"><strong>Example:</strong> 2 (Bezier curve
+                                                interpolation)</div>
+                                        </div>
+                                    </div>
+                                </summary>
+                                <div class="node-content">
+                                    <div class="description">Defines how the renderer should interpolate positions
+                                        between updates, and the Cartesian limits.</div>
+                                    <div class="accepted-values">
+                                        <strong>Accepted Parameters:</strong>
+                                        <div class="val-row"><span class="val-key">0</span><span class="val-desc">= Step
+                                                (Immediate coordinate jump)</span></div>
+                                        <div class="val-row"><span class="val-key">1</span><span class="val-desc">=
+                                                Linear (Direct line interpolation)</span></div>
+                                        <div class="val-row"><span class="val-key">2</span><span class="val-desc">=
+                                                Bezier (Smooth curve interpolation)</span></div>
+                                        <div class="val-row" style="margin-top:4px;"><span
+                                                class="val-key">Azimuth</span><span class="val-desc">-180.0° to 180.0°
+                                                (Horizontal axis)</span></div>
+                                        <div class="val-row"><span class="val-key">Elev.</span><span
+                                                class="val-desc">-90.0° to 90.0° (Vertical axis)</span></div>
+                                    </div>
+                                </div>
+                            </details>
                         </div>
                     </details>
                 </div>

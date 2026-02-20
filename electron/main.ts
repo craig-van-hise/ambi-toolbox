@@ -287,8 +287,15 @@ app.whenReady().then(() => {
                     encoder.kill('SIGKILL');
                 });
 
-                encoder.on('close', () => {
-                    if (!res.writableEnded) res.end();
+                encoder.on('close', (code) => {
+                    if (!res.writableEnded) {
+                        if (code !== 0 && code !== null) {
+                            console.error(`[OBR] Pipeline broken (exit code ${code}). Destroying response.`);
+                            res.destroy();
+                        } else {
+                            res.end();
+                        }
+                    }
                 });
 
             } catch (err: any) {

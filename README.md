@@ -57,7 +57,7 @@ This suite eliminates those bottlenecks, allowing audio engineers to process, co
 * **Hybrid Native Engine**:
 * **Order 1 (Ch 1-3)**: Full 3-Axis Matrix (Yaw/Pitch/Roll).
 * **Order >1 (Ch 4+)**: Infinite-Order Sectorial Yaw (Optimized).
-* *Monitoring*: Real-time **Binaural Rendering** (Google OBR) via internal HTTP streaming server.
+* *Monitoring*: Real-time **Binaural Rendering** (Google OBR) via internal HTTP streaming server. Supports up to **4th Order (25ch)** natively, with automatic truncation for higher-order files (7th Order/64ch).
 
 
 9. **AmbiTrim**: Lossless trimming for high-channel-count files.
@@ -128,7 +128,44 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 
 ## 📂 Project Structure
 
-```text
+├── package.json
+├── package-lock.json
+├── postcss.config.js
+├── public
+|  ├── ambisonics.js
+|  ├── electron-vite.animate.svg
+|  ├── electron-vite.svg
+|  ├── js
+|  └── vite.svg
+├── py
+|  ├── ambi_data_heuristics.py
+|  └── ambi_rotate.py
+├── repo-map.md
+├── resources
+|  └── scripts
+├── scripts
+|  ├── test-auto-resume.ts
+|  ├── test-binary-paths.ts
+|  ├── test-binaural.js
+|  ├── test-file-switch-autoplay.ts
+|  ├── test-frontend-url.ts
+|  ├── test-hard-swap.ts
+|  ├── test-obr-pipeline.js
+|  ├── test-queue-click.ts
+|  ├── test-seek-accuracy.ts
+|  ├── test-seek-debounce.ts
+|  ├── test-server.ts
+|  ├── test-stream-start.ts
+|  └── verify-stream-endpoint.js
+├── src
+|  ├── App.css
+|  ├── App.tsx
+|  ├── assets
+|  ├── components
+|  ├── constants.ts
+|  ├── contexts
+|  ├── cpp
+|  ├── index.css
 |  ├── main.tsx
 |  ├── tools
 |  ├── types.ts
@@ -149,6 +186,7 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 |  ├── gen_test_signal.py
 |  ├── handlers.test.ts
 |  ├── manual_test_out.wav
+|  ├── obr_pipeline.test.ts
 |  ├── sweep_in.wav
 |  ├── sweep_out.wav
 |  ├── test_16ch.wav
@@ -164,7 +202,7 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 └── xCleanup
    ├── legacy_apps
    └── legacy_libs
-```
+
 
 ## 🧪 Testing
 

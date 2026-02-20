@@ -43,23 +43,34 @@ export function createObrPipeline(
 
   console.log(`[Pipeline] Spawning 3-Stage Pipeline for: ${path.basename(inputPath)}`);
 
+  const safeChannels = Math.min(channels, 25);
+  const useTruncation = channels > 25;
+
   // 1. Decode
   // Input: File -> Output: stdout (f32le)
-  const decoder = spawn(ffmpegPath, [
+  const decoderArgs = [
     '-ss', start.toString(),
     '-i', inputPath,
     '-f', 'f32le',
     '-acodec', 'pcm_f32le',
     '-ar', '48000',
-    '-ac', channels.toString(),
-    '-max_muxing_queue_size', '9999',
-    'pipe:1'
-  ], { stdio: ['ignore', 'pipe', 'pipe'] }); // ignore stdin for decoder (file input)
+  ];
+
+  if (useTruncation) {
+    const mapString = Array.from({ length: 25 }, (_, i) => i).join('|');
+    decoderArgs.push('-af', `channelmap=map=${mapString}`);
+  } else {
+    decoderArgs.push('-ac', channels.toString());
+  }
+
+  decoderArgs.push('-max_muxing_queue_size', '9999', 'pipe:1');
+
+  const decoder = spawn(ffmpegPath, decoderArgs, { stdio: ['ignore', 'pipe', 'pipe'] });
 
   // 2. Process
   // Input: stdin (f32le) -> Output: stdout (f32le)
   const obr = spawn(obrPath, [
-    '--channels', channels.toString(),
+    '--channels', safeChannels.toString(),
     '--rate', '48000',
     '--profile', profile
   ], { stdio: ['pipe', 'pipe', 'pipe'] });
@@ -176,7 +187,13 @@ export function createObrPipeline(
       console.error(`[Pipeline] OBR exited with code ${code}`);
       killAll();
     }
-    // OBR finish -> Encoder should finish
+  });
+
+  encoder.on('close', code => {
+    if (code !== 0 && code !== null) {
+      console.error(`[Pipeline] Encoder exited with code ${code}`);
+      killAll();
+    }
   });
 
   // Return references
