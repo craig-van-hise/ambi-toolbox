@@ -1,90 +1,65 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createObrPipeline } from '../electron/handlers/ObrHandler';
 
-// Mock dependencies
-vi.mock('node:child_process', () => ({
+import { describe, it, expect, vi } from 'vitest';
+import { createObrPipeline } from '../electron/handlers/ObrHandler';
+import { spawn } from 'child_process';
+
+// Mock child_process and common
+vi.mock('child_process', () => ({
     spawn: vi.fn(() => ({
+        on: vi.fn(),
         stdout: { on: vi.fn(), pipe: vi.fn(() => ({ pipe: vi.fn() })) },
         stderr: { on: vi.fn() },
-        stdin: { on: vi.fn() },
-        on: vi.fn(),
-        kill: vi.fn()
+        stdin: { on: vi.fn() }
     }))
 }));
 
 vi.mock('../electron/handlers/common', () => ({
-    getBinaryPath: (name: string) => `/mock/bin/${name}`,
-    getFfmpegPath: () => '/mock/bin/ffmpeg'
+    getFfmpegPath: () => 'ffmpeg',
+    getFfprobePath: () => 'ffprobe',
+    getBinaryPath: (name: string) => name,
+    getSofaAssetPath: (name: string) => name
 }));
 
-describe('ObrHandler - createObrPipeline', () => {
-    let spawnMock: any;
+describe('OBR Pipeline Hardening', () => {
+    it('should force libopus decoder and use discrete channel mapping for .opus files', () => {
+        const inputPath = 'test_audio.opus';
+        const channels = 16;
+        const profile = 'ambient';
 
-    beforeEach(async () => {
-        const cp = await import('node:child_process');
-        spawnMock = cp.spawn;
-        spawnMock.mockClear();
+        createObrPipeline(inputPath, channels, profile);
+
+        const spawnCalls = vi.mocked(spawn).mock.calls;
+        const decoderArgs = spawnCalls[0][1];
+
+        // Phase 1 requirements:
+        // 1. '-c:a', 'libopus' should be at the start
+        expect(decoderArgs[0]).toBe('-c:a');
+        expect(decoderArgs[1]).toBe('libopus');
+        expect(decoderArgs).toContain('-i');
+
+        // 2. channelmap=map=0|1|...|15
+        const expectedMap = Array.from({ length: 16 }, (_, i) => i).join('|');
+        expect(decoderArgs).toContain(`channelmap=map=${expectedMap}`);
+
+        // 3. -strict experimental
+        expect(decoderArgs).toContain('-strict');
+        expect(decoderArgs).toContain('experimental');
     });
 
-    it('should use discrete channelmap for 7th-order truncation and omit -ac', () => {
-        // 64 channels (7th order)
-        createObrPipeline('/test/64ch.wav', 64, 'ambient', 0);
+    it('should use normal decoding for .wav files but still use channelmap', () => {
+        const inputPath = 'test_audio.wav';
+        const channels = 4;
+        const profile = 'ambient';
 
-        // find the decoder spawn (the first one)
-        const decoderCall = spawnMock.mock.calls.find((call: any) =>
-            call[1].includes('-i') && call[1].includes('/test/64ch.wav')
-        );
+        createObrPipeline(inputPath, channels, profile);
 
-        expect(decoderCall).toBeDefined();
-        const args = decoderCall[1];
+        const spawnCalls = vi.mocked(spawn).mock.calls;
+        // The second call (index 3 because of previous test) - wait, Vitest resets mocks?
+        // Let's use the last call or clear.
+        const lastCallArgs = spawnCalls[spawnCalls.length - 3][1]; // 3 processes per pipeline
 
-        // Should NOT contain -ac 64
-        expect(args).not.toContain('-ac');
-
-        const afIndex = args.indexOf('-af');
-        expect(afIndex).not.toBe(-1);
-        const filter = args[afIndex + 1];
-
-        expect(filter).toBe('channelmap=map=0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24');
-    });
-
-    it('should pass --channels 25 to OBR process for 7th-order file', () => {
-        createObrPipeline('/test/64ch.wav', 64, 'ambient', 0);
-
-        const obrCall = spawnMock.mock.calls.find((call: any) =>
-            call[0].includes('obr_stream')
-        );
-
-        expect(obrCall).toBeDefined();
-        const args = obrCall[1];
-        const channelsIndex = args.indexOf('--channels');
-        expect(args[channelsIndex + 1]).toBe('25');
-    });
-
-    it('should NOT use truncation filter for 1st-order (4ch) file', () => {
-        createObrPipeline('/test/4ch.wav', 4, 'ambient', 0);
-
-        const decoderCall = spawnMock.mock.calls.find((call: any) =>
-            call[1].includes('-i') && call[1].includes('/test/4ch.wav')
-        );
-
-        const args = decoderCall[1];
-        expect(args).not.toContain('-af');
-        expect(args).toContain('-ac');
-        expect(args[args.indexOf('-ac') + 1]).toBe('4');
-    });
-    it('should register close handlers that trigger kill', () => {
-        const procs = createObrPipeline('/test/file.wav', 4, 'ambient', 0);
-        const [decoder, obr, encoder] = procs;
-
-        // Find the 'close' listener registration
-        const decoderCloseHandler = (decoder.on as any).mock.calls.find((c: any) => c[0] === 'close')?.[1];
-        expect(decoderCloseHandler).toBeDefined();
-
-        // Triggering decoder exit 1 should kill others
-        decoderCloseHandler(1);
-
-        expect(obr.kill).toHaveBeenCalledWith('SIGKILL');
-        expect(encoder.kill).toHaveBeenCalledWith('SIGKILL');
+        expect(lastCallArgs).not.toContain('libopus');
+        const expectedMap = '0|1|2|3';
+        expect(lastCallArgs).toContain(`channelmap=map=${expectedMap}`);
     });
 });

@@ -87,3 +87,7 @@ export const BITRATE_OPTIONS = [
   BitrateOption.High,
   BitrateOption.Highest,
 ];
+
+export const ACCEPTED_AUDIO_FORMATS = [
+  '.aac', '.aivu', '.amb', '.caf', '.flac', '.iamf', '.m4a', '.mat', '.mkv', '.mov', '.mp3', '.mp4', '.ogg', '.opus', '.wav', '.webm'
+];

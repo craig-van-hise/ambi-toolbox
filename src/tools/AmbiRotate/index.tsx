@@ -255,7 +255,21 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
             }
 
             const rawBuffer = totalBuffer.buffer;
-            const buffer = WavDecoder.decode(rawBuffer, audioContextRef.current);
+            let buffer: AudioBuffer;
+
+            try {
+                // Try manual high-channel WAV decoder first (for Ambisonics)
+                buffer = WavDecoder.decode(rawBuffer, audioContextRef.current);
+            } catch (decodeErr) {
+                console.warn("Manual WavDecoder failed, falling back to Web Audio API:", decodeErr);
+                try {
+                    // Fallback to native decoder for standard formats (mp3, mp4-audio, etc.)
+                    buffer = await audioContextRef.current.decodeAudioData(rawBuffer);
+                } catch (nativeErr) {
+                    console.error("Native decode failed:", nativeErr);
+                    throw new Error("Unsupported audio format or corrupted file.");
+                }
+            }
 
             audioBufferRef.current = buffer;
             setDuration(buffer.duration);

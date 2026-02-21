@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { Upload } from 'lucide-react';
+import { ACCEPTED_AUDIO_FORMATS } from '../constants';
 
-const DEFAULT_EXTENSIONS = ['.wav', '.amb', '.caf', '.opus', '.mp3', '.aac', '.flac', '.ogg'];
+const DEFAULT_EXTENSIONS = ACCEPTED_AUDIO_FORMATS;
 
 interface SmartDropZoneProps {
     /** Compatible legacy handler (raw event) */

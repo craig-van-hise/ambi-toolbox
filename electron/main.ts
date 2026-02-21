@@ -12,6 +12,8 @@ import fs from 'node:fs';
 import { PassThrough, Transform } from 'stream';
 import { getFfmpegPath, getSofaAssetPath } from './handlers/common';
 import { createObrPipeline } from './handlers/ObrHandler';
+import { prepareStreamTarget } from './handlers/IngestionRouter';
+import os from 'node:os';
 
 // ------------------------------------------------------------------
 // PRIME BUFFER (PRP #113)
@@ -142,7 +144,7 @@ app.whenReady().then(() => {
         if (isLegacyStream) {
             // ... (Legacy /stream logic) ...
             const url = new URL(req.url!, `http://${req.headers.host}`);
-            const filePath = url.searchParams.get('file');
+            let filePath = url.searchParams.get('file');
             const binaural = url.searchParams.get('binaural') === 'true';
             let sofaPath = url.searchParams.get('sofaPath');
             const hrtfProfile = url.searchParams.get('hrtfProfile');
@@ -159,7 +161,22 @@ app.whenReady().then(() => {
                 }
             }
 
-            if (!filePath || !fs.existsSync(filePath)) {
+            if (!filePath) {
+                res.writeHead(400);
+                res.end('Missing File Path');
+                return;
+            }
+
+            try {
+                filePath = await prepareStreamTarget(filePath);
+            } catch (err) {
+                console.error(`[Stream] Ingestion Error:`, err);
+                res.writeHead(500);
+                res.end('Ingestion Error');
+                return;
+            }
+
+            if (!fs.existsSync(filePath)) {
                 res.writeHead(400);
                 res.end('Invalid File Path');
                 return;
@@ -180,11 +197,25 @@ app.whenReady().then(() => {
 
             // Construct FFmpeg Arguments
             const ffmpegPath = getFfmpegPath();
-            const args: string[] = [
+            const ext = filePath.toLowerCase();
+            const isOpus = ext.endsWith('.ogg') || ext.endsWith('.opus');
+            const isVideoContainer = ['.mp4', '.mov', '.mkv', '.webm'].some(e => ext.endsWith(e));
+
+            const args: string[] = [];
+
+            if (isOpus) {
+                args.push('-c:a', 'libopus');
+            }
+
+            args.push(
                 '-ss', start, // Seek to requested offset
                 '-fflags', '+genpts',
-                '-i', filePath,
-            ];
+                '-i', filePath
+            );
+
+            if (isVideoContainer || isOpus) {
+                args.push('-map', '0:a:0');
+            }
 
             if (useCardioid) {
                 // M/S Stereo Folddown: Ignores X (c3) to prevent rear-hemisphere attenuation.
@@ -192,7 +223,8 @@ app.whenReady().then(() => {
                 // Right = 0.707 * W - 0.707 * Y
                 args.push('-af', 'pan=stereo|c0=0.707*c0+0.707*c1|c1=0.707*c0-0.707*c1');
             } else {
-                args.push('-ac', '2'); // Standard Stereo Downmix
+                // PRP #120: Avoid -ac 2 to prevent swresample layout panics
+                args.push('-af', 'pan=stereo|c0=c0|c1=c1');
             }
 
             args.push(
@@ -201,6 +233,7 @@ app.whenReady().then(() => {
                 '-c:a', 'libopus',
                 '-b:a', '256k',
                 '-vbr', 'on',
+                '-strict', 'experimental',
                 'pipe:1'
             );
 
@@ -233,14 +266,29 @@ app.whenReady().then(() => {
         } else if (isObrStream) {
             // ... (OBR /obr-stream logic) ...
             const url = new URL(req.url!, `http://${req.headers.host}`);
-            const filePath = url.searchParams.get('file');
+            let filePath = url.searchParams.get('file');
             const channels = parseInt(url.searchParams.get('channels') || '0', 10);
             const profile = url.searchParams.get('profile') || 'ambient';
             const start = parseFloat(url.searchParams.get('start') || '0');
 
-            if (!filePath || !fs.existsSync(filePath) || !channels) {
+            if (!filePath || !channels) {
                 res.writeHead(400);
                 res.end('Invalid Parameters');
+                return;
+            }
+
+            try {
+                filePath = await prepareStreamTarget(filePath);
+            } catch (err) {
+                console.error(`[OBR] Ingestion Error:`, err);
+                res.writeHead(500);
+                res.end('Ingestion Error');
+                return;
+            }
+
+            if (!fs.existsSync(filePath)) {
+                res.writeHead(400);
+                res.end('Invalid File Path');
                 return;
             }
 
@@ -511,3 +559,27 @@ app.whenReady().then(() => {
 
     createWindow()
 })
+
+// ------------------------------------------------------------------
+// CLEANUP ON EXIT
+// ------------------------------------------------------------------
+app.on('quit', () => {
+    console.log('[Main] Cleaning up temporary files...');
+    const tempDir = os.tmpdir();
+    try {
+        const files = fs.readdirSync(tempDir);
+        files.forEach(f => {
+            if (f.endsWith('.ambi_tmp.wav')) {
+                const fullPath = path.join(tempDir, f);
+                try {
+                    fs.unlinkSync(fullPath);
+                    console.log(`[Main] Cleaned up: ${f}`);
+                } catch (unlinkErr) {
+                    console.warn(`[Main] Failed to delete ${f}:`, unlinkErr);
+                }
+            }
+        });
+    } catch (e) {
+        console.error('[Main] Cleanup failed:', e);
+    }
+});

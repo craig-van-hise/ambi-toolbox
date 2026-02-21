@@ -183,4 +183,10 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
     - **Robust Truncation**: Implemented discrete `channelmap` filtering in `ObrHandler.ts` to successfully downscale 7th-order (64ch) files to the renderer's 4th-order (25ch) limit. This bypasses FFmpeg's layout constraints.
     - **Error Hardening**: Enhanced pipeline cleanup logic to explicitly reap child processes and destroy response sockets upon encoder failure, preventing UI "waiting" hangs.
     - **Buffer Safety**: Capped browser-side `WavDecoder` to 32 channels for UI visualization to ensure stability with high-channel files.
+- **Decoder Pipeline Refactor (PRP #121)**:
+    - **Strict HOA/Discrete Separation**: Refactored the decoder pipeline to strictly apply the `-map 0:a:0` argument only to container formats (e.g., `.aivu`, `.mp4`, `.mkv`, `.mov`, `.webm`, `.m4a`) while preserving raw files like `.wav` and `.amb`.
+- **Native Apple Ingestion (PRP #123)**:
+    - **afconvert Proxying**: Implemented re-routing of Apple Immersive Video (`.aivu`) files through macOS's native `/usr/bin/afconvert` utility. This bypasses FFmpeg's `apac` decoder limitations and generates a high-fidelity 32-bit Float `.wav` proxy for the streaming pipeline.
+    - **Adaptive Pipeline**: Updated `ObrHandler.ts` and `main.ts` to strictly handle standard video containers while allowing proxy `.wav` files to stream with 1-to-1 discrete mapping.
+    - **Infrastructure Stability**: Eliminated the `no decoder found` crashes previously caused by proprietary Apple spatial audio formats. Verified via `tests/ingestion.test.ts`.
 

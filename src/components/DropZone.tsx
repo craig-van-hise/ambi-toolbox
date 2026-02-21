@@ -54,7 +54,7 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onFilesDrop
       </p>
       {!compact && (
         <p className="text-xs text-gray-500 mt-2">
-          .wav, .amb, .caf supported
+          Universal media ingest (+ proprietary) supported
         </p>
       )}
     </div>

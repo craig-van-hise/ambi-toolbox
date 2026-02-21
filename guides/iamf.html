@@ -24,7 +24,8 @@
         }
 
         details.container-card {
-            width: 700px;
+            /* WIDENED CONTAINER to prevent text wrapping */
+            width: 950px;
             background: var(--card-bg);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
@@ -168,6 +169,7 @@
             margin-left: 18px;
         }
 
+        /* TOOLTIP CSS */
         .tooltip-wrap {
             position: relative;
             margin-left: auto;
@@ -277,42 +279,75 @@
             margin-top: 6px;
         }
 
+        /* REFACTORED ACCEPTED VALUES BLOCK */
         .accepted-values {
-            margin-top: 10px;
-            padding: 10px 12px;
-            background: rgba(0, 0, 0, 0.4);
-            border-left: 3px solid var(--iamf-primary);
-            border-radius: 0 4px 4px 0;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.8rem;
-            color: #cfcfcf;
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            /* Slightly darker background for contrast */
+            border-left: 4px solid var(--iamf-primary);
+            border-radius: 0 6px 6px 0;
         }
 
-        .accepted-values strong {
+        .accepted-values strong.block-title {
             color: #fff;
             font-family: 'Inter', sans-serif;
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            opacity: 0.9;
         }
 
+        /* New Row Flex Structure */
         .val-row {
             display: flex;
-            margin-bottom: 4px;
-            line-height: 1.3;
+            align-items: baseline;
+            margin-bottom: 6px;
+            line-height: 1.4;
+            font-size: 0.85rem;
         }
 
+        /* Tighter Key Spacing */
         .val-key {
             color: var(--iamf-primary);
             font-weight: bold;
-            min-width: 50px;
-            flex-shrink: 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: nowrap;
         }
 
-        .val-desc {
-            color: #aaa;
+        /* Explicit Equal Sign */
+        .val-eq {
+            color: #888;
+            margin: 0 8px;
+            /* Tight, consistent spacing */
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* Wrapper for the description parts */
+        .val-desc-group {
+            flex: 1;
+            white-space: nowrap;
+            /* Prevents wrapping */
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Brighter Primary Name */
+        .val-name {
+            color: #ffffff;
+            /* Bright white */
+            font-weight: 600;
+            margin-right: 6px;
+        }
+
+        /* Muted Elucidation details */
+        .val-details {
+            color: #aaaaaa;
+            /* Muted gray */
+            font-size: 0.8rem;
+            font-style: italic;
         }
     </style>
 </head>
@@ -371,16 +406,36 @@
                         <div class="node-content">
                             <div class="description">Dictates the complexity tier of the stream, restricting or
                                 unlocking features like massive channel layouts.</div>
+
                             <div class="accepted-values">
-                                <strong>Accepted Parameters:</strong>
-                                <div class="val-row"><span class="val-key">0</span><span class="val-desc">= Simple
-                                        Profile (Channel-based only, limited to 5.1/7.1 layouts, no Ambisonics)</span>
+                                <strong class="block-title">Accepted Parameters:</strong>
+                                <div class="val-row">
+                                    <span class="val-key">0</span>
+                                    <span class="val-eq">=</span>
+                                    <span class="val-desc-group">
+                                        <span class="val-name">Simple Profile</span>
+                                        <span class="val-details">(Channel-based only, limited to 5.1/7.1
+                                            layouts)</span>
+                                    </span>
                                 </div>
-                                <div class="val-row"><span class="val-key">1</span><span class="val-desc">= Base Profile
-                                        (Adds up to 1st-order Ambisonics, Binaural, and 7.1.4 layouts)</span></div>
-                                <div class="val-row"><span class="val-key">2</span><span class="val-desc">=
-                                        Base-Enhanced Profile (Unlocks up to 3rd-order Ambisonics and massive 10.2.9.3
-                                        arrays)</span></div>
+                                <div class="val-row">
+                                    <span class="val-key">1</span>
+                                    <span class="val-eq">=</span>
+                                    <span class="val-desc-group">
+                                        <span class="val-name">Base Profile</span>
+                                        <span class="val-details">(Adds 1st-order Ambisonics, Binaural, and
+                                            7.1.4)</span>
+                                    </span>
+                                </div>
+                                <div class="val-row">
+                                    <span class="val-key">2</span>
+                                    <span class="val-eq">=</span>
+                                    <span class="val-desc-group">
+                                        <span class="val-name">Base-Enhanced Profile</span>
+                                        <span class="val-details">(Unlocks 3rd-order Ambisonics and massive 24ch
+                                            arrays)</span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </details>
@@ -413,8 +468,7 @@
                                     <div class="tooltip-header"><span class="color-blob b-primitive"></span> Primitive
                                         Variable</div>
                                     <div class="tooltip-body"><strong>4 Bytes:</strong> A 32-bit integer typically
-                                        represented as a 4-character ASCII string (FourCC). Users generally input the
-                                        exact text string, which software translates to hex.</div>
+                                        represented as a 4-character ASCII string (FourCC).</div>
                                     <div class="tooltip-example"><strong>Example:</strong> 0x4F707573 (Hex for "Opus")
                                     </div>
                                 </div>
@@ -422,17 +476,21 @@
                         </summary>
                         <div class="node-content">
                             <div class="description">A Four-Character Code (FourCC) strictly identifying the
-                                encapsulated audio format.</div>
+                                encapsulated audio format. User inputs the ASCII text string.</div>
                             <div class="accepted-values">
-                                <strong>Accepted Parameters (ASCII Text String):</strong>
-                                <div class="val-row"><span class="val-key">Opus</span><span class="val-desc">= Opus
-                                        Interactive Audio Codec</span></div>
-                                <div class="val-row"><span class="val-key">mp4a</span><span class="val-desc">= Advanced
-                                        Audio Coding (AAC-LC)</span></div>
-                                <div class="val-row"><span class="val-key">fLaC</span><span class="val-desc">= Free
-                                        Lossless Audio Codec</span></div>
-                                <div class="val-row"><span class="val-key">ipcm</span><span class="val-desc">= Linear
-                                        PCM (Uncompressed)</span></div>
+                                <strong class="block-title">Accepted FourCC Strings (ASCII):</strong>
+                                <div class="val-row"><span class="val-key">Opus</span><span class="val-eq">=</span><span
+                                        class="val-desc-group"><span class="val-name">Opus Interactive Audio
+                                            Codec</span></span></div>
+                                <div class="val-row"><span class="val-key">mp4a</span><span class="val-eq">=</span><span
+                                        class="val-desc-group"><span class="val-name">Advanced Audio Coding
+                                            (AAC-LC)</span></span></div>
+                                <div class="val-row"><span class="val-key">fLaC</span><span class="val-eq">=</span><span
+                                        class="val-desc-group"><span class="val-name">Free Lossless Audio
+                                            Codec</span></span></div>
+                                <div class="val-row"><span class="val-key">ipcm</span><span class="val-eq">=</span><span
+                                        class="val-desc-group"><span class="val-name">Linear PCM
+                                            (Uncompressed)</span></span></div>
                             </div>
                         </div>
                     </details>
@@ -455,11 +513,14 @@
                             <div class="description">Critical for random access; specifies how many samples prior to the
                                 target timestamp must be decoded to prime the decoder's internal state.</div>
                             <div class="accepted-values">
-                                <strong>Accepted Parameters:</strong>
-                                <div class="val-row"><span class="val-key">Int</span><span class="val-desc">= Any
-                                        positive integer (e.g., 3840, representing number of samples)</span></div>
-                                <div class="val-row"><span class="val-key">0</span><span class="val-desc">= MUST be
-                                        exactly 0 if codec_id is set to fLaC or ipcm</span></div>
+                                <strong class="block-title">Constraints:</strong>
+                                <div class="val-row"><span class="val-key">Int > 0</span><span
+                                        class="val-eq">=</span><span class="val-desc-group"><span
+                                            class="val-name">Positive Integer</span><span class="val-details">(Required
+                                            for lossy codecs like Opus/AAC to establish state)</span></span></div>
+                                <div class="val-row"><span class="val-key">0</span><span class="val-eq">=</span><span
+                                        class="val-desc-group"><span class="val-name">Zero Value</span><span
+                                            class="val-details">(MUST be 0 if codec is fLaC or ipcm)</span></span></div>
                             </div>
                         </div>
                     </details>
@@ -501,15 +562,21 @@
                             <div class="description">Fundamentally changes how the decoder interprets the subsequent
                                 data routing.</div>
                             <div class="accepted-values">
-                                <strong>Accepted Parameters:</strong>
-                                <div class="val-row"><span class="val-key">0</span><span class="val-desc">=
-                                        CHANNEL_BASED (Traditional speaker targets)</span></div>
-                                <div class="val-row"><span class="val-key">1</span><span class="val-desc">= SCENE_BASED
-                                        (Ambisonics soundfield)</span></div>
-                                <div class="val-row"><span class="val-key">2</span><span class="val-desc">= OBJECT_BASED
-                                        (Discrete items with Cartesian coordinates)</span></div>
-                                <div class="val-row"><span class="val-key">3-7</span><span class="val-desc">= Reserved
-                                        for future use</span></div>
+                                <strong class="block-title">Accepted Parameters:</strong>
+                                <div class="val-row"><span class="val-key">0</span><span class="val-eq">=</span><span
+                                        class="val-desc-group"><span class="val-name">CHANNEL_BASED</span><span
+                                            class="val-details">(Traditional speaker target layouts)</span></span></div>
+                                <div class="val-row"><span class="val-key">1</span><span class="val-eq">=</span><span
+                                        class="val-desc-group"><span class="val-name">SCENE_BASED</span><span
+                                            class="val-details">(Ambisonics soundfield via spherical
+                                            harmonics)</span></span></div>
+                                <div class="val-row"><span class="val-key">2</span><span class="val-eq">=</span><span
+                                        class="val-desc-group"><span class="val-name">OBJECT_BASED</span><span
+                                            class="val-details">(Discrete dynamic items with Cartesian
+                                            coordinates)</span></span></div>
+                                <div class="val-row"><span class="val-key">3-7</span><span class="val-eq">=</span><span
+                                        class="val-desc-group"><span class="val-name">Reserved</span><span
+                                            class="val-details">(For future specification expansion)</span></span></div>
                             </div>
                         </div>
                     </details>
@@ -549,17 +616,28 @@
                                 <div class="node-content">
                                     <div class="description">Defines standard channel arrays and scalability.</div>
                                     <div class="accepted-values">
-                                        <strong>Accepted Parameters:</strong>
-                                        <div class="val-row"><span class="val-key">Layers</span><span class="val-desc">1
-                                                to 7</span></div>
-                                        <div class="val-row"><span class="val-key">0</span><span class="val-desc">=
-                                                Mono</span></div>
-                                        <div class="val-row"><span class="val-key">1</span><span class="val-desc">=
-                                                Stereo</span></div>
-                                        <div class="val-row"><span class="val-key">2</span><span class="val-desc">=
-                                                5.1</span></div>
-                                        <div class="val-row"><span class="val-key">15</span><span class="val-desc">=
-                                                Expanded Layout (Triggers expanded_loudspeaker_layout)</span></div>
+                                        <strong class="block-title">Accepted Parameters:</strong>
+                                        <div class="val-row"><span class="val-key">Layers</span><span
+                                                class="val-eq">:</span><span class="val-desc-group"><span
+                                                    class="val-name">1 to 7</span><span class="val-details">(Defines the
+                                                    hierarchy depth)</span></span></div>
+                                        <div class="val-row"><span class="val-key">0</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">Mono</span><span class="val-details">(Single
+                                                    channel center)</span></span></div>
+                                        <div class="val-row"><span class="val-key">1</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">Stereo</span><span class="val-details">(Left /
+                                                    Right pair)</span></span></div>
+                                        <div class="val-row"><span class="val-key">2</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">5.1 Surround</span><span
+                                                    class="val-details">(Standard cinema layout)</span></span></div>
+                                        <div class="val-row"><span class="val-key">15</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">Expanded Layout</span><span
+                                                    class="val-details">(Triggers parsing of
+                                                    expanded_loudspeaker_layout)</span></span></div>
                                     </div>
                                 </div>
                             </details>
@@ -582,15 +660,23 @@
                                     <div class="description">Parsed when standard layout is set to 15. Supports
                                         ultra-immersive, high-density hardware setups.</div>
                                     <div class="accepted-values">
-                                        <strong>Accepted Parameters:</strong>
-                                        <div class="val-row"><span class="val-key">8</span><span class="val-desc">=
-                                                9.1.6ch (16 Channels)</span></div>
-                                        <div class="val-row"><span class="val-key">13</span><span class="val-desc">=
-                                                10.2.9.3ch (24 Channels)</span></div>
-                                        <div class="val-row"><span class="val-key">18</span><span class="val-desc">=
-                                                Top-1ch (TpC "Voice of God")</span></div>
-                                        <div class="val-row"><span class="val-key">19</span><span class="val-desc">=
-                                                Top-5ch (Full overhead ring)</span></div>
+                                        <strong class="block-title">Accepted Parameters:</strong>
+                                        <div class="val-row"><span class="val-key">8</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">9.1.6ch</span><span class="val-details">(16 Channel
+                                                    Immersive)</span></span></div>
+                                        <div class="val-row"><span class="val-key">13</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">10.2.9.3ch</span><span class="val-details">(24
+                                                    Channel Immersive - Eclipsa)</span></span></div>
+                                        <div class="val-row"><span class="val-key">18</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">Top-1ch</span><span class="val-details">(TpC "Voice
+                                                    of God" overhead)</span></span></div>
+                                        <div class="val-row"><span class="val-key">19</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">Top-5ch</span><span class="val-details">(Full
+                                                    overhead ring array)</span></span></div>
                                     </div>
                                 </div>
                             </details>
@@ -654,13 +740,20 @@
                                     <div class="description">Allows content normalization based on a specific perceptual
                                         element rather than the whole mix.</div>
                                     <div class="accepted-values">
-                                        <strong>Accepted Parameters:</strong>
-                                        <div class="val-row"><span class="val-key">0</span><span class="val-desc">=
-                                                Unknown Anchor</span></div>
-                                        <div class="val-row"><span class="val-key">1</span><span class="val-desc">=
-                                                Dialogue Anchor</span></div>
-                                        <div class="val-row"><span class="val-key">2</span><span class="val-desc">=
-                                                Album Anchor</span></div>
+                                        <strong class="block-title">Accepted Parameters:</strong>
+                                        <div class="val-row"><span class="val-key">0</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">Unknown Anchor</span><span
+                                                    class="val-details">(Generic leveling)</span></span></div>
+                                        <div class="val-row"><span class="val-key">1</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">Dialogue Anchor</span><span
+                                                    class="val-details">(Leveling based on speech)</span></span></div>
+                                        <div class="val-row"><span class="val-key">2</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">Album Anchor</span><span
+                                                    class="val-details">(Leveling based on overall music
+                                                    program)</span></span></div>
                                     </div>
                                 </div>
                             </details>
@@ -702,11 +795,16 @@
                                     <div class="description">Directs how standard layouts should be converted when the
                                         endpoint is a pair of headphones.</div>
                                     <div class="accepted-values">
-                                        <strong>Accepted Parameters:</strong>
-                                        <div class="val-row"><span class="val-key">0</span><span class="val-desc">=
-                                                STEREO (Basic Downmix)</span></div>
-                                        <div class="val-row"><span class="val-key">1</span><span class="val-desc">=
-                                                BINAURAL (HRTF 3D Spatialization)</span></div>
+                                        <strong class="block-title">Accepted Parameters:</strong>
+                                        <div class="val-row"><span class="val-key">0</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">STEREO</span><span class="val-details">(Basic 2.0
+                                                    channel downmix)</span></span></div>
+                                        <div class="val-row"><span class="val-key">1</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">BINAURAL</span><span
+                                                    class="val-details">(HRTF-based 3D spatialization)</span></span>
+                                        </div>
                                     </div>
                                 </div>
                             </details>
@@ -767,15 +865,24 @@
                                     <div class="description">Defines the values of alpha, beta, gamma, and delta used in
                                         the demixing matrix.</div>
                                     <div class="accepted-values">
-                                        <strong>Accepted Parameters (0-7):</strong>
-                                        <div class="val-row"><span class="val-key">0</span><span class="val-desc">= Mode
-                                                1 (Standard cinematic demixing)</span></div>
-                                        <div class="val-row"><span class="val-key">1</span><span class="val-desc">= Mode
-                                                2 (Flatter energy distribution)</span></div>
-                                        <div class="val-row"><span class="val-key">2</span><span class="val-desc">= Mode
-                                                3 (Front-focused weighting)</span></div>
-                                        <div class="val-row"><span class="val-key">3-7</span><span class="val-desc">=
-                                                Reserved for future matrix configurations</span></div>
+                                        <strong class="block-title">Accepted Parameters (0-7):</strong>
+                                        <div class="val-row"><span class="val-key">0</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">Mode 1</span><span class="val-details">(Standard
+                                                    cinematic demixing coefficients)</span></span></div>
+                                        <div class="val-row"><span class="val-key">1</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">Mode 2</span><span class="val-details">(Flatter
+                                                    energy distribution weighting)</span></span></div>
+                                        <div class="val-row"><span class="val-key">2</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">Mode 3</span><span
+                                                    class="val-details">(Front-focused spatial weighting)</span></span>
+                                        </div>
+                                        <div class="val-row"><span class="val-key">3-7</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">Reserved</span><span class="val-details">(Future
+                                                    matrix configurations)</span></span></div>
                                     </div>
                                 </div>
                             </details>
@@ -819,18 +926,28 @@
                                     <div class="description">Defines how the renderer should interpolate positions
                                         between updates, and the Cartesian limits.</div>
                                     <div class="accepted-values">
-                                        <strong>Accepted Parameters:</strong>
-                                        <div class="val-row"><span class="val-key">0</span><span class="val-desc">= Step
-                                                (Immediate coordinate jump)</span></div>
-                                        <div class="val-row"><span class="val-key">1</span><span class="val-desc">=
-                                                Linear (Direct line interpolation)</span></div>
-                                        <div class="val-row"><span class="val-key">2</span><span class="val-desc">=
-                                                Bezier (Smooth curve interpolation)</span></div>
-                                        <div class="val-row" style="margin-top:4px;"><span
-                                                class="val-key">Azimuth</span><span class="val-desc">-180.0° to 180.0°
-                                                (Horizontal axis)</span></div>
+                                        <strong class="block-title">Accepted Parameters:</strong>
+                                        <div class="val-row"><span class="val-key">0</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">Step</span><span class="val-details">(Immediate
+                                                    coordinate jump)</span></span></div>
+                                        <div class="val-row"><span class="val-key">1</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">Linear</span><span class="val-details">(Direct line
+                                                    interpolation)</span></span></div>
+                                        <div class="val-row"><span class="val-key">2</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">Bezier</span><span class="val-details">(Smooth
+                                                    curve interpolation)</span></span></div>
+                                        <div class="val-row" style="margin-top:6px;"><span
+                                                class="val-key">Azimuth</span><span class="val-eq">:</span><span
+                                                class="val-desc-group"><span class="val-name">-180.0° to
+                                                    180.0°</span><span class="val-details">(Horizontal axis
+                                                    range)</span></span></div>
                                         <div class="val-row"><span class="val-key">Elev.</span><span
-                                                class="val-desc">-90.0° to 90.0° (Vertical axis)</span></div>
+                                                class="val-eq">:</span><span class="val-desc-group"><span
+                                                    class="val-name">-90.0° to 90.0°</span><span
+                                                    class="val-details">(Vertical axis range)</span></span></div>
                                     </div>
                                 </div>
                             </details>

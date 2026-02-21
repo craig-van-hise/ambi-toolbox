@@ -35,9 +35,10 @@ export async function generateProxy(filePath: string): Promise<Buffer> {
         const args = [
             '-y',
             '-i', filePath,
+            '-map', '0:a:0',
 
             // THE FIX: Manual Matrix Decode
-            '-filter_complex', '[0:a]pan=stereo|c0=0.5*c0+0.5*c1|c1=0.5*c0-0.5*c1[out]',
+            '-filter_complex', '[0:a:0]pan=stereo|c0=0.5*c0+0.5*c1|c1=0.5*c0-0.5*c1[out]',
             '-map', '[out]',
 
             // STANDARD FORMATTING
@@ -115,6 +116,7 @@ export async function executeTrim(
         const args = [
             '-ss', startTime.toString(),
             '-i', filePath,
+            '-map', '0:a:0',
             '-t', duration.toString(),
             '-c', 'copy',
             '-y',

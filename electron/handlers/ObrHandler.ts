@@ -44,26 +44,39 @@ export function createObrPipeline(
   console.log(`[Pipeline] Spawning 3-Stage Pipeline for: ${path.basename(inputPath)}`);
 
   const safeChannels = Math.min(channels, 25);
-  const useTruncation = channels > 25;
 
   // 1. Decode
   // Input: File -> Output: stdout (f32le)
-  const decoderArgs = [
+  const ext = inputPath.toLowerCase();
+  const isOpus = ext.endsWith('.ogg') || ext.endsWith('.opus');
+  const isVideoContainer = ['.mp4', '.mov', '.mkv', '.webm'].some(e => ext.endsWith(e));
+
+  const decoderArgs: string[] = [];
+
+  if (isOpus) {
+    decoderArgs.push('-c:a', 'libopus');
+  }
+
+  decoderArgs.push(
     '-ss', start.toString(),
-    '-i', inputPath,
+    '-i', inputPath
+  );
+
+  if (isVideoContainer || isOpus) {
+    decoderArgs.push('-map', '0:a:0');
+  }
+
+  decoderArgs.push(
     '-f', 'f32le',
     '-acodec', 'pcm_f32le',
     '-ar', '48000',
-  ];
+  );
 
-  if (useTruncation) {
-    const mapString = Array.from({ length: 25 }, (_, i) => i).join('|');
-    decoderArgs.push('-af', `channelmap=map=${mapString}`);
-  } else {
-    decoderArgs.push('-ac', channels.toString());
-  }
+  // ALWAYS use channelmap for 1-to-1 routing to avoid swresample layout panics
+  const mapString = Array.from({ length: safeChannels }, (_, i) => i).join('|');
+  decoderArgs.push('-af', `channelmap=map=${mapString}`);
 
-  decoderArgs.push('-max_muxing_queue_size', '9999', 'pipe:1');
+  decoderArgs.push('-strict', 'experimental', '-max_muxing_queue_size', '9999', 'pipe:1');
 
   const decoder = spawn(ffmpegPath, decoderArgs, { stdio: ['ignore', 'pipe', 'pipe'] });
 
