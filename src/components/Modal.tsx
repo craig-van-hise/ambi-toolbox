@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 interface ModalProps {
@@ -29,7 +30,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
 
     if (!isOpen) return null;
 
-    return (
+    const modalContent = (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
             <div
                 ref={modalRef}
@@ -51,4 +52,6 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
             </div>
         </div>
     );
+
+    return createPortal(modalContent, document.body);
 };

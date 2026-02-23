@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode, useRef, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useRef, useEffect, useCallback } from 'react';
 import { PlayerState, HrtfProfile } from '../types';
+import { useSettings } from '../contexts/SettingsContext';
 
 interface PlaybackContextType {
     state: PlayerState;
@@ -17,31 +18,55 @@ interface PlaybackContextType {
     toggleLoop: () => void;
     toggleHeadphones: () => void;
     setHrtfProfile: (profile: string) => void;
+    setCustomSofaPath: (path: string | null) => void;
     setLoopPoints: (inTime: number, outTime: number) => void;
     setCurrentFile: (filePath: string | null, shouldPlay?: boolean) => void;
 }
 
 const PlaybackContext = createContext<PlaybackContextType | undefined>(undefined);
 
-export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const audioRef = useRef<HTMLAudioElement | null>(null);
 
-    const [state, setState] = useState<PlayerState>({
-        currentTime: 0,
-        duration: 0,
-        isPlaying: false,
-        isLooping: false,
-        isHeadphonesOn: true,
-        volume: 0.8,
-        hrtfProfile: HrtfProfile.Neumann,
-        currentFile: null,
-        channels: 0,
-        streamOffset: 0,
-        loopIn: 0,
-        loopOut: 0,
-        isRebuilding: false,
-        seekNonce: 0,
-    });
+
+const defaultState: PlayerState = {
+    currentTime: 0,
+    duration: 0,
+    isPlaying: false,
+    isLooping: false,
+    isHeadphonesOn: true,
+    volume: 0.8,
+    hrtfProfile: HrtfProfile.Neumann,
+    customSofaPath: null,
+    currentFile: null,
+    channels: 0,
+    streamOffset: 0,
+    loopIn: 0,
+    loopOut: 0,
+    isRebuilding: false,
+    seekNonce: 0
+};
+
+export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { settings, updateSettings } = useSettings();
+
+    // 1. Core State
+    const [state, setState] = useState<PlayerState>(defaultState);
+    const isInitializedRef = useRef(false);
+
+    // Boot Hydration: Wait for SettingsContext to populate, then inject it once.
+    useEffect(() => {
+        if (isInitializedRef.current) return;
+
+        const globalSettings = settings.toolSettings?.globalPlayback;
+        if (globalSettings && (globalSettings.hrtfProfile || globalSettings.customSofaPath)) {
+            setState(prev => ({
+                ...prev,
+                hrtfProfile: globalSettings.hrtfProfile || HrtfProfile.Neumann,
+                customSofaPath: globalSettings.customSofaPath || null
+            }));
+            isInitializedRef.current = true;
+        }
+    }, [settings.toolSettings?.globalPlayback]);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const playbackIntentRef = useRef(false);
     const rebuildTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -268,7 +293,7 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         const audio = audioRef.current;
         if (!audio || !state.currentFile || state.channels === 0) return;
 
-        const { currentFile, channels, requestedSeekTime, isHeadphonesOn, hrtfProfile } = state;
+        const { currentFile, channels, requestedSeekTime, isHeadphonesOn, hrtfProfile, customSofaPath } = state;
         const start = requestedSeekTime !== undefined ? requestedSeekTime : 0;
 
         const params = new URLSearchParams();
@@ -276,6 +301,9 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         params.append('channels', channels.toString());
         params.append('profile', 'ambient');
         params.append('hrtfProfile', hrtfProfile);
+        if (hrtfProfile === HrtfProfile.Custom && customSofaPath) {
+            params.append('sofaPath', customSofaPath);
+        }
         params.append('start', start.toString());
         params.append('_t', Date.now().toString());
 
@@ -466,6 +494,52 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
             requestedSeekTime: currentPlayhead,
             seekNonce: Date.now()
         }));
+
+        updateSettings(prev => ({
+            toolSettings: {
+                ...prev.toolSettings,
+                globalPlayback: {
+                    ...prev.toolSettings?.globalPlayback,
+                    hrtfProfile: profile
+                }
+            }
+        }));
+    };
+
+    const setCustomSofaPath = (path: string | null) => {
+        if (state.isRebuilding) return;
+
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        const wasPlaying = !audio.paused;
+        const currentPlayhead = state.currentTime;
+
+        if (wasPlaying) {
+            playbackIntentRef.current = true;
+            audio.pause();
+        }
+
+        enterRebuildLock(wasPlaying);
+
+        setState(prev => ({
+            ...prev,
+            hrtfProfile: path ? HrtfProfile.Custom : prev.hrtfProfile,
+            customSofaPath: path,
+            requestedSeekTime: currentPlayhead,
+            seekNonce: Date.now()
+        }));
+
+        updateSettings(prev => ({
+            toolSettings: {
+                ...prev.toolSettings,
+                globalPlayback: {
+                    ...prev.toolSettings?.globalPlayback,
+                    hrtfProfile: path ? HrtfProfile.Custom : state.hrtfProfile,
+                    customSofaPath: path
+                }
+            }
+        }));
     };
 
     const setCurrentFile = useCallback((filePath: string | null, shouldPlay = false) => {
@@ -524,6 +598,7 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
             setLoopPoints,
             toggleHeadphones,
             setHrtfProfile,
+            setCustomSofaPath,
             setCurrentFile,
         }}>
             {children}

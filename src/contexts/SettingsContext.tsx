@@ -10,7 +10,7 @@ export interface AppSettings {
 
 interface SettingsContextType {
     settings: AppSettings;
-    updateSettings: (newSettings: Partial<AppSettings>) => void;
+    updateSettings: (updater: Partial<AppSettings> | ((prev: AppSettings) => Partial<AppSettings>)) => void;
 }
 
 const defaultSettings: AppSettings = {
@@ -54,12 +54,20 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
     }, [settings]);
 
-    const updateSettings = (newSettings: Partial<AppSettings>) => {
+    const updateSettings = (updater: Partial<AppSettings> | ((prev: AppSettings) => Partial<AppSettings>)) => {
         setSettings((prev) => {
+            const newSettings = typeof updater === 'function' ? updater(prev) : updater;
             const updated = { ...prev, ...newSettings };
+
             // Ensure deep merge for toolSettings if present
             if (newSettings.toolSettings) {
-                updated.toolSettings = { ...prev.toolSettings, ...newSettings.toolSettings };
+                updated.toolSettings = { ...prev.toolSettings };
+                for (const key of Object.keys(newSettings.toolSettings)) {
+                    updated.toolSettings[key] = {
+                        ...(prev.toolSettings[key] || {}),
+                        ...newSettings.toolSettings[key]
+                    };
+                }
             }
             return updated;
         });

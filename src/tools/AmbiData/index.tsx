@@ -46,7 +46,8 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
         setVolume,
         toggleLoop,
         toggleHeadphones,
-        setHrtfProfile
+        setHrtfProfile,
+        setCustomSofaPath
     } = usePlayback();
     const [activeEdits, setActiveEdits] = useState<Record<string, any>>({});
 
@@ -397,6 +398,7 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                                     onToggleLoop={toggleLoop}
                                     onToggleHeadphones={toggleHeadphones}
                                     onSetHrtfProfile={setHrtfProfile}
+                                    onSetCustomSofaPath={setCustomSofaPath}
                                     onSetLoopPoints={setLoopPoints}
                                     canNext={canNext}
                                     canPrev={canPrev}
@@ -412,10 +414,10 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                 {/* DRAGGABLE DIVIDER */}
                 <div
                     onMouseDown={handleMouseDown}
-                    className="h-0 w-full border-t border-studio-border relative z-50 group hover:border-indigo-500/50 transition-colors cursor-row-resize shrink-0"
+                    className="h-0 w-full border-t border-studio-border relative group hover:border-indigo-500/50 transition-colors cursor-row-resize shrink-0"
                 >
                     {/* Invisible Hit Area */}
-                    <div className="absolute top-[-6px] bottom-[-6px] left-0 right-0 z-50 cursor-row-resize"></div>
+                    <div className="absolute top-[-6px] bottom-[-6px] left-0 right-0 z-10 cursor-row-resize"></div>
                 </div>
 
                 {/* LOWER PARTITION */}

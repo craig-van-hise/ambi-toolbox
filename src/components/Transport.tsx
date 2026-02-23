@@ -1,8 +1,9 @@
 import React from 'react';
 import { PlayerState, HrtfProfile } from '../types';
 import { formatTime } from '../utils/time-formatters';
+import { Headphones, ChevronDown, Settings } from 'lucide-react';
+import { useSettings } from '../contexts/SettingsContext';
 import { Modal } from './Modal';
-import { Settings, Headphones, ChevronDown } from 'lucide-react';
 
 interface TransportProps {
     state: PlayerState;
@@ -16,6 +17,7 @@ interface TransportProps {
     onToggleLoop: () => void;
     onToggleHeadphones: () => void;
     onSetHrtfProfile: (profile: string) => void;
+    onSetCustomSofaPath: (path: string | null) => void;
     onSetLoopPoints: (inTime: number, outTime: number) => void;
     canNext: boolean;
     canPrev: boolean;
@@ -91,10 +93,12 @@ export const Transport: React.FC<TransportProps> = ({
     onToggleLoop,
     onToggleHeadphones,
     onSetHrtfProfile,
+    onSetCustomSofaPath,
     onSetLoopPoints,
     canNext,
     canPrev
 }) => {
+    const { settings, updateSettings } = useSettings();
     const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
     const [dragging, setDragging] = React.useState<'in' | 'out' | null>(null);
     const trackRef = React.useRef<HTMLDivElement>(null);
@@ -251,10 +255,10 @@ export const Transport: React.FC<TransportProps> = ({
                     <button
                         onClick={state.isRebuilding ? undefined : onPlayPause}
                         className={`w-11 h-9 flex items-center justify-center rounded-md transition-all active:scale-95 shadow-md ${state.isRebuilding
-                                ? 'bg-amber-900/30 text-amber-500 cursor-not-allowed'
-                                : state.isPlaying
-                                    ? 'bg-green-500 text-black hover:bg-green-400'
-                                    : 'bg-white text-black hover:bg-gray-200'
+                            ? 'bg-amber-900/30 text-amber-500 cursor-not-allowed'
+                            : state.isPlaying
+                                ? 'bg-green-500 text-black hover:bg-green-400'
+                                : 'bg-white text-black hover:bg-gray-200'
                             }`}
                         title={state.isRebuilding ? 'Buffering...' : (state.isPlaying ? 'Pause' : 'Play')}
                     >
@@ -339,7 +343,42 @@ export const Transport: React.FC<TransportProps> = ({
                         <div className="relative">
                             <select
                                 value={state.hrtfProfile}
-                                onChange={(e) => onSetHrtfProfile(e.target.value)}
+                                onChange={async (e) => {
+                                    const val = e.target.value;
+                                    if (val === HrtfProfile.Custom) {
+                                        try {
+                                            const lastDir = settings.toolSettings?.globalPlayback?.lastSofaDir || undefined;
+                                            const result = await window.electronAPI.selectFiles({
+                                                properties: ['openFile'],
+                                                defaultPath: lastDir,
+                                                filters: [
+                                                    { name: 'SOFA Files', extensions: ['sofa'] },
+                                                    { name: 'All Files', extensions: ['*'] }
+                                                ]
+                                            });
+                                            if (result && result.length > 0) {
+                                                const selectedPath = result[0];
+                                                onSetCustomSofaPath(selectedPath);
+
+                                                // Save directory to settings
+                                                const dirPath = selectedPath.substring(0, selectedPath.lastIndexOf('/'));
+                                                updateSettings(prev => ({
+                                                    toolSettings: {
+                                                        ...prev.toolSettings,
+                                                        globalPlayback: {
+                                                            ...prev.toolSettings?.globalPlayback,
+                                                            lastSofaDir: dirPath
+                                                        }
+                                                    }
+                                                }));
+                                            }
+                                        } catch (err) {
+                                            console.error("Failed to select custom SOFA:", err);
+                                        }
+                                    } else {
+                                        onSetHrtfProfile(val);
+                                    }
+                                }}
                                 className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-brand-green appearance-none text-white"
                             >
                                 <option value={HrtfProfile.Neumann}>{HrtfProfile.Neumann}</option>
@@ -348,9 +387,9 @@ export const Transport: React.FC<TransportProps> = ({
                             </select>
                             <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-gray-500 pointer-events-none" />
                         </div>
-                        {state.hrtfProfile === HrtfProfile.Custom && (
-                            <p className="text-[10px] text-brand-green mt-2 font-mono italic">
-                                * Uses the same custom SOFA file configured in Ambix2Bin.
+                        {state.hrtfProfile === HrtfProfile.Custom && state.customSofaPath && (
+                            <p className="text-[10px] text-green-400 mt-1 font-mono break-all">
+                                Using: {state.customSofaPath.split('/').pop()}
                             </p>
                         )}
                     </div>

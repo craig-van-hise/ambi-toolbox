@@ -89,6 +89,7 @@ export interface PlayerState {
   isHeadphonesOn: boolean;
   volume: number;
   hrtfProfile: string;
+  customSofaPath?: string | null;
   currentFile: string | null;
   channels: number;
   requestedSeekTime?: number;

@@ -153,10 +153,11 @@ const Ambix2BinTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void
 
   const handleProfileChange = async (val: HrtfProfile) => {
     if (val === HrtfProfile.Custom) {
-      // Trigger file dialog
       try {
+        const lastDir = settings.toolSettings?.globalPlayback?.lastSofaDir || undefined;
         const result = await window.electronAPI.selectFiles({
           properties: ['openFile'],
+          defaultPath: lastDir,
           filters: [
             { name: 'SOFA Files', extensions: ['sofa'] },
             { name: 'All Files', extensions: ['*'] }
@@ -168,17 +169,24 @@ const Ambix2BinTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void
           setCustomSofaPath(selectedPath);
           setProfile(HrtfProfile.Custom); // Only set to Custom if file selected
 
-          // Persist (store 'Custom' in settings, AND store path)
-          updateSettings({
+          // Save directory to settings
+          const dirPath = selectedPath.substring(0, selectedPath.lastIndexOf('/'));
+
+          // Persist (store 'Custom' in settings, AND store path, and save directory)
+          updateSettings(prev => ({
             toolSettings: {
-              ...settings.toolSettings,
+              ...prev.toolSettings,
+              globalPlayback: {
+                ...prev.toolSettings?.globalPlayback,
+                lastSofaDir: dirPath
+              },
               [tool.id]: {
-                ...settings.toolSettings?.[tool.id],
+                ...prev.toolSettings?.[tool.id],
                 hrtfProfile: val,
                 customSofaPath: selectedPath
               }
             }
-          });
+          }));
         } else {
           // Cancelled: Do nothing? Or revert select? 
           // If we don't update state, select remains on old value naturally.
@@ -190,16 +198,16 @@ const Ambix2BinTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void
       setProfile(val);
       // Don't clear custom path, just switch profile. User might switch back.
 
-      updateSettings({
+      updateSettings(prev => ({
         toolSettings: {
-          ...settings.toolSettings,
+          ...prev.toolSettings,
           [tool.id]: {
-            ...settings.toolSettings?.[tool.id],
+            ...prev.toolSettings?.[tool.id],
             hrtfProfile: val
             // customSofaPath is preserved in settings
           }
         }
-      });
+      }));
     }
   };
 
@@ -562,6 +570,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     setLoopPoints,
     toggleHeadphones,
     setHrtfProfile,
+    setCustomSofaPath,
     setCurrentFile
   } = usePlayback();
 
@@ -1001,6 +1010,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
                     onToggleLoop={toggleLoop}
                     onToggleHeadphones={toggleHeadphones}
                     onSetHrtfProfile={setHrtfProfile}
+                    onSetCustomSofaPath={setCustomSofaPath}
                     onSetLoopPoints={setLoopPoints}
                     canNext={canNext}
                     canPrev={canPrev}
@@ -1044,10 +1054,10 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
 
         <div
           onMouseDown={handleMouseDown}
-          className="h-0 w-full border-t border-studio-border relative z-50 group hover:border-indigo-500/50 transition-colors cursor-row-resize shrink-0"
+          className="h-0 w-full border-t border-studio-border relative group hover:border-indigo-500/50 transition-colors cursor-row-resize shrink-0"
         >
           {/* Invisible Hit Area */}
-          <div className="absolute top-[-6px] bottom-[-6px] left-0 right-0 z-50 cursor-row-resize"></div>
+          <div className="absolute top-[-6px] bottom-[-6px] left-0 right-0 z-10 cursor-row-resize"></div>
         </div>
 
         {/* BOTTOM PARTITION (Controls / AmbiRotate Visuals) */}
