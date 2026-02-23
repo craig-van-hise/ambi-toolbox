@@ -4,7 +4,7 @@
   "version": "0.9.0-beta",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "rm -f GEMINI_CONTEXT.log && vite | tee -a GEMINI_CONTEXT.log",
     "build": "tsc && vite build && electron-builder",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
@@ -15,6 +15,7 @@
     "@types/uuid": "^10.0.0",
     "ambisonics": "github:polarch/JSAmbisonics",
     "cross-spawn": "^7.0.6",
+    "electron-log": "^5.4.3",
     "lucide-react": "^0.563.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

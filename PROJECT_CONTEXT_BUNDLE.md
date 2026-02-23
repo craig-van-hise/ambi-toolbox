@@ -8,11 +8,40 @@
 ├── AmbiData file types list.md
 ├── EULA.md
 ├── FAILURE_REPORT_PRP79.md
+├── GEMINI_CONTEXT.log
 ├── LICENSE
 ├── NOTICE.txt
 ├── PROJECT_CONTEXT_BUNDLE.md
 ├── PROJECT_STATE.md
 ├── PROJECT_STATE_AmbiData.md
+├── PRPs
+|  ├── # 101.md
+|  ├── # 102.md
+|  ├── # 103.md
+|  ├── # 104.md
+|  ├── # 105.md
+|  ├── # 106.md
+|  ├── # 107.md
+|  ├── # 108.md
+|  ├── # 109.md
+|  ├── # 110.md
+|  ├── # 111.md
+|  ├── # 112.md
+|  ├── # 113.md
+|  ├── # 114.md
+|  ├── # 115.md
+|  ├── # 116.md
+|  ├── # 117.md
+|  ├── # 118.md
+|  ├── # 119.md
+|  ├── # 120.md
+|  ├── # 121.md
+|  ├── # 122.md
+|  ├── # 123.md
+|  ├── # 124.md
+|  ├── # 125.md
+|  ├── # setup Electron logging.md
+|  └── 0-100
 ├── README.md
 ├── README_AmbiData.md
 ├── assets
@@ -22,20 +51,10 @@
 |  ├── Roboto-Regular.ttf
 |  ├── ambisonics_icon.svg
 |  ├── bin
-|  |  ├── __MACOSX
-|  |  ├── apac-enc
-|  |  ├── ffmpeg
-|  |  ├── ffprobe
-|  |  ├── iamf-enc
-|  |  └── obr_stream
 |  ├── bin_evermeet
-|  |  └── ffmpeg
 |  ├── ffmpeg80arm.zip
 |  ├── ffmpeg_evermeet.zip
 |  ├── hrtf
-|  |  ├── H3_48K_24bit_256tap_FIR_SOFA.sofa
-|  |  ├── MIT_KEMAR_Normal.sofa
-|  |  └── Neumann_KU100_48k.sofa
 |  ├── ic_check.svg
 |  ├── ic_dark_mode.svg
 |  ├── ic_error.svg
@@ -45,29 +64,17 @@
 |  ├── ic_music.svg
 |  ├── ic_settings.svg
 |  └── vv_logo.png
+├── build
+|  ├── Makefile
+|  ├── Release
+|  ├── binding.Makefile
+|  ├── config.gypi
+|  ├── gyp-mac-tool
+|  └── spatial_renderer.target.mk
+├── dev-debug.log
 ├── electron
 |  ├── electron-env.d.ts
 |  ├── handlers
-|  |  ├── AmbiData.ts
-|  |  ├── AmbiOrder.ts
-|  |  ├── AmbiRotate.ts
-|  |  ├── AmbiSwap.ts
-|  |  ├── Ambix2APAC.ts
-|  |  ├── Ambix2Bin.ts
-|  |  ├── Ambix2CAF.ts
-|  |  ├── Ambix2IAMF.ts
-|  |  ├── Ambix2Ogg.ts
-|  |  ├── Ambix2Opus.ts
-|  |  ├── IamfParser.ts
-|  |  ├── ObrHandler.ts
-|  |  ├── WaveParser.ts
-|  |  ├── common.ts
-|  |  ├── iamf-config-generator.ts
-|  |  ├── index.ts
-|  |  ├── scripts
-|  |  |  ├── requirements.txt
-|  |  |  └── saf_wrapper.py
-|  |  └── trim.ts
 |  ├── main.ts
 |  ├── preload.ts
 |  └── shim.ts
@@ -76,15 +83,16 @@
 |  ├── IAMF (Immersive Audio Model and Formats) : Eclipsa Audio Ecosystem.png
 |  ├── IAMF Metadata.png
 |  ├── IAMF Muxing Workflow.png
+|  ├── guide_to_spatial_audio_metadata_scaffold.html
 |  └── iamf.html
 ├── index.html
 ├── llms.txt
 ├── make_repo_map.py
 ├── native
 |  └── apac-enc
-|     └── main.swift
 ├── package-lock.json
 ├── package.json
+├── parse_debug.ts
 ├── postcss.config.js
 ├── project_tree.txt
 ├── public
@@ -92,15 +100,14 @@
 |  ├── electron-vite.animate.svg
 |  ├── electron-vite.svg
 |  ├── js
-|  |  └── JSAmbisonics.min.js
 |  └── vite.svg
 ├── py
 |  ├── ambi_data_heuristics.py
-|  └── ambi_rotate.py
+|  ├── ambi_rotate.py
+|  └── format_decoder.py
 ├── repo-map.md
 ├── resources
 |  └── scripts
-|     └── rotator.py
 ├── scripts
 |  ├── test-auto-resume.ts
 |  ├── test-binary-paths.ts
@@ -119,68 +126,20 @@
 |  ├── App.css
 |  ├── App.tsx
 |  ├── assets
-|  |  └── react.svg
 |  ├── components
-|  |  ├── DropZone.tsx
-|  |  ├── FileQueue.tsx
-|  |  ├── Modal.tsx
-|  |  ├── SettingsModal.tsx
-|  |  ├── Sidebar.tsx
-|  |  ├── SmartDropZone.tsx
-|  |  ├── ToolViews.tsx
-|  |  ├── Transport.tsx
-|  |  └── tools
-|  |     ├── AmbiTrim.css
-|  |     ├── AmbiTrim.tsx
-|  |     └── TimeInput.tsx
 |  ├── constants.ts
 |  ├── contexts
-|  |  ├── PlaybackContext.tsx
-|  |  ├── SettingsContext.tsx
-|  |  └── ToolStateContext.tsx
 |  ├── cpp
-|  |  ├── CMakeLists.txt
-|  |  ├── obr_stream.cc
-|  |  └── vendor
-|  |     └── obr
-|  |        ├── BUILD
-|  |        ├── CMakeLists.txt
-|  |        ├── CONTRIBUTING.md
-|  |        ├── LICENSE
-|  |        ├── MODULE.bazel
-|  |        ├── PATENTS
-|  |        ├── README.md
-|  |        ├── WORKSPACE
-|  |        ├── docs
-|  |        ├── external
-|  |        └── obr
 |  ├── index.css
 |  ├── main.tsx
 |  ├── tools
-|  |  ├── AmbiData
-|  |  |  ├── components
-|  |  |  |  ├── Inspector.tsx
-|  |  |  |  └── InspectorComponents.tsx
-|  |  |  ├── index.tsx
-|  |  |  ├── index.tsx.bak
-|  |  |  └── types.ts
-|  |  └── AmbiRotate
-|  |     ├── NativeRotator.ts
-|  |     ├── components
-|  |     |  ├── Knob.tsx
-|  |     |  └── Timeline.tsx
-|  |     └── index.tsx
 |  ├── types.ts
 |  ├── utils
-|  |  ├── WavDecoder.ts
-|  |  └── time-formatters.ts
 |  └── vite-env.d.ts
 ├── tailwind.config.js
+├── terminal.log
 ├── test_000007.iamf
 ├── test_iamf_parser.py
-├── test_output
-|  └── trim_tests
-|     └── output
 ├── test_output.webm
 ├── tests
 |  ├── 3rd Order Ambi Clock Test.wav
@@ -190,6 +149,9 @@
 |  ├── debug_rotation_sweep.py
 |  ├── gen_test_signal.py
 |  ├── handlers.test.ts
+|  ├── iamf_recursive.test.ts
+|  ├── ingestion.test.ts
+|  ├── ingestion_router.test.ts
 |  ├── manual_test_out.wav
 |  ├── obr_pipeline.test.ts
 |  ├── sweep_in.wav
@@ -205,14 +167,14 @@
 ├── vite.config.ts
 └── vitest.config.ts
 
-directory: 1579 file: 10875 symboliclink: 4
+directory: 436 file: 291
 
-ignored: directory (193)
+ignored: directory (4)
 
 
 [2K[1G# AmbiToolbox - Project State Report
 
-**Date:** February 20, 2026 (Updated 17:58)
+**Date:** February 23, 2026 (Updated)
 **Architecture:** Electron Modular Monolith
 
 ## 1. Executive Summary
@@ -253,7 +215,8 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 |  └── vite.svg
 ├── py
 |  ├── ambi_data_heuristics.py
-|  └── ambi_rotate.py
+|  ├── ambi_rotate.py
+|  └── format_decoder.py
 ├── repo-map.md
 ├── resources
 |  └── scripts
@@ -288,8 +251,6 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 ├── tailwind.config.js
 ├── test_000007.iamf
 ├── test_iamf_parser.py
-├── test_output
-|  └── trim_tests
 ├── test_output.webm
 ├── tests
 |  ├── 3rd Order Ambi Clock Test.wav
@@ -299,6 +260,9 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 |  ├── debug_rotation_sweep.py
 |  ├── gen_test_signal.py
 |  ├── handlers.test.ts
+|  ├── iamf_recursive.test.ts
+|  ├── ingestion.test.ts
+|  ├── ingestion_router.test.ts
 |  ├── manual_test_out.wav
 |  ├── obr_pipeline.test.ts
 |  ├── sweep_in.wav
@@ -312,10 +276,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 ├── tsconfig.json
 ├── tsconfig.node.json
 ├── vite.config.ts
-├── vitest.config.ts
-└── xCleanup
-   ├── legacy_apps
-   └── legacy_libs
+└── vitest.config.ts
 ```
 
 -   **`src/`**: Frontend Source (React/Vite).
@@ -395,7 +356,17 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
     - **Robust Truncation**: Implemented discrete `channelmap` filtering in `ObrHandler.ts` to successfully downscale 7th-order (64ch) files to the renderer's 4th-order (25ch) limit. This bypasses FFmpeg's layout constraints.
     - **Error Hardening**: Enhanced pipeline cleanup logic to explicitly reap child processes and destroy response sockets upon encoder failure, preventing UI "waiting" hangs.
     - **Buffer Safety**: Capped browser-side `WavDecoder` to 32 channels for UI visualization to ensure stability with high-channel files.
-
+- **Decoder Pipeline Refactor (PRP #121)**:
+    - **Strict HOA/Discrete Separation**: Refactored the decoder pipeline to strictly apply the `-map 0:a:0` argument only to container formats (e.g., `.aivu`, `.mp4`, `.mkv`, `.mov`, `.webm`, `.m4a`) while preserving raw files like `.wav` and `.amb`.
+- **Native Apple Ingestion (PRP #123)**:
+    - **afconvert Proxying**: Implemented re-routing of Apple Immersive Video (`.aivu`) files through macOS's native `/usr/bin/afconvert` utility. This bypasses FFmpeg's `apac` decoder limitations and generates a high-fidelity 32-bit Float `.wav` proxy for the streaming pipeline.
+    - **Adaptive Pipeline**: Updated `ObrHandler.ts` and `main.ts` to strictly handle standard video containers while allowing proxy `.wav` files to stream with 1-to-1 discrete mapping.
+    - **Infrastructure Stability**: Eliminated the `no decoder found` crashes previously caused by proprietary Apple spatial audio formats. Verified via `tests/ingestion.test.ts`.
+- **Playback & Ingestion Stabilization (PRP #125)**:
+    - **Recursive OBU Scanning**: Hardened `IamfParser.ts` directly resolving the "0 channel" playback issue when reading nested Immersive Audio Model and Formats (`.iamf`) payload streams.
+    - **Deterministic Ingestion Caching**: Integrated stat-based (`path` + `size` + `mtime`) `md5` hashing into `IngestionRouter` assuring unique deterministic proxy cache hits. This eliminates playback "ghosting" when manipulating identically named target files.
+    - **FileQueue Race Condition Resolution**: Isolated `onClick` from `onDoubleClick` events inside `FileQueue` utilizing strict `preventDefault` propagation. Eliminated aggressive asynchronous UI clobbering within `ToolViews.tsx` that previously nuked playback buffers indiscriminately upon single-click browsing.
+    - **Double-Click Same File Bug**: Fixed `setCurrentFile` bug forcing full buffer purge when double-clicking currently active streams; streams now properly re-initialize playback. Fixed `AmbiData` component Transport Next/Prev navigation.
 
 # AmbiToolbox
 
@@ -537,7 +508,8 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 |  └── vite.svg
 ├── py
 |  ├── ambi_data_heuristics.py
-|  └── ambi_rotate.py
+|  ├── ambi_rotate.py
+|  └── format_decoder.py
 ├── repo-map.md
 ├── resources
 |  └── scripts
@@ -572,8 +544,6 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 ├── tailwind.config.js
 ├── test_000007.iamf
 ├── test_iamf_parser.py
-├── test_output
-|  └── trim_tests
 ├── test_output.webm
 ├── tests
 |  ├── 3rd Order Ambi Clock Test.wav
@@ -583,6 +553,9 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 |  ├── debug_rotation_sweep.py
 |  ├── gen_test_signal.py
 |  ├── handlers.test.ts
+|  ├── iamf_recursive.test.ts
+|  ├── ingestion.test.ts
+|  ├── ingestion_router.test.ts
 |  ├── manual_test_out.wav
 |  ├── obr_pipeline.test.ts
 |  ├── sweep_in.wav
@@ -596,10 +569,7 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 ├── tsconfig.json
 ├── tsconfig.node.json
 ├── vite.config.ts
-├── vitest.config.ts
-└── xCleanup
-   ├── legacy_apps
-   └── legacy_libs
+└── vitest.config.ts
 
 
 ## 🧪 Testing

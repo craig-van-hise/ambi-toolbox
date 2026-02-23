@@ -3,6 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAMF Metadata Interactive Guide v1.1</title>
     <style>
         :root {
             --iamf-primary: #FF8C00;
@@ -11,8 +13,11 @@
             --text-main: #e0e0e0;
             --text-sub: #b0b0b0;
             --badge-struct: #FFD700;
+            /* Gold: Structural (OBU) */
             --badge-complex: #FF1493;
+            /* Pink: Complex/Binary (Struct/Parameter) */
             --badge-primitive: #00CED1;
+            /* Cyan: Primitive (Value/Integer) */
             --link-accent: #4da6ff;
         }
 
@@ -21,10 +26,11 @@
             background: var(--bg-dark);
             color: var(--text-main);
             padding: 40px;
+            line-height: 1.6;
         }
 
+        /* Main Dashboard Card */
         details.container-card {
-            /* WIDENED CONTAINER to prevent text wrapping */
             width: 950px;
             background: var(--card-bg);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -36,7 +42,7 @@
 
         summary.card-header {
             background: var(--iamf-primary);
-            padding: 20px 24px;
+            padding: 24px 28px;
             color: #000;
             cursor: pointer;
             display: flex;
@@ -59,10 +65,10 @@
             display: inline-block;
             width: 0;
             height: 0;
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent;
-            border-left: 12px solid #000;
-            margin-right: 18px;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 14px solid #000;
+            margin-right: 22px;
             transition: transform 0.2s;
         }
 
@@ -76,15 +82,15 @@
         }
 
         .header-main-title {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: 900;
             line-height: 1;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             letter-spacing: -0.05em;
         }
 
         .header-sub-title {
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -95,17 +101,17 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 6px;
+            gap: 8px;
         }
 
         .spec-link {
             background: rgba(0, 0, 0, 0.15);
             color: #000;
             text-decoration: none;
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 700;
+            font-size: 0.8rem;
+            font-weight: 800;
             text-transform: uppercase;
             transition: background 0.2s, color 0.2s;
             border: 1px solid rgba(0, 0, 0, 0.2);
@@ -117,29 +123,30 @@
         }
 
         .content-area {
-            padding: 20px;
+            padding: 30px;
             border-top: 2px solid #000;
         }
 
+        /* Nested Node Styling */
         details.nested-node {
-            margin: 8px 0;
-            border-radius: 6px;
+            margin: 12px 0;
+            border-radius: 8px;
             background: rgba(255, 255, 255, 0.02);
-            transition: background 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         details.nested-node:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.04);
         }
 
         summary.nested-summary {
             cursor: pointer;
-            padding: 10px 14px;
+            padding: 14px 18px;
             list-style: none;
             display: flex;
             align-items: center;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 1rem;
             position: relative;
         }
 
@@ -152,10 +159,10 @@
             display: inline-block;
             width: 0;
             height: 0;
-            border-top: 5px solid transparent;
-            border-bottom: 5px solid transparent;
-            border-left: 8px solid var(--iamf-primary);
-            margin-right: 12px;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 10px solid var(--iamf-primary);
+            margin-right: 14px;
             transition: transform 0.2s;
         }
 
@@ -164,9 +171,9 @@
         }
 
         .node-content {
-            padding: 0 16px 14px 32px;
+            padding: 0 20px 20px 40px;
             border-left: 1px solid #444;
-            margin-left: 18px;
+            margin-left: 24px;
         }
 
         /* TOOLTIP CSS */
@@ -177,8 +184,8 @@
         }
 
         .badge {
-            font-size: 0.65rem;
-            padding: 4px 8px;
+            font-size: 0.7rem;
+            padding: 5px 10px;
             border-radius: 4px;
             text-transform: uppercase;
             font-weight: 900;
@@ -200,12 +207,12 @@
 
         .tooltip-content {
             position: absolute;
-            width: 280px;
+            width: 300px;
             background: #222;
             border: 1px solid #444;
-            border-radius: 6px;
-            padding: 12px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            padding: 14px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s, transform 0.2s;
@@ -216,9 +223,9 @@
         }
 
         .tooltip-up .tooltip-content {
-            bottom: 130%;
+            bottom: 140%;
             right: 0;
-            transform: translateY(5px);
+            transform: translateY(8px);
         }
 
         .tooltip-up:hover .tooltip-content {
@@ -227,9 +234,9 @@
         }
 
         .tooltip-down .tooltip-content {
-            top: 130%;
+            top: 140%;
             right: 0;
-            transform: translateY(-5px);
+            transform: translateY(-8px);
         }
 
         .tooltip-down:hover .tooltip-content {
@@ -240,113 +247,98 @@
         .tooltip-header {
             display: flex;
             align-items: center;
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding-bottom: 6px;
-            margin-bottom: 8px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
             border-bottom: 1px solid #444;
             color: #fff;
         }
 
         .color-blob {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            margin-right: 8px;
+            margin-right: 10px;
             display: inline-block;
         }
 
         .tooltip-body {
-            font-size: 0.8rem;
-            line-height: 1.4;
-            margin-bottom: 8px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
         }
 
         .tooltip-example {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             background: #111;
-            padding: 6px 8px;
+            padding: 8px 10px;
             border-radius: 4px;
-            border-left: 2px solid var(--iamf-primary);
+            border-left: 3px solid var(--iamf-primary);
             color: #aaa;
-            font-family: monospace;
+            font-family: 'Roboto Mono', monospace;
         }
 
         .description {
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             color: var(--text-sub);
-            line-height: 1.5;
-            margin-top: 6px;
+            margin-top: 8px;
         }
 
-        /* REFACTORED ACCEPTED VALUES BLOCK */
+        /* ACCEPTED VALUES BLOCK */
         .accepted-values {
-            margin-top: 12px;
-            padding: 12px 16px;
-            background: rgba(0, 0, 0, 0.3);
-            /* Slightly darker background for contrast */
-            border-left: 4px solid var(--iamf-primary);
-            border-radius: 0 6px 6px 0;
+            margin-top: 15px;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.35);
+            border-left: 5px solid var(--iamf-primary);
+            border-radius: 0 8px 8px 0;
         }
 
         .accepted-values strong.block-title {
             color: #fff;
-            font-family: 'Inter', sans-serif;
             display: block;
-            margin-bottom: 8px;
-            font-size: 0.75rem;
+            margin-bottom: 10px;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
             opacity: 0.9;
         }
 
-        /* New Row Flex Structure */
         .val-row {
             display: flex;
             align-items: baseline;
-            margin-bottom: 6px;
-            line-height: 1.4;
-            font-size: 0.85rem;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
         }
 
-        /* Tighter Key Spacing */
         .val-key {
             color: var(--iamf-primary);
-            font-weight: bold;
-            font-family: 'Courier New', Courier, monospace;
+            font-weight: 900;
+            font-family: 'Roboto Mono', monospace;
             white-space: nowrap;
         }
 
-        /* Explicit Equal Sign */
         .val-eq {
             color: #888;
-            margin: 0 8px;
-            /* Tight, consistent spacing */
-            font-family: 'Courier New', Courier, monospace;
+            margin: 0 10px;
+            font-family: 'Roboto Mono', monospace;
+            font-weight: 900;
         }
 
-        /* Wrapper for the description parts */
         .val-desc-group {
             flex: 1;
             white-space: nowrap;
-            /* Prevents wrapping */
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
-        /* Brighter Primary Name */
         .val-name {
             color: #ffffff;
-            /* Bright white */
-            font-weight: 600;
-            margin-right: 6px;
+            font-weight: 700;
+            margin-right: 8px;
         }
 
-        /* Muted Elucidation details */
         .val-details {
             color: #aaaaaa;
-            /* Muted gray */
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-style: italic;
         }
     </style>
@@ -365,7 +357,8 @@
 
             <div class="authority-links">
                 <a href="https://aomedia.org/specifications/iamf/" target="_blank" class="spec-link">Format Overview</a>
-                <a href="https://aomediacodec.github.io/iamf/" target="_blank" class="spec-link">v1.1 Specification</a>
+                <a href="https://aomediacodec.github.io/iamf/" target="_blank" class="spec-link">v1.1.0
+                    Specification</a>
             </div>
         </summary>
 
@@ -378,16 +371,34 @@
                         <div class="tooltip-content">
                             <div class="tooltip-header"><span class="color-blob b-struct"></span> Structural Wrapper
                             </div>
-                            <div class="tooltip-body"><strong>Open Bitstream Unit:</strong> A packetized container that
-                                encapsulates data. Type 31 acts as the global master descriptor.</div>
-                            <div class="tooltip-example"><strong>Example:</strong> Header payload declaring
-                                'Base-Enhanced' profile active.</div>
+                            <div class="tooltip-body">The global master packet that identifies the file as IAMF and sets
+                                the primary decoding rules.</div>
+                            <div class="tooltip-example">Example: ia_code: "iamf"</div>
                         </div>
                     </div>
                 </summary>
                 <div class="node-content">
-                    <div class="description">The global configuration for the entire IAMF stream, defining profiles and
-                        versioning.</div>
+                    <div class="description">Identifies the IAMF payload and declares the architectural profiles in use.
+                    </div>
+
+                    <details class="nested-node">
+                        <summary class="nested-summary">ia_code
+                            <div class="tooltip-wrap tooltip-down">
+                                <span class="badge b-primitive">4 Bytes</span>
+                                <div class="tooltip-content">
+                                    <div class="tooltip-header"><span class="color-blob b-primitive"></span> Primitive
+                                        Variable</div>
+                                    <div class="tooltip-body">A fixed signature used for bitstream synchronization.
+                                    </div>
+                                    <div class="tooltip-example">Example: "iamf" (0x69616d66)</div>
+                                </div>
+                            </div>
+                        </summary>
+                        <div class="node-content">
+                            <div class="description">The mandatory ASCII string required to identify the start of a
+                                valid IAMF sequence.</div>
+                        </div>
+                    </details>
 
                     <details class="nested-node">
                         <summary class="nested-summary">primary_profile
@@ -396,46 +407,29 @@
                                 <div class="tooltip-content">
                                     <div class="tooltip-header"><span class="color-blob b-primitive"></span> Primitive
                                         Variable</div>
-                                    <div class="tooltip-body"><strong>Value:</strong> A numeric selection defining the
-                                        complexity tier of the stream.</div>
-                                    <div class="tooltip-example"><strong>Example:</strong> 2 (Base-Enhanced Profile)
-                                    </div>
+                                    <div class="tooltip-body">A numeric selection defining the complexity tier of the
+                                        stream.</div>
+                                    <div class="tooltip-example">Example: 2</div>
                                 </div>
                             </div>
                         </summary>
                         <div class="node-content">
-                            <div class="description">Dictates the complexity tier of the stream, restricting or
-                                unlocking features like massive channel layouts.</div>
-
+                            <div class="description">Sets the computational and feature constraints of the bitstream.
+                            </div>
                             <div class="accepted-values">
                                 <strong class="block-title">Accepted Parameters:</strong>
-                                <div class="val-row">
-                                    <span class="val-key">0</span>
-                                    <span class="val-eq">=</span>
-                                    <span class="val-desc-group">
-                                        <span class="val-name">Simple Profile</span>
-                                        <span class="val-details">(Channel-based only, limited to 5.1/7.1
-                                            layouts)</span>
-                                    </span>
+                                <div class="val-row"><span class="val-key">0</span><span class="val-eq">=</span><span
+                                        class="val-desc-group"><span class="val-name">Simple Profile</span><span
+                                            class="val-details">(Limited to static channel beds up to 7.1)</span></span>
                                 </div>
-                                <div class="val-row">
-                                    <span class="val-key">1</span>
-                                    <span class="val-eq">=</span>
-                                    <span class="val-desc-group">
-                                        <span class="val-name">Base Profile</span>
-                                        <span class="val-details">(Adds 1st-order Ambisonics, Binaural, and
-                                            7.1.4)</span>
-                                    </span>
-                                </div>
-                                <div class="val-row">
-                                    <span class="val-key">2</span>
-                                    <span class="val-eq">=</span>
-                                    <span class="val-desc-group">
-                                        <span class="val-name">Base-Enhanced Profile</span>
-                                        <span class="val-details">(Unlocks 3rd-order Ambisonics and massive 24ch
-                                            arrays)</span>
-                                    </span>
-                                </div>
+                                <div class="val-row"><span class="val-key">1</span><span class="val-eq">=</span><span
+                                        class="val-desc-group"><span class="val-name">Base Profile</span><span
+                                            class="val-details">(Enables 1st-order Ambisonics and 7.1.4
+                                            objects)</span></span></div>
+                                <div class="val-row"><span class="val-key">2</span><span class="val-eq">=</span><span
+                                        class="val-desc-group"><span class="val-name">Base-Enhanced Profile</span><span
+                                            class="val-details">(Enables 3rd-order Ambisonics and massive 24ch
+                                            arrays)</span></span></div>
                             </div>
                         </div>
                     </details>
@@ -449,16 +443,15 @@
                         <div class="tooltip-content">
                             <div class="tooltip-header"><span class="color-blob b-struct"></span> Structural Wrapper
                             </div>
-                            <div class="tooltip-body"><strong>Open Bitstream Unit:</strong> A packet containing
-                                initialization data required to set up the audio decoder.</div>
-                            <div class="tooltip-example"><strong>Example:</strong> Payload containing specific Opus
-                                channel counts and magic signatures.</div>
+                            <div class="tooltip-body">Initializes the audio decoder for specific formats like Opus or
+                                AAC.</div>
+                            <div class="tooltip-example">Example: codec_id: "Opus"</div>
                         </div>
                     </div>
                 </summary>
                 <div class="node-content">
-                    <div class="description">Defines the specific codec initialization data. Essential for setting up
-                        the audio decoder.</div>
+                    <div class="description">Defines the specific codec parameters and initialization requirements.
+                    </div>
 
                     <details class="nested-node">
                         <summary class="nested-summary">codec_id
@@ -467,30 +460,28 @@
                                 <div class="tooltip-content">
                                     <div class="tooltip-header"><span class="color-blob b-primitive"></span> Primitive
                                         Variable</div>
-                                    <div class="tooltip-body"><strong>4 Bytes:</strong> A 32-bit integer typically
-                                        represented as a 4-character ASCII string (FourCC).</div>
-                                    <div class="tooltip-example"><strong>Example:</strong> 0x4F707573 (Hex for "Opus")
-                                    </div>
+                                    <div class="tooltip-body">A 4-character code (FourCC) naming the codec.</div>
+                                    <div class="tooltip-example">Example: "Opus"</div>
                                 </div>
                             </div>
                         </summary>
                         <div class="node-content">
-                            <div class="description">A Four-Character Code (FourCC) strictly identifying the
-                                encapsulated audio format. User inputs the ASCII text string.</div>
+                            <div class="description">Specifies the compression algorithm utilized in the audio element
+                                substreams.</div>
                             <div class="accepted-values">
-                                <strong class="block-title">Accepted FourCC Strings (ASCII):</strong>
+                                <strong class="block-title">Accepted FourCC Strings:</strong>
                                 <div class="val-row"><span class="val-key">Opus</span><span class="val-eq">=</span><span
-                                        class="val-desc-group"><span class="val-name">Opus Interactive Audio
-                                            Codec</span></span></div>
+                                        class="val-desc-group"><span class="val-name">Opus Codec</span><span
+                                            class="val-details">(Streaming optimized)</span></span></div>
                                 <div class="val-row"><span class="val-key">mp4a</span><span class="val-eq">=</span><span
-                                        class="val-desc-group"><span class="val-name">Advanced Audio Coding
-                                            (AAC-LC)</span></span></div>
+                                        class="val-desc-group"><span class="val-name">AAC-LC</span><span
+                                            class="val-details">(Broad compatibility)</span></span></div>
                                 <div class="val-row"><span class="val-key">fLaC</span><span class="val-eq">=</span><span
-                                        class="val-desc-group"><span class="val-name">Free Lossless Audio
-                                            Codec</span></span></div>
+                                        class="val-desc-group"><span class="val-name">FLAC</span><span
+                                            class="val-details">(Lossless compression)</span></span></div>
                                 <div class="val-row"><span class="val-key">ipcm</span><span class="val-eq">=</span><span
-                                        class="val-desc-group"><span class="val-name">Linear PCM
-                                            (Uncompressed)</span></span></div>
+                                        class="val-desc-group"><span class="val-name">Linear PCM</span><span
+                                            class="val-details">(Uncompressed raw audio)</span></span></div>
                             </div>
                         </div>
                     </details>
@@ -498,29 +489,26 @@
                     <details class="nested-node">
                         <summary class="nested-summary">audio_roll_distance
                             <div class="tooltip-wrap tooltip-up">
-                                <span class="badge b-primitive">Value</span>
+                                <span class="badge b-primitive">Int</span>
                                 <div class="tooltip-content">
                                     <div class="tooltip-header"><span class="color-blob b-primitive"></span> Primitive
                                         Variable</div>
-                                    <div class="tooltip-body"><strong>Value:</strong> A positive integer instructing the
-                                        decoder how many samples to pre-roll before rendering audio.</div>
-                                    <div class="tooltip-example"><strong>Example:</strong> 3840 (Common pre-roll for
-                                        Opus)</div>
+                                    <div class="tooltip-body">Sets the seek-point pre-roll in samples.</div>
+                                    <div class="tooltip-example">Example: 3840</div>
                                 </div>
                             </div>
                         </summary>
                         <div class="node-content">
-                            <div class="description">Critical for random access; specifies how many samples prior to the
-                                target timestamp must be decoded to prime the decoder's internal state.</div>
+                            <div class="description">Ensures the decoder can prime its internal state for seamless
+                                playback starting at any frame.</div>
                             <div class="accepted-values">
-                                <strong class="block-title">Constraints:</strong>
-                                <div class="val-row"><span class="val-key">Int > 0</span><span
-                                        class="val-eq">=</span><span class="val-desc-group"><span
-                                            class="val-name">Positive Integer</span><span class="val-details">(Required
-                                            for lossy codecs like Opus/AAC to establish state)</span></span></div>
-                                <div class="val-row"><span class="val-key">0</span><span class="val-eq">=</span><span
-                                        class="val-desc-group"><span class="val-name">Zero Value</span><span
-                                            class="val-details">(MUST be 0 if codec is fLaC or ipcm)</span></span></div>
+                                <strong class="block-title">Requirements:</strong>
+                                <div class="val-row"><span class="val-key">> 0</span><span class="val-eq">:</span><span
+                                        class="val-desc-group"><span class="val-name">Lossy Codecs</span><span
+                                            class="val-details">(Required for Opus and AAC)</span></span></div>
+                                <div class="val-row"><span class="val-key">0</span><span class="val-eq">:</span><span
+                                        class="val-desc-group"><span class="val-name">Lossless/Raw</span><span
+                                            class="val-details">(Must be zero for FLAC or PCM)</span></span></div>
                             </div>
                         </div>
                     </details>
@@ -534,16 +522,15 @@
                         <div class="tooltip-content">
                             <div class="tooltip-header"><span class="color-blob b-struct"></span> Structural Wrapper
                             </div>
-                            <div class="tooltip-body"><strong>Open Bitstream Unit:</strong> A packet describing the
-                                layout of an audio object, channel bed, or Ambisonics scene.</div>
-                            <div class="tooltip-example"><strong>Example:</strong> Payload defining a discrete 7.1.4
-                                channel bed structure.</div>
+                            <div class="tooltip-body">Defines how audio substreams are combined to form a spatial scene
+                                or object.</div>
+                            <div class="tooltip-example">Example: audio_element_type: 1</div>
                         </div>
                     </div>
                 </summary>
                 <div class="node-content">
-                    <div class="description">Describes the structure of an audio object, channel bed, or Ambisonics
-                        scene, defining how substreams are combined.</div>
+                    <div class="description">The foundational OBU for defining the physical and spatial makeup of the
+                        audio content.</div>
 
                     <details class="nested-node">
                         <summary class="nested-summary">audio_element_type
@@ -552,31 +539,28 @@
                                 <div class="tooltip-content">
                                     <div class="tooltip-header"><span class="color-blob b-primitive"></span> Primitive
                                         Variable</div>
-                                    <div class="tooltip-body"><strong>Value:</strong> A numeric selection defining the
-                                        structural paradigm of the audio payload.</div>
-                                    <div class="tooltip-example"><strong>Example:</strong> 1 (Scene Based)</div>
+                                    <div class="tooltip-body">Defines the fundamental spatial paradigm of the
+                                        substreams.</div>
+                                    <div class="tooltip-example">Example: 2</div>
                                 </div>
                             </div>
                         </summary>
                         <div class="node-content">
-                            <div class="description">Fundamentally changes how the decoder interprets the subsequent
-                                data routing.</div>
+                            <div class="description">Categorizes the audio as either fixed speakers, a soundfield, or
+                                discrete objects.</div>
                             <div class="accepted-values">
                                 <strong class="block-title">Accepted Parameters:</strong>
                                 <div class="val-row"><span class="val-key">0</span><span class="val-eq">=</span><span
-                                        class="val-desc-group"><span class="val-name">CHANNEL_BASED</span><span
-                                            class="val-details">(Traditional speaker target layouts)</span></span></div>
+                                        class="val-desc-group"><span class="val-name">Channel-Based</span><span
+                                            class="val-details">(Standard surround beds like 5.1/7.1.4)</span></span>
+                                </div>
                                 <div class="val-row"><span class="val-key">1</span><span class="val-eq">=</span><span
-                                        class="val-desc-group"><span class="val-name">SCENE_BASED</span><span
-                                            class="val-details">(Ambisonics soundfield via spherical
-                                            harmonics)</span></span></div>
+                                        class="val-desc-group"><span class="val-name">Scene-Based</span><span
+                                            class="val-details">(Ambisonics HOA Soundfields)</span></span></div>
                                 <div class="val-row"><span class="val-key">2</span><span class="val-eq">=</span><span
-                                        class="val-desc-group"><span class="val-name">OBJECT_BASED</span><span
-                                            class="val-details">(Discrete dynamic items with Cartesian
-                                            coordinates)</span></span></div>
-                                <div class="val-row"><span class="val-key">3-7</span><span class="val-eq">=</span><span
-                                        class="val-desc-group"><span class="val-name">Reserved</span><span
-                                            class="val-details">(For future specification expansion)</span></span></div>
+                                        class="val-desc-group"><span class="val-name">Object-Based</span><span
+                                            class="val-details">(Discrete items with XYZ trajectories)</span></span>
+                                </div>
                             </div>
                         </div>
                     </details>
@@ -588,55 +572,80 @@
                                 <div class="tooltip-content">
                                     <div class="tooltip-header"><span class="color-blob b-complex"></span> Complex Data
                                         Payload</div>
-                                    <div class="tooltip-body"><strong>Struct (Structure):</strong> A grouping of
-                                        multiple variables (like layer depth and channel config) bundled together.</div>
-                                    <div class="tooltip-example"><strong>Example:</strong> { num_layers: 2,
-                                        loudspeaker_layout: 9 }</div>
+                                    <div class="tooltip-body">A configuration block determining how many channels are
+                                        decoded based on playback hardware.</div>
+                                    <div class="tooltip-example">Example: { num_layers: 2 }</div>
                                 </div>
                             </div>
                         </summary>
                         <div class="node-content">
-                            <div class="description">Allows a decoder to download or decode only the channels it needs.
-                                Triggered by Type 0.</div>
+                            <div class="description">Enables "one-to-many" delivery by defining layers for mono, stereo,
+                                and surround.</div>
 
                             <details class="nested-node">
-                                <summary class="nested-summary">loudspeaker_layout & num_layers
+                                <summary class="nested-summary">num_layers
                                     <div class="tooltip-wrap tooltip-up">
                                         <span class="badge b-primitive">Value</span>
                                         <div class="tooltip-content">
                                             <div class="tooltip-header"><span class="color-blob b-primitive"></span>
                                                 Primitive Variable</div>
-                                            <div class="tooltip-body"><strong>Value:</strong> Standard mapping
-                                                parameters for the stream geometry.</div>
-                                            <div class="tooltip-example"><strong>Example:</strong> 2 (5.1 surround)
-                                            </div>
+                                            <div class="tooltip-body">The number of scalable channel configurations
+                                                provided.</div>
+                                            <div class="tooltip-example">Example: 3</div>
                                         </div>
                                     </div>
                                 </summary>
                                 <div class="node-content">
-                                    <div class="description">Defines standard channel arrays and scalability.</div>
+                                    <div class="description">Defines the count of distinct hierarchies (e.g., Layer 1 =
+                                        Stereo, Layer 2 = 5.1, Layer 3 = 7.1.4).</div>
                                     <div class="accepted-values">
                                         <strong class="block-title">Accepted Parameters:</strong>
-                                        <div class="val-row"><span class="val-key">Layers</span><span
+                                        <div class="val-row"><span class="val-key">1-7</span><span
                                                 class="val-eq">:</span><span class="val-desc-group"><span
-                                                    class="val-name">1 to 7</span><span class="val-details">(Defines the
-                                                    hierarchy depth)</span></span></div>
+                                                    class="val-name">Numeric Count</span><span
+                                                    class="val-details">(Maximum of 7 scalable tiers per
+                                                    element)</span></span></div>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <details class="nested-node">
+                                <summary class="nested-summary">loudspeaker_layout
+                                    <div class="tooltip-wrap tooltip-up">
+                                        <span class="badge b-primitive">Value</span>
+                                        <div class="tooltip-content">
+                                            <div class="tooltip-header"><span class="color-blob b-primitive"></span>
+                                                Primitive Variable</div>
+                                            <div class="tooltip-body">The standard channel configuration for the current
+                                                layer.</div>
+                                            <div class="tooltip-example">Example: 10</div>
+                                        </div>
+                                    </div>
+                                </summary>
+                                <div class="node-content">
+                                    <div class="description">Identifies the speaker arrangement for the current layer.
+                                    </div>
+                                    <div class="accepted-values">
+                                        <strong class="block-title">Accepted Parameters:</strong>
                                         <div class="val-row"><span class="val-key">0</span><span
                                                 class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">Mono</span><span class="val-details">(Single
-                                                    channel center)</span></span></div>
+                                                    class="val-name">Mono</span><span class="val-details">(Center
+                                                    only)</span></span></div>
                                         <div class="val-row"><span class="val-key">1</span><span
                                                 class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">Stereo</span><span class="val-details">(Left /
-                                                    Right pair)</span></span></div>
+                                                    class="val-name">Stereo</span><span
+                                                    class="val-details">(L/R)</span></span></div>
                                         <div class="val-row"><span class="val-key">2</span><span
                                                 class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">5.1 Surround</span><span
-                                                    class="val-details">(Standard cinema layout)</span></span></div>
+                                                    class="val-name">5.1.0 Surround</span><span
+                                                    class="val-details">(Standard cinematic)</span></span></div>
+                                        <div class="val-row"><span class="val-key">10</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">7.1.4 Immersive</span><span
+                                                    class="val-details">(Includes 4 height channels)</span></span></div>
                                         <div class="val-row"><span class="val-key">15</span><span
                                                 class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">Expanded Layout</span><span
-                                                    class="val-details">(Triggers parsing of
+                                                    class="val-name">Expanded</span><span class="val-details">(Triggers
                                                     expanded_loudspeaker_layout)</span></span></div>
                                     </div>
                                 </div>
@@ -649,34 +658,102 @@
                                         <div class="tooltip-content">
                                             <div class="tooltip-header"><span class="color-blob b-primitive"></span>
                                                 Primitive Variable</div>
-                                            <div class="tooltip-body"><strong>8-Bit Integer:</strong> A small data size
-                                                used to select highly specific, massive speaker layouts.</div>
-                                            <div class="tooltip-example"><strong>Example:</strong> 8 (Representing
-                                                9.1.6ch)</div>
+                                            <div class="tooltip-body">A deeper field used only when loudspeaker_layout
+                                                is set to 15.</div>
+                                            <div class="tooltip-example">Example: 13</div>
                                         </div>
                                     </div>
                                 </summary>
                                 <div class="node-content">
-                                    <div class="description">Parsed when standard layout is set to 15. Supports
-                                        ultra-immersive, high-density hardware setups.</div>
+                                    <div class="description">Unlocks massive hardware-specific channel arrays for
+                                        Eclipsa Audio environments.</div>
                                     <div class="accepted-values">
                                         <strong class="block-title">Accepted Parameters:</strong>
                                         <div class="val-row"><span class="val-key">8</span><span
                                                 class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">9.1.6ch</span><span class="val-details">(16 Channel
-                                                    Immersive)</span></span></div>
+                                                    class="val-name">9.1.6 ch</span><span class="val-details">(16
+                                                    Channels - Base-Enhanced Profile)</span></span></div>
                                         <div class="val-row"><span class="val-key">13</span><span
                                                 class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">10.2.9.3ch</span><span class="val-details">(24
-                                                    Channel Immersive - Eclipsa)</span></span></div>
-                                        <div class="val-row"><span class="val-key">18</span><span
-                                                class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">Top-1ch</span><span class="val-details">(TpC "Voice
-                                                    of God" overhead)</span></span></div>
+                                                    class="val-name">10.2.9.3 ch</span><span class="val-details">(24
+                                                    Channels - Advanced Eclipsa)</span></span></div>
                                         <div class="val-row"><span class="val-key">19</span><span
                                                 class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">Top-5ch</span><span class="val-details">(Full
-                                                    overhead ring array)</span></span></div>
+                                                    class="val-name">Top-5 ch</span><span class="val-details">(Full
+                                                    overhead height ring)</span></span></div>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+
+                    <details class="nested-node">
+                        <summary class="nested-summary">AmbisonicsConfig
+                            <div class="tooltip-wrap tooltip-up">
+                                <span class="badge b-complex">Struct</span>
+                                <div class="tooltip-content">
+                                    <div class="tooltip-header"><span class="color-blob b-complex"></span> Complex Data
+                                        Payload</div>
+                                    <div class="tooltip-body">Defines scene-based encoding for the soundfield.</div>
+                                    <div class="tooltip-example">Example: { ambisonics_mode: 1 }</div>
+                                </div>
+                            </div>
+                        </summary>
+                        <div class="node-content">
+                            <div class="description">Configures scene-based rendering using spherical harmonic
+                                expansion.</div>
+
+                            <details class="nested-node">
+                                <summary class="nested-summary">ambisonics_mode
+                                    <div class="tooltip-wrap tooltip-up">
+                                        <span class="badge b-primitive">Value</span>
+                                        <div class="tooltip-content">
+                                            <div class="tooltip-header"><span class="color-blob b-primitive"></span>
+                                                Primitive Variable</div>
+                                            <div class="tooltip-body">Selects the Ambisonic processing method.</div>
+                                            <div class="tooltip-example">Example: 0</div>
+                                        </div>
+                                    </div>
+                                </summary>
+                                <div class="node-content">
+                                    <div class="description">Dictates how the substreams map to spherical harmonics.
+                                    </div>
+                                    <div class="accepted-values">
+                                        <strong class="block-title">Accepted Parameters:</strong>
+                                        <div class="val-row"><span class="val-key">0</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">AMBISONICS_MONO</span><span
+                                                    class="val-details">(Strict channel mapping)</span></span></div>
+                                        <div class="val-row"><span class="val-key">1</span><span
+                                                class="val-eq">=</span><span class="val-desc-group"><span
+                                                    class="val-name">AMBISONICS_PROJECTION</span><span
+                                                    class="val-details">(Linear projection matrix)</span></span></div>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <details class="nested-node">
+                                <summary class="nested-summary">ambisonics_order
+                                    <div class="tooltip-wrap tooltip-up">
+                                        <span class="badge b-primitive">Value</span>
+                                        <div class="tooltip-content">
+                                            <div class="tooltip-header"><span class="color-blob b-primitive"></span>
+                                                Primitive Variable</div>
+                                            <div class="tooltip-body">Defines the mathematical order of the HOA
+                                                soundfield.</div>
+                                            <div class="tooltip-example">Example: 3</div>
+                                        </div>
+                                    </div>
+                                </summary>
+                                <div class="node-content">
+                                    <div class="description">Sets the spatial resolution. Higher orders provide more
+                                        precise directional imaging.</div>
+                                    <div class="accepted-values">
+                                        <strong class="block-title">Accepted Parameters:</strong>
+                                        <div class="val-row"><span class="val-key">1-3</span><span
+                                                class="val-eq">:</span><span class="val-desc-group"><span
+                                                    class="val-name">HOA Order</span><span class="val-details">(Order 3
+                                                    supports up to 16 channels)</span></span></div>
                                     </div>
                                 </div>
                             </details>
@@ -692,16 +769,15 @@
                         <div class="tooltip-content">
                             <div class="tooltip-header"><span class="color-blob b-struct"></span> Structural Wrapper
                             </div>
-                            <div class="tooltip-body"><strong>Open Bitstream Unit:</strong> A packet containing the
-                                rendering and mixing rules for the final output.</div>
-                            <div class="tooltip-example"><strong>Example:</strong> Payload defining the volume routing
-                                for an English 5.1 mix.</div>
+                            <div class="tooltip-body">The "Mix Instruction" packet; dictates how beds and objects are
+                                combined for the user.</div>
+                            <div class="tooltip-example">Example: num_sub_mixes: 1</div>
                         </div>
                     </div>
                 </summary>
                 <div class="node-content">
-                    <div class="description">Contains the rendering and mixing rules (loudness, gain, layout targeting)
-                        for the final output.</div>
+                    <div class="description">Carries the final mix instructions, loudness targets, and headphone
+                        rendering rules.</div>
 
                     <details class="nested-node">
                         <summary class="nested-summary">Loudness Info (ITU-R BS.1770-4)
@@ -710,17 +786,33 @@
                                 <div class="tooltip-content">
                                     <div class="tooltip-header"><span class="color-blob b-complex"></span> Complex Data
                                         Payload</div>
-                                    <div class="tooltip-body"><strong>Struct:</strong> Bundles several loudness metrics
-                                        together, ensuring the audio meets strict broadcast regulations.</div>
-                                    <div class="tooltip-example"><strong>Example:</strong> { integrated_loudness: -24
-                                        LKFS, true_peak: -1.5 dBTP }</div>
+                                    <div class="tooltip-body">A bundle of mandatory loudness normalization values.</div>
+                                    <div class="tooltip-example">Example: { integrated_loudness: -2400 }</div>
                                 </div>
                             </div>
                         </summary>
                         <div class="node-content">
-                            <div class="description">Mandatory loudness compliance data. Carries
-                                <strong>integrated_loudness</strong> and maximum <strong>true_peak</strong> (dBTP).
-                            </div>
+                            <div class="description">Critical compliance data ensuring consistent playback volume across
+                                content sources.</div>
+
+                            <details class="nested-node">
+                                <summary class="nested-summary">integrated_loudness
+                                    <div class="tooltip-wrap tooltip-up">
+                                        <span class="badge b-primitive">16-Bit Int</span>
+                                        <div class="tooltip-content">
+                                            <div class="tooltip-header"><span class="color-blob b-primitive"></span>
+                                                Primitive Variable</div>
+                                            <div class="tooltip-body">Target loudness in LKFS (expressed in Q8.8
+                                                format).</div>
+                                            <div class="tooltip-example">Example: -2400 (=-24.0 LKFS)</div>
+                                        </div>
+                                    </div>
+                                </summary>
+                                <div class="node-content">
+                                    <div class="description">The measured integrated loudness over the entire duration
+                                        of the presentation.</div>
+                                </div>
+                            </details>
 
                             <details class="nested-node">
                                 <summary class="nested-summary">anchor_element
@@ -729,31 +821,27 @@
                                         <div class="tooltip-content">
                                             <div class="tooltip-header"><span class="color-blob b-primitive"></span>
                                                 Primitive Variable</div>
-                                            <div class="tooltip-body"><strong>Value:</strong> Selection defining
-                                                perceptual leveling targets.</div>
-                                            <div class="tooltip-example"><strong>Example:</strong> 1 (Dialogue Anchor)
+                                            <div class="tooltip-body">Defines the perceptual anchor for normalization.
                                             </div>
+                                            <div class="tooltip-example">Example: 1</div>
                                         </div>
                                     </div>
                                 </summary>
                                 <div class="node-content">
-                                    <div class="description">Allows content normalization based on a specific perceptual
-                                        element rather than the whole mix.</div>
+                                    <div class="description">Sets which audio element the loudness measurements were
+                                        prioritized against.</div>
                                     <div class="accepted-values">
                                         <strong class="block-title">Accepted Parameters:</strong>
-                                        <div class="val-row"><span class="val-key">0</span><span
-                                                class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">Unknown Anchor</span><span
-                                                    class="val-details">(Generic leveling)</span></span></div>
                                         <div class="val-row"><span class="val-key">1</span><span
                                                 class="val-eq">=</span><span class="val-desc-group"><span
                                                     class="val-name">Dialogue Anchor</span><span
-                                                    class="val-details">(Leveling based on speech)</span></span></div>
+                                                    class="val-details">(Leveling based on speech clarity)</span></span>
+                                        </div>
                                         <div class="val-row"><span class="val-key">2</span><span
                                                 class="val-eq">=</span><span class="val-desc-group"><span
                                                     class="val-name">Album Anchor</span><span
-                                                    class="val-details">(Leveling based on overall music
-                                                    program)</span></span></div>
+                                                    class="val-details">(Leveling based on musical energy)</span></span>
+                                        </div>
                                     </div>
                                 </div>
                             </details>
@@ -767,15 +855,14 @@
                                 <div class="tooltip-content">
                                     <div class="tooltip-header"><span class="color-blob b-complex"></span> Complex Data
                                         Payload</div>
-                                    <div class="tooltip-body"><strong>Struct:</strong> Instructs the renderer on
-                                        algorithmic application.</div>
-                                    <div class="tooltip-example"><strong>Example:</strong> { headphones_rendering_mode:
-                                        1 }</div>
+                                    <div class="tooltip-body">Sets rules for converting spatial content to various
+                                        hardware endpoints.</div>
+                                    <div class="tooltip-example">Example: { headphones_rendering_mode: 1 }</div>
                                 </div>
                             </div>
                         </summary>
                         <div class="node-content">
-                            <div class="description">Determines the specific mathematical playback engine utilized.
+                            <div class="description">Instructs the renderer on how to handle headphones and downmixing.
                             </div>
 
                             <details class="nested-node">
@@ -785,26 +872,24 @@
                                         <div class="tooltip-content">
                                             <div class="tooltip-header"><span class="color-blob b-primitive"></span>
                                                 Primitive Variable</div>
-                                            <div class="tooltip-body"><strong>Value:</strong> Toggles spatial 3D audio
-                                                for headsets.</div>
-                                            <div class="tooltip-example"><strong>Example:</strong> 1</div>
+                                            <div class="tooltip-body">Toggles 3D spatialization for headphones.</div>
+                                            <div class="tooltip-example">Example: 1</div>
                                         </div>
                                     </div>
                                 </summary>
                                 <div class="node-content">
-                                    <div class="description">Directs how standard layouts should be converted when the
-                                        endpoint is a pair of headphones.</div>
+                                    <div class="description">Determines if headphone listeners receive a basic stereo
+                                        downmix or full HRTF-based binaural audio.</div>
                                     <div class="accepted-values">
                                         <strong class="block-title">Accepted Parameters:</strong>
                                         <div class="val-row"><span class="val-key">0</span><span
                                                 class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">STEREO</span><span class="val-details">(Basic 2.0
-                                                    channel downmix)</span></span></div>
+                                                    class="val-name">Stereo Mode</span><span class="val-details">(Simple
+                                                    2.0 downmix)</span></span></div>
                                         <div class="val-row"><span class="val-key">1</span><span
                                                 class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">BINAURAL</span><span
-                                                    class="val-details">(HRTF-based 3D spatialization)</span></span>
-                                        </div>
+                                                    class="val-name">Binaural Mode</span><span class="val-details">(3D
+                                                    spatial rendering via HRTF)</span></span></div>
                                     </div>
                                 </div>
                             </details>
@@ -820,74 +905,15 @@
                         <div class="tooltip-content">
                             <div class="tooltip-header"><span class="color-blob b-struct"></span> Structural Wrapper
                             </div>
-                            <div class="tooltip-body"><strong>Open Bitstream Unit:</strong> A packet carrying
-                                time-varying dynamic metadata for a specific frame duration.</div>
-                            <div class="tooltip-example"><strong>Example:</strong> Payload updating an object's X, Y, Z
-                                coordinates for frame 1024.</div>
+                            <div class="tooltip-body">Carries time-varying metadata (trajectory/gain) for specific
+                                frames.</div>
+                            <div class="tooltip-example">Example: subblock_duration: 1024</div>
                         </div>
                     </div>
                 </summary>
                 <div class="node-content">
-                    <div class="description">Carries time-varying dynamic metadata (demixing coefficients, spatial
-                        positions) for a specific duration.</div>
-
-                    <details class="nested-node">
-                        <summary class="nested-summary">DemixingInfoParameterData
-                            <div class="tooltip-wrap tooltip-up">
-                                <span class="badge b-complex">Struct</span>
-                                <div class="tooltip-content">
-                                    <div class="tooltip-header"><span class="color-blob b-complex"></span> Complex Data
-                                        Payload</div>
-                                    <div class="tooltip-body"><strong>Struct:</strong> Bundles mathematical keys to
-                                        unfold a downmix.</div>
-                                    <div class="tooltip-example"><strong>Example:</strong> { dmixp_mode: 0 }</div>
-                                </div>
-                            </div>
-                        </summary>
-                        <div class="node-content">
-                            <div class="description">Provides the key to unfold a downmix back into a high-channel-count
-                                mix.</div>
-
-                            <details class="nested-node">
-                                <summary class="nested-summary">dmixp_mode
-                                    <div class="tooltip-wrap tooltip-up">
-                                        <span class="badge b-primitive">3-Bit</span>
-                                        <div class="tooltip-content">
-                                            <div class="tooltip-header"><span class="color-blob b-primitive"></span>
-                                                Primitive Variable</div>
-                                            <div class="tooltip-body"><strong>3-Bit Integer:</strong> Selects one of 8
-                                                preset demixing parametric combinations.</div>
-                                            <div class="tooltip-example"><strong>Example:</strong> 0</div>
-                                        </div>
-                                    </div>
-                                </summary>
-                                <div class="node-content">
-                                    <div class="description">Defines the values of alpha, beta, gamma, and delta used in
-                                        the demixing matrix.</div>
-                                    <div class="accepted-values">
-                                        <strong class="block-title">Accepted Parameters (0-7):</strong>
-                                        <div class="val-row"><span class="val-key">0</span><span
-                                                class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">Mode 1</span><span class="val-details">(Standard
-                                                    cinematic demixing coefficients)</span></span></div>
-                                        <div class="val-row"><span class="val-key">1</span><span
-                                                class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">Mode 2</span><span class="val-details">(Flatter
-                                                    energy distribution weighting)</span></span></div>
-                                        <div class="val-row"><span class="val-key">2</span><span
-                                                class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">Mode 3</span><span
-                                                    class="val-details">(Front-focused spatial weighting)</span></span>
-                                        </div>
-                                        <div class="val-row"><span class="val-key">3-7</span><span
-                                                class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">Reserved</span><span class="val-details">(Future
-                                                    matrix configurations)</span></span></div>
-                                    </div>
-                                </div>
-                            </details>
-                        </div>
-                    </details>
+                    <div class="description">Provides the real-time instructions for object movement and gain
+                        modulation.</div>
 
                     <details class="nested-node">
                         <summary class="nested-summary">SinglePositionParameterData
@@ -896,58 +922,82 @@
                                 <div class="tooltip-content">
                                     <div class="tooltip-header"><span class="color-blob b-complex"></span> Complex Data
                                         Payload</div>
-                                    <div class="tooltip-body"><strong>Struct:</strong> Bundles precise 3D mathematical
-                                        coordinates.</div>
-                                    <div class="tooltip-example"><strong>Example:</strong> { animation_type: 1, azimuth:
-                                        45.0 }</div>
+                                    <div class="tooltip-body">The Cartesian coordinates and animation logic for an audio
+                                        object.</div>
+                                    <div class="tooltip-example">Example: { azimuth: 4500 }</div>
                                 </div>
                             </div>
                         </summary>
                         <div class="node-content">
-                            <div class="description">Carries the 3D coordinates moving objects through space. Includes
-                                <strong>azimuth</strong>, <strong>elevation</strong>, and <strong>distance</strong>.
-                            </div>
+                            <div class="description">Defines the 3D location of an object in a spherical coordinate
+                                system.</div>
 
                             <details class="nested-node">
-                                <summary class="nested-summary">animation_type & coordinates
+                                <summary class="nested-summary">animation_type
                                     <div class="tooltip-wrap tooltip-up">
                                         <span class="badge b-primitive">Value</span>
                                         <div class="tooltip-content">
                                             <div class="tooltip-header"><span class="color-blob b-primitive"></span>
                                                 Primitive Variable</div>
-                                            <div class="tooltip-body"><strong>Value:</strong> Instructions on how to
-                                                calculate position vectors over time.</div>
-                                            <div class="tooltip-example"><strong>Example:</strong> 2 (Bezier curve
-                                                interpolation)</div>
+                                            <div class="tooltip-body">Instructions on how to calculate position over
+                                                time.</div>
+                                            <div class="tooltip-example">Example: 1</div>
                                         </div>
                                     </div>
                                 </summary>
                                 <div class="node-content">
-                                    <div class="description">Defines how the renderer should interpolate positions
-                                        between updates, and the Cartesian limits.</div>
+                                    <div class="description">Directs the renderer to interpolate between coordinate
+                                        updates.</div>
                                     <div class="accepted-values">
                                         <strong class="block-title">Accepted Parameters:</strong>
                                         <div class="val-row"><span class="val-key">0</span><span
                                                 class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">Step</span><span class="val-details">(Immediate
-                                                    coordinate jump)</span></span></div>
+                                                    class="val-name">Step</span><span class="val-details">(Instant jump
+                                                    to new coordinates)</span></span></div>
                                         <div class="val-row"><span class="val-key">1</span><span
                                                 class="val-eq">=</span><span class="val-desc-group"><span
-                                                    class="val-name">Linear</span><span class="val-details">(Direct line
-                                                    interpolation)</span></span></div>
+                                                    class="val-name">Linear</span><span
+                                                    class="val-details">(Straight-line movement between
+                                                    points)</span></span></div>
                                         <div class="val-row"><span class="val-key">2</span><span
                                                 class="val-eq">=</span><span class="val-desc-group"><span
                                                     class="val-name">Bezier</span><span class="val-details">(Smooth
-                                                    curve interpolation)</span></span></div>
-                                        <div class="val-row" style="margin-top:6px;"><span
-                                                class="val-key">Azimuth</span><span class="val-eq">:</span><span
-                                                class="val-desc-group"><span class="val-name">-180.0° to
-                                                    180.0°</span><span class="val-details">(Horizontal axis
-                                                    range)</span></span></div>
-                                        <div class="val-row"><span class="val-key">Elev.</span><span
+                                                    curve trajectory interpolation)</span></span></div>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <details class="nested-node">
+                                <summary class="nested-summary">coordinates (azimuth, elevation, distance)
+                                    <div class="tooltip-wrap tooltip-up">
+                                        <span class="badge b-primitive">Float</span>
+                                        <div class="tooltip-content">
+                                            <div class="tooltip-header"><span class="color-blob b-primitive"></span>
+                                                Primitive Variable</div>
+                                            <div class="tooltip-body">The raw Cartesian/Spherical data for object
+                                                tracking.</div>
+                                            <div class="tooltip-example">Example: "azimuth": 45.0</div>
+                                        </div>
+                                    </div>
+                                </summary>
+                                <div class="node-content">
+                                    <div class="description">Defines where the object sits in 3D space relative to the
+                                        listener.</div>
+                                    <div class="accepted-values">
+                                        <strong class="block-title">Accepted Ranges:</strong>
+                                        <div class="val-row"><span class="val-key">Azimuth</span><span
+                                                class="val-eq">:</span><span class="val-desc-group"><span
+                                                    class="val-name">-180.0° to 180.0°</span><span
+                                                    class="val-details">(Left to Right horizontal axis)</span></span>
+                                        </div>
+                                        <div class="val-row"><span class="val-key">Elevation</span><span
                                                 class="val-eq">:</span><span class="val-desc-group"><span
                                                     class="val-name">-90.0° to 90.0°</span><span
-                                                    class="val-details">(Vertical axis range)</span></span></div>
+                                                    class="val-details">(Down to Up vertical axis)</span></span></div>
+                                        <div class="val-row"><span class="val-key">Distance</span><span
+                                                class="val-eq">:</span><span class="val-desc-group"><span
+                                                    class="val-name">0.0 to 1.0</span><span class="val-details">(Scalar
+                                                    depth/closeness)</span></span></div>
                                     </div>
                                 </div>
                             </details>

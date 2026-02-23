@@ -1,4 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
+import 'electron-log/preload';
+
 
 // --- LEGACY BRIDGE (For EpicsToBin, MixToOpus, etc.) ---
 contextBridge.exposeInMainWorld('electron', {

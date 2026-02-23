@@ -139,7 +139,8 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 |  └── vite.svg
 ├── py
 |  ├── ambi_data_heuristics.py
-|  └── ambi_rotate.py
+|  ├── ambi_rotate.py
+|  └── format_decoder.py
 ├── repo-map.md
 ├── resources
 |  └── scripts
@@ -174,8 +175,6 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 ├── tailwind.config.js
 ├── test_000007.iamf
 ├── test_iamf_parser.py
-├── test_output
-|  └── trim_tests
 ├── test_output.webm
 ├── tests
 |  ├── 3rd Order Ambi Clock Test.wav
@@ -185,6 +184,9 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 |  ├── debug_rotation_sweep.py
 |  ├── gen_test_signal.py
 |  ├── handlers.test.ts
+|  ├── iamf_recursive.test.ts
+|  ├── ingestion.test.ts
+|  ├── ingestion_router.test.ts
 |  ├── manual_test_out.wav
 |  ├── obr_pipeline.test.ts
 |  ├── sweep_in.wav
@@ -198,10 +200,7 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 ├── tsconfig.json
 ├── tsconfig.node.json
 ├── vite.config.ts
-├── vitest.config.ts
-└── xCleanup
-   ├── legacy_apps
-   └── legacy_libs
+└── vitest.config.ts
 
 
 ## 🧪 Testing

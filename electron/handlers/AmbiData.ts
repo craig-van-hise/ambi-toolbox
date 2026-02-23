@@ -97,10 +97,14 @@ export async function analyzeAmbiFile(event: IpcMainInvokeEvent, filePath: strin
 
         // Output Construction
         if (audioStreams.length === 0 && iamfData) {
+            // Find highest channel count in IAMF audio elements (PRP #125)
+            const maxChannels = iamfData.audioElements?.reduce((max: number, el: any) =>
+                Math.max(max, el.outputChannelCount || 0), 0) || 0;
+
             audioStreams = [{
                 codec_name: 'IAMF (OBU)',
                 sample_rate: fastAudioData?.sampleRate || 48000,
-                channels: fastAudioData?.channels || 0,
+                channels: maxChannels,
                 bits_per_sample: fastAudioData?.bitDepth || 16
             }];
         } else if (audioStreams.length === 0) {
@@ -192,9 +196,8 @@ export async function analyzeAmbiFile(event: IpcMainInvokeEvent, filePath: strin
 
         // Skip heuristics analysis for IAMF per PRP #83
         if (iamfData) {
-            const firstElement = iamfData.audioElements?.[0];
-            result.spatial.formatPrediction = firstElement?.type || 'IAMF Scene-Based';
-            result.spatial.normalizationPrediction = firstElement?.normalization || 'SN3D';
+            result.spatial.formatPrediction = iamfData.profile || iamfData.audioElements?.[0]?.type || 'IAMF Scene-Based';
+            result.spatial.normalizationPrediction = iamfData.audioElements?.[0]?.normalization || 'SN3D';
             result.spatial.confidence = 100;
             // No heuristics for IAMF
             event.sender.send('ambi-data-progress', { filePath, phase: 'spatial-final', data: result });

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode, useRef, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useRef, useEffect, useCallback } from 'react';
 import { PlayerState, HrtfProfile } from '../types';
 
 interface PlaybackContextType {
@@ -171,12 +171,14 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         };
 
         const onPlay = () => {
+            if (audioRef.current && audioRef.current.paused) return; // Stale event check
             if (!stateRef.current.isPlaying) {
                 setState(prev => ({ ...prev, isPlaying: true }));
             }
         };
 
         const onPause = () => {
+            if (audioRef.current && !audioRef.current.paused) return; // Stale event check
             if (stateRef.current.isPlaying) {
                 setState(prev => ({ ...prev, isPlaying: false }));
             }
@@ -466,29 +468,30 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
         }));
     };
 
-    const setCurrentFile = (filePath: string | null, shouldPlay = false) => {
-        console.log(`[Playback] [Step 1] Intent: ${filePath}, shouldPlay: ${shouldPlay}`);
+    const setCurrentFile = useCallback((filePath: string | null, shouldPlay = false) => {
+        if (stateRef.current.currentFile === filePath) {
+            // If the same file, just handle the play intent without purging the buffer.
+            if (shouldPlay) {
+                playbackIntentRef.current = true;
+                if (!stateRef.current.isPlaying) {
+                    setState(prev => ({ ...prev, isPlaying: true }));
+                }
+            }
+            return;
+        }
 
         if (shouldPlay) {
             playbackIntentRef.current = true;
         }
 
+        const audio = audioRef.current;
+        if (audio) {
+            audio.pause();
+            audio.src = 'about:blank'; // Force full browser-level buffer purge (PRP #125)
+            audio.currentTime = 0;
+        }
+
         setState(prev => {
-            if (prev.currentFile === filePath) {
-                if (shouldPlay && !prev.isPlaying && prev.channels > 0) {
-                    return { ...prev, isPlaying: true };
-                }
-                return prev;
-            }
-
-            const audio = audioRef.current;
-            if (audio) {
-                audio.pause();
-                audio.currentTime = 0;
-            }
-
-            playbackIntentRef.current = shouldPlay;
-
             return {
                 ...prev,
                 currentFile: filePath,
@@ -503,7 +506,7 @@ export const PlaybackProvider: React.FC<{ children: ReactNode }> = ({ children }
                 seekNonce: 0,
             };
         });
-    };
+    }, []);
 
     return (
         <PlaybackContext.Provider value={{

@@ -13,6 +13,10 @@ vi.mock('electron', () => ({
     ipcMain: { handle: vi.fn() }
 }));
 
+vi.mock('../electron/shim', () => ({
+    app: { isPackaged: false }
+}));
+
 vi.mock('node:child_process', () => ({
     spawn: vi.fn(() => ({
         stdout: { on: vi.fn() },

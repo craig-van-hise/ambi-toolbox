@@ -8,11 +8,40 @@
 ├── AmbiData file types list.md
 ├── EULA.md
 ├── FAILURE_REPORT_PRP79.md
+├── GEMINI_CONTEXT.log
 ├── LICENSE
 ├── NOTICE.txt
 ├── PROJECT_CONTEXT_BUNDLE.md
 ├── PROJECT_STATE.md
 ├── PROJECT_STATE_AmbiData.md
+├── PRPs
+|  ├── # 101.md
+|  ├── # 102.md
+|  ├── # 103.md
+|  ├── # 104.md
+|  ├── # 105.md
+|  ├── # 106.md
+|  ├── # 107.md
+|  ├── # 108.md
+|  ├── # 109.md
+|  ├── # 110.md
+|  ├── # 111.md
+|  ├── # 112.md
+|  ├── # 113.md
+|  ├── # 114.md
+|  ├── # 115.md
+|  ├── # 116.md
+|  ├── # 117.md
+|  ├── # 118.md
+|  ├── # 119.md
+|  ├── # 120.md
+|  ├── # 121.md
+|  ├── # 122.md
+|  ├── # 123.md
+|  ├── # 124.md
+|  ├── # 125.md
+|  ├── # setup Electron logging.md
+|  └── 0-100
 ├── README.md
 ├── README_AmbiData.md
 ├── assets
@@ -22,20 +51,10 @@
 |  ├── Roboto-Regular.ttf
 |  ├── ambisonics_icon.svg
 |  ├── bin
-|  |  ├── __MACOSX
-|  |  ├── apac-enc
-|  |  ├── ffmpeg
-|  |  ├── ffprobe
-|  |  ├── iamf-enc
-|  |  └── obr_stream
 |  ├── bin_evermeet
-|  |  └── ffmpeg
 |  ├── ffmpeg80arm.zip
 |  ├── ffmpeg_evermeet.zip
 |  ├── hrtf
-|  |  ├── H3_48K_24bit_256tap_FIR_SOFA.sofa
-|  |  ├── MIT_KEMAR_Normal.sofa
-|  |  └── Neumann_KU100_48k.sofa
 |  ├── ic_check.svg
 |  ├── ic_dark_mode.svg
 |  ├── ic_error.svg
@@ -45,29 +64,17 @@
 |  ├── ic_music.svg
 |  ├── ic_settings.svg
 |  └── vv_logo.png
+├── build
+|  ├── Makefile
+|  ├── Release
+|  ├── binding.Makefile
+|  ├── config.gypi
+|  ├── gyp-mac-tool
+|  └── spatial_renderer.target.mk
+├── dev-debug.log
 ├── electron
 |  ├── electron-env.d.ts
 |  ├── handlers
-|  |  ├── AmbiData.ts
-|  |  ├── AmbiOrder.ts
-|  |  ├── AmbiRotate.ts
-|  |  ├── AmbiSwap.ts
-|  |  ├── Ambix2APAC.ts
-|  |  ├── Ambix2Bin.ts
-|  |  ├── Ambix2CAF.ts
-|  |  ├── Ambix2IAMF.ts
-|  |  ├── Ambix2Ogg.ts
-|  |  ├── Ambix2Opus.ts
-|  |  ├── IamfParser.ts
-|  |  ├── ObrHandler.ts
-|  |  ├── WaveParser.ts
-|  |  ├── common.ts
-|  |  ├── iamf-config-generator.ts
-|  |  ├── index.ts
-|  |  ├── scripts
-|  |  |  ├── requirements.txt
-|  |  |  └── saf_wrapper.py
-|  |  └── trim.ts
 |  ├── main.ts
 |  ├── preload.ts
 |  └── shim.ts
@@ -76,15 +83,16 @@
 |  ├── IAMF (Immersive Audio Model and Formats) : Eclipsa Audio Ecosystem.png
 |  ├── IAMF Metadata.png
 |  ├── IAMF Muxing Workflow.png
+|  ├── guide_to_spatial_audio_metadata_scaffold.html
 |  └── iamf.html
 ├── index.html
 ├── llms.txt
 ├── make_repo_map.py
 ├── native
 |  └── apac-enc
-|     └── main.swift
 ├── package-lock.json
 ├── package.json
+├── parse_debug.ts
 ├── postcss.config.js
 ├── project_tree.txt
 ├── public
@@ -92,15 +100,14 @@
 |  ├── electron-vite.animate.svg
 |  ├── electron-vite.svg
 |  ├── js
-|  |  └── JSAmbisonics.min.js
 |  └── vite.svg
 ├── py
 |  ├── ambi_data_heuristics.py
-|  └── ambi_rotate.py
+|  ├── ambi_rotate.py
+|  └── format_decoder.py
 ├── repo-map.md
 ├── resources
 |  └── scripts
-|     └── rotator.py
 ├── scripts
 |  ├── test-auto-resume.ts
 |  ├── test-binary-paths.ts
@@ -119,68 +126,20 @@
 |  ├── App.css
 |  ├── App.tsx
 |  ├── assets
-|  |  └── react.svg
 |  ├── components
-|  |  ├── DropZone.tsx
-|  |  ├── FileQueue.tsx
-|  |  ├── Modal.tsx
-|  |  ├── SettingsModal.tsx
-|  |  ├── Sidebar.tsx
-|  |  ├── SmartDropZone.tsx
-|  |  ├── ToolViews.tsx
-|  |  ├── Transport.tsx
-|  |  └── tools
-|  |     ├── AmbiTrim.css
-|  |     ├── AmbiTrim.tsx
-|  |     └── TimeInput.tsx
 |  ├── constants.ts
 |  ├── contexts
-|  |  ├── PlaybackContext.tsx
-|  |  ├── SettingsContext.tsx
-|  |  └── ToolStateContext.tsx
 |  ├── cpp
-|  |  ├── CMakeLists.txt
-|  |  ├── obr_stream.cc
-|  |  └── vendor
-|  |     └── obr
-|  |        ├── BUILD
-|  |        ├── CMakeLists.txt
-|  |        ├── CONTRIBUTING.md
-|  |        ├── LICENSE
-|  |        ├── MODULE.bazel
-|  |        ├── PATENTS
-|  |        ├── README.md
-|  |        ├── WORKSPACE
-|  |        ├── docs
-|  |        ├── external
-|  |        └── obr
 |  ├── index.css
 |  ├── main.tsx
 |  ├── tools
-|  |  ├── AmbiData
-|  |  |  ├── components
-|  |  |  |  ├── Inspector.tsx
-|  |  |  |  └── InspectorComponents.tsx
-|  |  |  ├── index.tsx
-|  |  |  ├── index.tsx.bak
-|  |  |  └── types.ts
-|  |  └── AmbiRotate
-|  |     ├── NativeRotator.ts
-|  |     ├── components
-|  |     |  ├── Knob.tsx
-|  |     |  └── Timeline.tsx
-|  |     └── index.tsx
 |  ├── types.ts
 |  ├── utils
-|  |  ├── WavDecoder.ts
-|  |  └── time-formatters.ts
 |  └── vite-env.d.ts
 ├── tailwind.config.js
+├── terminal.log
 ├── test_000007.iamf
 ├── test_iamf_parser.py
-├── test_output
-|  └── trim_tests
-|     └── output
 ├── test_output.webm
 ├── tests
 |  ├── 3rd Order Ambi Clock Test.wav
@@ -190,6 +149,9 @@
 |  ├── debug_rotation_sweep.py
 |  ├── gen_test_signal.py
 |  ├── handlers.test.ts
+|  ├── iamf_recursive.test.ts
+|  ├── ingestion.test.ts
+|  ├── ingestion_router.test.ts
 |  ├── manual_test_out.wav
 |  ├── obr_pipeline.test.ts
 |  ├── sweep_in.wav
@@ -205,9 +167,9 @@
 ├── vite.config.ts
 └── vitest.config.ts
 
-directory: 1579 file: 10875 symboliclink: 4
+directory: 436 file: 291
 
-ignored: directory (193)
+ignored: directory (4)
 
 
 [2K[1G

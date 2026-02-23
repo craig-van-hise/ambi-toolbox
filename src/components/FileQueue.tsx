@@ -83,6 +83,7 @@ export const FileQueue: React.FC<FileQueueProps> = ({
                             key={id || i}
                             onClick={() => onSelect(id)}
                             onDoubleClick={(e) => {
+                                e.preventDefault();
                                 e.stopPropagation();
                                 if (onPlay) onPlay(id, true);
                             }}

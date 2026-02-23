@@ -29,7 +29,7 @@ export async function parseIamfFile(filePath: string): Promise<any> {
     const fileHandle = await fs.open(filePath, 'r');
     const stats = await fileHandle.stat();
     const size = stats.size;
-    const buffer = Buffer.alloc(Math.min(size, 64 * 1024)); // Read first 64KB
+    const buffer = Buffer.alloc(Math.min(size, 10 * 1024 * 1024)); // Read first 10MB (PRP #125)
     await fileHandle.read(buffer, 0, buffer.length, 0);
     await fileHandle.close();
 
@@ -38,99 +38,109 @@ export async function parseIamfFile(filePath: string): Promise<any> {
         mixTargets: []
     };
 
-    let offset = 0;
-
-    // PARSING LOOP
-    // We collect ALL valid OBUs first, then deduplicate them at the end.
+    // PARSING LOOP: Recursive OBU Scanner (PRP # 125 Phase 2)
+    // Scan byte-by-byte for OBU types 31, 32, 33
     const rawAudioElementObus: any[] = [];
 
-    try {
-        while (offset < buffer.length - 20) { // Safety margin
-            const { value: obuType, bytes: typeBytes } = readLeb128(buffer, offset);
-            offset += typeBytes;
+    for (let offset = 0; offset < buffer.length - 20; offset++) {
+        const typeByte = buffer[offset];
 
-            const { bytes: headerBytes } = readLeb128(buffer, offset);
-            offset += headerBytes;
+        if (typeByte === 31 || typeByte === 32 || typeByte === 33) {
+            try {
+                const { value: obuType, bytes: typeBytes } = readLeb128(buffer, offset);
+                // Sanity check
+                if (obuType !== typeByte) continue;
 
-            const { value: obuSize, bytes: sizeBytes } = readLeb128(buffer, offset);
-            offset += sizeBytes;
+                const { bytes: headerBytes } = readLeb128(buffer, offset + typeBytes);
+                const { value: obuSize, bytes: sizeBytes } = readLeb128(buffer, offset + typeBytes + headerBytes);
 
-            const payloadOffset = offset;
-            const nextObuOffset = offset + obuSize;
+                const payloadOffset = offset + typeBytes + headerBytes + sizeBytes;
+                const nextObuOffset = payloadOffset + obuSize;
 
-            if (nextObuOffset > buffer.length) break;
+                // Strict validation: Size must be small (OBUs are config headers, not media data)
+                if (obuSize >= 0 && obuSize < 5000 && nextObuOffset <= buffer.length) {
 
-            if (obuType === 31) { // IA Sequence Header
-                const profileId = buffer[payloadOffset];
-                const additionalProfileId = buffer[payloadOffset + 1];
+                    if (obuType === 31) { // IA Sequence Header
+                        // Sequence Header payload is exactly 2 bytes (primary & additional profiles)
+                        if (obuSize !== 2) continue;
 
-                iamfData.profile = getProfileName(profileId);
-                iamfData.primaryProfile = getProfileName(profileId);
-                iamfData.additionalProfile = getProfileName(additionalProfileId);
-            }
-            else if (obuType === 33) { // Mix Presentation
-                // Mix ID read removed as it was unused
+                        const profileId = buffer[payloadOffset];
+                        const additionalProfileId = buffer[payloadOffset + 1];
 
-                // For now, valid existence is enough to populate placeholder
-                iamfData.mixPresentation = {
-                    loudness: -23.0,
-                    truePeak: -1.0
-                };
-            }
-            else if (obuType === 32) { // Audio Element
-                const extractId = readLeb128(buffer, payloadOffset);
-                const elementId = extractId.value;
-                let currentObuOffset = payloadOffset + extractId.bytes;
+                        iamfData.profile = getProfileName(profileId);
+                        iamfData.primaryProfile = getProfileName(profileId);
+                        iamfData.additionalProfile = getProfileName(additionalProfileId);
 
-                const elementTypeByte = buffer[currentObuOffset];
-                const elementType = elementTypeByte >> 5;
-                currentObuOffset++; // 1 byte for type + reserved
-
-                // Parameters to extract
-                let outputChannelCount = 0;
-
-                if (elementType === 1) { // SCENE-BASED
-                    const ambisonicsModeRes = readLeb128(buffer, currentObuOffset);
-                    const ambisonicsMode = ambisonicsModeRes.value;
-                    currentObuOffset += ambisonicsModeRes.bytes;
-
-                    if (ambisonicsMode === 0) {
-                        // MONO
-                        outputChannelCount = 1;
-                    } else {
-                        // PROJECTION (Ambisonics)
-                        const outChannelsRes = readLeb128(buffer, currentObuOffset);
-                        outputChannelCount = outChannelsRes.value;
-                        currentObuOffset += outChannelsRes.bytes;
+                        offset = nextObuOffset - 1; // Advance
                     }
+                    else if (obuType === 33) { // Mix Presentation
+                        // Just marking existence
+                        iamfData.mixPresentation = { loudness: -23.0, truePeak: -1.0 };
+                        offset = nextObuOffset - 1;
+                    }
+                    else if (obuType === 32) { // Audio Element
+                        const extractId = readLeb128(buffer, payloadOffset);
+                        const elementId = extractId.value;
+                        let currentObuOffset = payloadOffset + extractId.bytes;
 
-                    // Push with extracted channel count
-                    rawAudioElementObus.push({
-                        id: elementId,
-                        type: 'Scene-Based',
-                        algorithm: 'ACN', // Default for IAMF
-                        normalization: 'SN3D',
-                        outputChannelCount: outputChannelCount
-                    });
-                } else if (elementType === 0) { // CHANNEL-BASED
-                    const numSubstreamsRes = readLeb128(buffer, currentObuOffset);
-                    // For Channel-Based, output is roughly numSubstreams (simplified)
-                    // or we'd need to parse the Scalable Channel Layout Config.
-                    // For now, let's look for known layouts or default to numSubstreams as a proxy.
-                    outputChannelCount = numSubstreamsRes.value;
+                        const elementTypeByte = buffer[currentObuOffset];
+                        const elementType = elementTypeByte >> 5;
+                        currentObuOffset++;
 
-                    rawAudioElementObus.push({
-                        id: elementId,
-                        type: 'Channel-Based',
-                        outputChannelCount: outputChannelCount
-                    });
+                        let outputChannelCount = 0;
+                        let isValid = false;
+
+                        if (elementType === 1) { // SCENE-BASED
+                            const ambisonicsModeRes = readLeb128(buffer, currentObuOffset);
+                            const ambisonicsMode = ambisonicsModeRes.value;
+                            currentObuOffset += ambisonicsModeRes.bytes;
+
+                            if (ambisonicsMode === 0) {
+                                outputChannelCount = 1;
+                                isValid = true;
+                            } else if (ambisonicsMode === 1) {
+                                const outChannelsRes = readLeb128(buffer, currentObuOffset);
+                                outputChannelCount = outChannelsRes.value;
+                                currentObuOffset += outChannelsRes.bytes;
+                                // Ambisonics channel counts are usually (order+1)^2. Allow up to 64 (7th order)
+                                if (outputChannelCount > 0 && outputChannelCount <= 64) {
+                                    isValid = true;
+                                }
+                            }
+
+                            if (isValid) {
+                                rawAudioElementObus.push({
+                                    id: elementId,
+                                    type: 'Scene-Based',
+                                    algorithm: 'ACN',
+                                    normalization: 'SN3D',
+                                    outputChannelCount: outputChannelCount
+                                });
+                            }
+                        } else if (elementType === 0) { // CHANNEL-BASED
+                            const numSubstreamsRes = readLeb128(buffer, currentObuOffset);
+                            outputChannelCount = numSubstreamsRes.value;
+
+                            // Channel based counts rarely exceed 24 (e.g. 22.2 layout)
+                            if (outputChannelCount > 0 && outputChannelCount <= 24) {
+                                rawAudioElementObus.push({
+                                    id: elementId,
+                                    type: 'Channel-Based',
+                                    outputChannelCount: outputChannelCount
+                                });
+                                isValid = true;
+                            }
+                        }
+
+                        if (isValid) {
+                            offset = nextObuOffset - 1;
+                        }
+                    }
                 }
+            } catch (e) {
+                // Ignore parse errors from random matching bytes
             }
-
-            offset = nextObuOffset;
         }
-    } catch (e) {
-        console.error("IAMF Parser Error", e);
     }
 
     // DEDUPLICATION STEP (Strict PRP #82 Requirement)
@@ -140,6 +150,23 @@ export async function parseIamfFile(filePath: string): Promise<any> {
     const uniqueAudioElements = Array.from(
         new Map(rawAudioElementObus.map(obu => [obu.id, obu])).values()
     );
+
+    // PRP #125: Profile defaulting logic
+    if (uniqueAudioElements.length > 0 && !iamfData.profile) {
+        uniqueAudioElements.forEach((el: any) => {
+            if (el.outputChannelCount === 16) {
+                el.type = 'Generic Scene-Based';
+                el.normalization = 'SN3D';
+            }
+        });
+
+        // If highest channel count is 16, set a generic profile indicator
+        const maxCh = Math.max(...uniqueAudioElements.map((el: any) => el.outputChannelCount || 0));
+        if (maxCh === 16) {
+            iamfData.profile = 'Generic Scene-Based (16ch)';
+        }
+    }
+
     iamfData.audioElements = uniqueAudioElements;
 
     return iamfData;

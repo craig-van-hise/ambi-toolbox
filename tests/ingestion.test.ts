@@ -20,8 +20,10 @@ vi.mock('node:fs', async () => {
         default: {
             ...actual,
             existsSync: vi.fn((p) => p.includes('exists') || p.includes('.ambi_tmp.wav')),
+            statSync: vi.fn(() => ({ size: 1024, mtimeMs: 1600000000000 }))
         },
         existsSync: vi.fn((p) => p.includes('exists') || p.includes('.ambi_tmp.wav')),
+        statSync: vi.fn(() => ({ size: 1024, mtimeMs: 1600000000000 }))
     };
 });
 

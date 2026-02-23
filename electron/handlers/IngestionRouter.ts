@@ -10,8 +10,11 @@ import crypto from 'crypto';
  * by transcoding them to a temporary WAV file using a Python sidecar.
  */
 
-function getHash(input: string): string {
-    return crypto.createHash('md5').update(input).digest('hex');
+function getHash(filePath: string): string {
+    const stats = fs.statSync(filePath);
+    return crypto.createHash('md5')
+        .update(`${filePath}-${stats.size}-${stats.mtimeMs}`)
+        .digest('hex');
 }
 
 export async function prepareStreamTarget(originalPath: string): Promise<string> {

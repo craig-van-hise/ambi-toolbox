@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain, dialog, protocol, net } from 'electron'
+import log from 'electron-log/main'
 // import { createRequire } from 'node:module' // Unused
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import path from 'node:path'
@@ -14,6 +15,7 @@ import { getFfmpegPath, getSofaAssetPath } from './handlers/common';
 import { createObrPipeline } from './handlers/ObrHandler';
 import { prepareStreamTarget } from './handlers/IngestionRouter';
 import os from 'node:os';
+import crypto from 'node:crypto';
 
 // ------------------------------------------------------------------
 // PRIME BUFFER (PRP #113)
@@ -58,6 +60,25 @@ process.env.APP_ROOT = path.join(__dirname, '..')
 
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
+
+// ------------------------------------------------------------------
+// LOGGING CONFIGURATION (Direct to stdout for tee)
+// ------------------------------------------------------------------
+log.initialize();
+
+// Disable file transport to prevent file-lock issues
+log.transports.file.level = false;
+
+// Ensure everything goes to the terminal
+log.transports.console.level = 'silly';
+
+// Ensure IPC (Renderer DevTools) logs are caught and routed to terminal
+log.transports.ipc.level = 'silly';
+
+// Intercept console log in main process
+Object.assign(console, log.functions);
+// ------------------------------------------------------------------
+
 export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron')
 export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 
@@ -113,6 +134,8 @@ app.whenReady().then(() => {
     // BINAURAL STREAMING SERVER (PRP #72)
     // ------------------------------------------------------------------
     const server = http.createServer(async (req, res) => {
+        console.log(`[StreamServer] Incoming request: ${req.url}`);
+
         // PROBE METADATA ENDPOINT
         if (req.url?.startsWith('/probe-metadata') || req.url?.startsWith('/probe-duration')) {
             const url = new URL(req.url, `http://${req.headers.host}`);
@@ -124,7 +147,9 @@ app.whenReady().then(() => {
                 return;
             }
 
-            const info = await probeAudio(filePath).catch(() => null);
+            // Convert proprietary formats (.iamf, .mat, .aivu) to .wav proxies
+            const targetPath = await prepareStreamTarget(filePath);
+            const info = await probeAudio(targetPath).catch(() => null);
             res.writeHead(200, {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
@@ -190,7 +215,8 @@ app.whenReady().then(() => {
                 'Transfer-Encoding': 'chunked',
                 'Cache-Control': 'no-cache',
                 'Connection': 'keep-alive',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                'X-Content-Signature': crypto.createHash('md5').update(filePath || '').digest('hex')
             });
 
             const useCardioid = render === 'stereo' && channels >= 4;
@@ -299,7 +325,8 @@ app.whenReady().then(() => {
                 'Transfer-Encoding': 'chunked',
                 'Cache-Control': 'no-cache',
                 'Connection': 'keep-alive',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                'X-Content-Signature': crypto.createHash('md5').update(filePath || '').digest('hex')
             });
 
             try {
@@ -390,7 +417,8 @@ app.whenReady().then(() => {
     // Expose File Inspection
     ipcMain.handle('inspect-file', async (_event, path) => {
         try {
-            const info = await probeAudio(path);
+            const targetPath = await prepareStreamTarget(path);
+            const info = await probeAudio(targetPath);
             return { success: true, data: info };
         } catch (error: any) {
             return { success: false, error: error.message };

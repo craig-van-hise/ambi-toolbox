@@ -1,6 +1,6 @@
 # AmbiToolbox - Project State Report
 
-**Date:** February 20, 2026 (Updated 17:58)
+**Date:** February 23, 2026 (Updated)
 **Architecture:** Electron Modular Monolith
 
 ## 1. Executive Summary
@@ -41,7 +41,8 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 |  └── vite.svg
 ├── py
 |  ├── ambi_data_heuristics.py
-|  └── ambi_rotate.py
+|  ├── ambi_rotate.py
+|  └── format_decoder.py
 ├── repo-map.md
 ├── resources
 |  └── scripts
@@ -76,8 +77,6 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 ├── tailwind.config.js
 ├── test_000007.iamf
 ├── test_iamf_parser.py
-├── test_output
-|  └── trim_tests
 ├── test_output.webm
 ├── tests
 |  ├── 3rd Order Ambi Clock Test.wav
@@ -87,6 +86,9 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 |  ├── debug_rotation_sweep.py
 |  ├── gen_test_signal.py
 |  ├── handlers.test.ts
+|  ├── iamf_recursive.test.ts
+|  ├── ingestion.test.ts
+|  ├── ingestion_router.test.ts
 |  ├── manual_test_out.wav
 |  ├── obr_pipeline.test.ts
 |  ├── sweep_in.wav
@@ -100,10 +102,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 ├── tsconfig.json
 ├── tsconfig.node.json
 ├── vite.config.ts
-├── vitest.config.ts
-└── xCleanup
-   ├── legacy_apps
-   └── legacy_libs
+└── vitest.config.ts
 ```
 
 -   **`src/`**: Frontend Source (React/Vite).
@@ -189,4 +188,8 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
     - **afconvert Proxying**: Implemented re-routing of Apple Immersive Video (`.aivu`) files through macOS's native `/usr/bin/afconvert` utility. This bypasses FFmpeg's `apac` decoder limitations and generates a high-fidelity 32-bit Float `.wav` proxy for the streaming pipeline.
     - **Adaptive Pipeline**: Updated `ObrHandler.ts` and `main.ts` to strictly handle standard video containers while allowing proxy `.wav` files to stream with 1-to-1 discrete mapping.
     - **Infrastructure Stability**: Eliminated the `no decoder found` crashes previously caused by proprietary Apple spatial audio formats. Verified via `tests/ingestion.test.ts`.
-
+- **Playback & Ingestion Stabilization (PRP #125)**:
+    - **Recursive OBU Scanning**: Hardened `IamfParser.ts` directly resolving the "0 channel" playback issue when reading nested Immersive Audio Model and Formats (`.iamf`) payload streams.
+    - **Deterministic Ingestion Caching**: Integrated stat-based (`path` + `size` + `mtime`) `md5` hashing into `IngestionRouter` assuring unique deterministic proxy cache hits. This eliminates playback "ghosting" when manipulating identically named target files.
+    - **FileQueue Race Condition Resolution**: Isolated `onClick` from `onDoubleClick` events inside `FileQueue` utilizing strict `preventDefault` propagation. Eliminated aggressive asynchronous UI clobbering within `ToolViews.tsx` that previously nuked playback buffers indiscriminately upon single-click browsing.
+    - **Double-Click Same File Bug**: Fixed `setCurrentFile` bug forcing full buffer purge when double-clicking currently active streams; streams now properly re-initialize playback. Fixed `AmbiData` component Transport Next/Prev navigation.

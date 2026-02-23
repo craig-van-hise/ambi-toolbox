@@ -726,16 +726,8 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     }
   };
 
-  // Sync Current File to Playback Context
-  useEffect(() => {
-    const file = files[activeFileIndex];
-    if (file) {
-      // We cast to any because .path is a custom property we defined
-      setCurrentFile((file as any).path);
-    } else {
-      setCurrentFile(null);
-    }
-  }, [activeFileIndex, files, setCurrentFile]);
+  // Sync Current File to Playback Context 
+  // REMOVED (PRP #125): Syncing selected file to active player automatically kills streams when browsing metadata.
 
   // Auto-selection logic: select first file if none selected
   useEffect(() => {
@@ -993,7 +985,13 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
                 {files.length > 0 && (
                   <Transport
                     state={playerState}
-                    onPlayPause={togglePlayPause}
+                    onPlayPause={() => {
+                      if (!playerState.currentFile && selectedFileId) {
+                        setCurrentFile(selectedFileId, true);
+                      } else {
+                        togglePlayPause();
+                      }
+                    }}
                     onStop={stop}
                     onNext={handleNext}
                     onPrev={handlePrev}

@@ -70,6 +70,27 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
 
     const hasChanges = Object.keys(activeEdits).length > 0;
 
+    // Navigation Logic
+    const currentIndex = files.findIndex(f => f.id === selectedFileId);
+    const canNext = currentIndex >= 0 && currentIndex < files.length - 1;
+    const canPrev = currentIndex > 0;
+
+    const handleNext = () => {
+        if (canNext) {
+            const nextId = files[currentIndex + 1].id;
+            setSelectedFileId(nextId);
+            setCurrentFile(nextId, true);
+        }
+    };
+
+    const handlePrev = () => {
+        if (canPrev) {
+            const prevId = files[currentIndex - 1].id;
+            setSelectedFileId(prevId);
+            setCurrentFile(prevId, true);
+        }
+    };
+
     // Clear edits when file changes
     useEffect(() => {
         setActiveEdits({});
@@ -360,10 +381,16 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                             {files.length > 0 && (
                                 <Transport
                                     state={playerState}
-                                    onPlayPause={togglePlayPause}
+                                    onPlayPause={() => {
+                                        if (!playerState.currentFile && selectedFileId) {
+                                            setCurrentFile(selectedFileId, true);
+                                        } else {
+                                            togglePlayPause();
+                                        }
+                                    }}
                                     onStop={stop}
-                                    onNext={() => { }}
-                                    onPrev={() => { }}
+                                    onNext={handleNext}
+                                    onPrev={handlePrev}
                                     onSeek={seek}
                                     onCommitSeek={commitSeek}
                                     onVolumeChange={setVolume}
@@ -371,8 +398,8 @@ export const AmbiDataTool: React.FC<AmbiDataToolProps> = ({ tool }) => {
                                     onToggleHeadphones={toggleHeadphones}
                                     onSetHrtfProfile={setHrtfProfile}
                                     onSetLoopPoints={setLoopPoints}
-                                    canNext={false}
-                                    canPrev={false}
+                                    canNext={canNext}
+                                    canPrev={canPrev}
                                 />
                             )}
                         </div>
