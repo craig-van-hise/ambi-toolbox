@@ -77,6 +77,11 @@ This suite eliminates those bottlenecks, allowing audio engineers to process, co
 * **Instant Remux**: Detects existing Opus files and wraps them in Ogg container without re-encoding (Pass-Through).
 
 
+12. **Stereo2Ambix**: Upmix Stereo to High-Order Ambisonics.
+* **Adaptive PCA**: Separates Primary and Ambient signals for precise spatialization.
+* **Diffusion**: 16x16 Hadamard-based frequency domain decorrelation for immersive envelopment.
+
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -173,9 +178,6 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 |  ├── utils
 |  └── vite-env.d.ts
 ├── tailwind.config.js
-├── test_000007.iamf
-├── test_iamf_parser.py
-├── test_output.webm
 ├── tests
 |  ├── 3rd Order Ambi Clock Test.wav
 |  ├── check_hrtf_delay.py
@@ -189,6 +191,7 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 |  ├── ingestion_router.test.ts
 |  ├── manual_test_out.wav
 |  ├── obr_pipeline.test.ts
+|  ├── settings_merge.test.ts
 |  ├── sweep_in.wav
 |  ├── sweep_out.wav
 |  ├── test_16ch.wav

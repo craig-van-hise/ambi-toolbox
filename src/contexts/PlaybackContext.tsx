@@ -311,7 +311,7 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             params.append('render', 'stereo');
         }
 
-        const endpoint = isHeadphonesOn ? 'obr-stream' : 'stream';
+        const endpoint = (isHeadphonesOn && channels >= 4) ? 'obr-stream' : 'stream';
         const newSrc = `http://127.0.0.1:45455/${endpoint}?${params.toString()}`;
 
         if (audio.src !== newSrc) {

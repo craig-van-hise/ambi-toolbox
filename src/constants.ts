@@ -78,6 +78,13 @@ export const TOOLS: ToolDefinition[] = [
     description: 'Lossless trimming for Ambisonic master files.',
     colorClass: 'text-teal-400',
     btnColorClass: 'bg-teal-600 hover:bg-teal-700',
+  },
+  {
+    id: ToolId.Stereo2Ambix,
+    label: 'Stereo2Ambix',
+    description: 'Upmixes 2ch stereo audio into high-order Ambisonics using adaptive PCA and FDN.',
+    colorClass: 'text-emerald-500',
+    btnColorClass: 'bg-emerald-600 hover:bg-emerald-700',
   }
 ];
 

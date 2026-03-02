@@ -73,6 +73,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   convertAmbiRotate: (filePaths: string[], rotation: { yaw: number, pitch: number, roll: number }, settings?: any) =>
     ipcRenderer.invoke('run-task', 'ambirotate', { files: filePaths, ...rotation, settings }),
 
+  convertStereo2Ambix: (filePaths: string[], targetOrder: string, stageWidth: number, envelopment: number, settings?: any) =>
+    ipcRenderer.invoke('run-task', 'stereo2ambix', { files: filePaths, targetOrder, stageWidth, envelopment, settings }),
+
 
   // AmbiTrim
   trim: {

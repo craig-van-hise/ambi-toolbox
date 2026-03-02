@@ -22,12 +22,18 @@ export async function handleAmbiOrder(event: IpcMainInvokeEvent, options: {
             "1st Order": 4,
             "2nd Order": 9,
             "3rd Order": 16,
+            "3rd Order (16 Channels)": 16,
             "0th Order": 1,
+            "0th Order (Omni)": 1,
             "Zero Order": 1,
             "4th Order": 25,
+            "4th Order (25 Channels)": 25,
             "5th Order": 36,
+            "5th Order (36 Channels)": 36,
             "6th Order": 49,
+            "6th Order (49 Channels)": 49,
             "7th Order": 64,
+            "7th Order (64 Channels)": 64,
         };
         const targetChannels = orderMap[targetOrder];
         if (!targetChannels) throw new Error(`Invalid target order: ${targetOrder} `);
