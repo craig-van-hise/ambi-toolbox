@@ -84,12 +84,10 @@ export async function handleStereo2Ambix(event: IpcMainInvokeEvent, options: {
             const hash = crypto.createHash('md5').update(hashPayload).digest('hex');
             const cacheFile = getCachePath(hash);
 
-            let isCacheHit = false;
             if (fs.existsSync(cacheFile)) {
                 const cacheData = JSON.parse(await fs.promises.readFile(cacheFile, 'utf-8'));
                 // Verify that the cached output file actually still exists on disk
                 if (fs.existsSync(cacheData.outputPath)) {
-                    isCacheHit = true;
                     console.log(`[Stereo2Ambix] Cache Hit! Instantly skipping ${path.basename(inputPath)}`);
                     results.push(cacheData.outputPath);
                     event.sender.send('task-progress', { progress: (i + 1) / files.length, toolId: 'stereo2ambix' });

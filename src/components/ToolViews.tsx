@@ -557,7 +557,7 @@ const Ambix2OggTool: React.FC<{ tool: ToolDefinition, files: File[], onRun: (opt
 // MAIN SWITCHER
 // ----------------------------------------------------------------------
 
-const Stereo2AmbixTool: React.FC<{ tool: ToolDefinition, files: File[], onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, files, onRun, isProcessing }) => {
+const Stereo2AmbixTool: React.FC<{ tool: ToolDefinition, files?: File[], onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
   const { settings, updateSettings } = useSettings();
   const [targetOrder, setTargetOrder] = useState<string>(() => {
     return settings.toolSettings?.[tool.id]?.targetOrder || AmbisonicOrder.Third;
@@ -796,6 +796,8 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
   }, [isProcessing, statusMsg]);
 
   useEffect(() => {
+    if (!window.electronAPI) return;
+
     const unsubProgress = window.electronAPI.onProgress((data: any) => {
       // PRO: Scope progress to tool
       // If scalar (legacy/AmbiRotate?), assume global or ignore? 
