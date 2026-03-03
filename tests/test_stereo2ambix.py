@@ -16,14 +16,14 @@ def mock_stereo_data():
     return np.vstack((left, right)).T, sample_rate
 
 def test_pca_extraction_shape():
-    from stereo_to_ambix import extract_primary_ambient_fft
+    from stereo_to_ambix import extract_primary_ambient
     
     # Needs to be exactly 4096 frames
     audio = np.random.randn(4096, 2)
     win = np.hanning(4096)[:, None]
     block_win = audio * win
     
-    primary, ambient = extract_primary_ambient_fft(block_win)
+    primary, ambient = extract_primary_ambient(block_win)
     
     assert primary.shape == audio.shape
     assert ambient.shape == audio.shape
@@ -50,12 +50,12 @@ def test_ambisonic_encoding_shape():
     assert out.shape[1] == num_channels
 
 def test_fail_safe_extraction_zero_phase():
-    from stereo_to_ambix import extract_primary_ambient_fft
+    from stereo_to_ambix import extract_primary_ambient
     
     audio = np.random.randn(4096, 2)
     
     # The PCA outputs must be mathematically orthogonal and perfectly sum to the input over FFT bins
-    primary, ambient = extract_primary_ambient_fft(audio)
+    primary, ambient = extract_primary_ambient(audio)
     
     summed = primary + ambient
     np.testing.assert_allclose(summed, audio, atol=1e-5)

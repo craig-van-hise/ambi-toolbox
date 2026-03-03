@@ -6,43 +6,27 @@ import soundfile as sf
 import spaudiopy as spa
 from scipy.linalg import hadamard
 
-def extract_primary_ambient_fft(X_win):
+def extract_primary_ambient(X_win):
     """
     X_win: (4096, 2) windowed input block
     Returns: primary_win (4096, 2), ambient_win (4096, 2)
-    We do FFT, PCA per bin, IFFT.
+    We do Broadband PCA per block in the time domain.
     """
-    X_f = np.fft.rfft(X_win, axis=0) # (2049, 2)
-    F = X_f.shape[0]
+    # Covariance matrix (2, 2) across the block
+    cov = np.cov(X_win, rowvar=False) + np.eye(2)*1e-10
+    evals, evecs = np.linalg.eig(cov)
     
-    P_f = np.zeros_like(X_f)
-    A_f = np.zeros_like(X_f)
+    idx = np.argsort(evals.real)[::-1]
+    evecs = evecs[:, idx]
     
-    # We don't have time dimension, so covariance is just outer product per bin
-    # To get stable PCA, we average across nearby bins (freq smoothing) 
-    # But for a single block, Adaptive weighted PCA on outer product:
-    for fi in range(F):
-        x = X_f[fi, :]
-        # Covariance matrix (2, 2)
-        cov = np.outer(x, x.conj()) + np.eye(2)*1e-10
-        evals, evecs = np.linalg.eig(cov)
-        idx = np.argsort(evals.real)[::-1]
-        evecs = evecs[:, idx]
-        
-        # primary is projection onto max eigenvector
-        w1 = evecs[:, 0]
-        # X is (2,)
-        # projection is dot(X, w1.conj()) * w1
-        proj1 = np.dot(x, w1.conj())
-        P_f[fi, :] = proj1 * w1
-        
-        # ambient is the rest (projection onto 2nd evec)
-        w2 = evecs[:, 1]
-        proj2 = np.dot(x, w2.conj())
-        A_f[fi, :] = proj2 * w2
-        
-    P_win = np.fft.irfft(P_f, n=X_win.shape[0], axis=0)
-    A_win = np.fft.irfft(A_f, n=X_win.shape[0], axis=0)
+    # primary is projection onto max eigenvector
+    w1 = evecs[:, 0]
+    P_win = np.outer(np.dot(X_win, w1), w1)
+    
+    # ambient is the rest (projection onto 2nd evec)
+    w2 = evecs[:, 1]
+    A_win = np.outer(np.dot(X_win, w2), w2)
+    
     return P_win, A_win
 
 def route_primary(P_win, order, stage_width_pct):
@@ -164,7 +148,7 @@ def process_block(audio_hop, order, stage_width, envelopment, z1):
     block_win = block * win
     
     # 3. PCA Extraction
-    P_win, A_win = extract_primary_ambient_fft(block_win)
+    P_win, A_win = extract_primary_ambient(block_win)
     
     # 4. Spatialize P
     P_ambi = route_primary(P_win, order, stage_width)
