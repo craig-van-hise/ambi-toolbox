@@ -45,6 +45,13 @@ export const TOOLS: ToolDefinition[] = [
     btnColorClass: 'bg-cyan-600 hover:bg-cyan-700',
   },
   {
+    id: ToolId.Stereo2Ambix,
+    label: 'Stereo2Ambix',
+    description: 'Upmixes 2ch stereo audio into high-order Ambisonics using adaptive PCA and FDN.',
+    colorClass: 'text-emerald-500',
+    btnColorClass: 'bg-emerald-600 hover:bg-emerald-700',
+  },
+  {
     id: ToolId.AmbiData,
     label: 'AmbiData',
     description: 'Analyze and edit spatial audio metadata & technical specs.',
@@ -79,13 +86,6 @@ export const TOOLS: ToolDefinition[] = [
     colorClass: 'text-teal-400',
     btnColorClass: 'bg-teal-600 hover:bg-teal-700',
   },
-  {
-    id: ToolId.Stereo2Ambix,
-    label: 'Stereo2Ambix',
-    description: 'Upmixes 2ch stereo audio into high-order Ambisonics using adaptive PCA and FDN.',
-    colorClass: 'text-emerald-500',
-    btnColorClass: 'bg-emerald-600 hover:bg-emerald-700',
-  }
 ];
 
 export const BITRATE_OPTIONS = [

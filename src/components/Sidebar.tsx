@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ToolId } from '../types';
 import { TOOLS } from '../constants';
-import { Layers, Repeat, Compass, Headphones, Settings, Scissors, Package, Info, Axis3d, RectangleGoggles, Box, Shrink } from 'lucide-react';
+import { Layers, Repeat, Compass, Headphones, Settings, Scissors, Package, Info, Axis3d, RectangleGoggles, Box, Shrink, Split } from 'lucide-react';
 import { SettingsModal } from './SettingsModal';
 
 interface SidebarProps {
@@ -16,13 +16,14 @@ const getIcon = (id: ToolId) => {
     case ToolId.Ambix2APAC: return <RectangleGoggles className="w-5 h-5" />;
     case ToolId.Ambix2CAF: return <Box className="w-5 h-5" />;
     case ToolId.Ambix2Opus: return <Shrink className="w-5 h-5" />;
-    
+
     case ToolId.AmbiOrder: return <Layers className="w-5 h-5" />;
     case ToolId.AmbiSwap: return <Repeat className="w-5 h-5" />;
     case ToolId.AmbiRotate: return <Compass className="w-5 h-5" />;
     case ToolId.Ambix2Bin: return <Headphones className="w-5 h-5" />;
     case ToolId.Ambix2Ogg: return <Package className="w-5 h-5" />;
     case ToolId.AmbiTrim: return <Scissors className="w-5 h-5" />;
+    case ToolId.Stereo2Ambix: return <Split className="w-5 h-5" />;
     default: return <Box className="w-5 h-5" />;
   }
 };
@@ -39,6 +40,7 @@ const getBorderColor = (id: ToolId) => {
     case ToolId.AmbiSwap: return 'border-orange-500';
     case ToolId.AmbiRotate: return 'border-red-500';
     case ToolId.AmbiTrim: return 'border-teal-400';
+    case ToolId.Stereo2Ambix: return 'border-emerald-500';
     default: return 'border-white';
   }
 };
