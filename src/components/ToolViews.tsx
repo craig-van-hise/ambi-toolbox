@@ -15,6 +15,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { AmbiTrim } from '../components/tools/AmbiTrim';
+import { AmbiLevelTool } from '../components/tools/AmbiLevel';
 import { AmbiDataTool } from '../tools/AmbiData';
 import { FileQueue } from './FileQueue';
 
@@ -974,6 +975,9 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
         case ToolId.Stereo2Ambix:
           result = await window.electronAPI.convertStereo2Ambix(filePaths, options.targetOrder, options.stageWidth, options.envelopment, backendSettings);
           break;
+        case ToolId.AmbiLevel:
+          result = await window.electronAPI.processAmbiLevel(filePaths, options.mode, options.targetDb, backendSettings);
+          break;
       }
 
       if (result && !result.success) {
@@ -1218,6 +1222,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
               {tool.id === ToolId.AmbiSwap && <AmbiSwapTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
               {tool.id === ToolId.Ambix2CAF && <Ambix2CafTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
               {tool.id === ToolId.Stereo2Ambix && <Stereo2AmbixTool tool={tool} files={files} onRun={handleRunTask} isProcessing={isProcessing} />}
+              {tool.id === ToolId.AmbiLevel && <AmbiLevelTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
 
               {/* AMBIROTATE ACTION BUTTON */}
               {tool.id === ToolId.AmbiRotate && (

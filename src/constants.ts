@@ -86,6 +86,13 @@ export const TOOLS: ToolDefinition[] = [
     colorClass: 'text-teal-400',
     btnColorClass: 'bg-teal-600 hover:bg-teal-700',
   },
+  {
+    id: ToolId.AmbiLevel,
+    label: 'AmbiLevel',
+    description: 'Adjust gain or normalize Ambisonic audio safely (Linked Channels).',
+    colorClass: 'text-fuchsia-400',
+    btnColorClass: 'bg-fuchsia-600 hover:bg-fuchsia-700',
+  },
 ];
 
 export const BITRATE_OPTIONS = [

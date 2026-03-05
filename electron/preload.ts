@@ -76,6 +76,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   convertStereo2Ambix: (filePaths: string[], targetOrder: string, stageWidth: number, envelopment: number, settings?: any) =>
     ipcRenderer.invoke('run-task', 'stereo2ambix', { files: filePaths, targetOrder, stageWidth, envelopment, settings }),
 
+  processAmbiLevel: (filePaths: string[], mode: 'manual' | 'normalize', targetDb: number, settings?: any) =>
+    ipcRenderer.invoke('run-task', 'ambilevel', { files: filePaths, mode, targetDb, settings }),
 
   // AmbiTrim
   trim: {
