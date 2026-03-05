@@ -20,6 +20,7 @@ This suite eliminates those bottlenecks, allowing audio engineers to process, co
 * **Asset Downscaling:** Use **AmbiOrder** to reduce a 3rd Order master file into 1st Order for mobile game engines (Unity/Unreal) or hardware with limited channel counts.
 * **Orientation Correction:** Fix recordings made with a misaligned or upside-down microphone by applying 3-axis rotation (Yaw/Pitch/Roll) in real-time with **AmbiRotate** before committing to a new file.
 * **Lossless Trimming:** Use **AmbiTrim** to cut unwanted sections from massive multi-channel master files without re-encoding, preserving the original audio data bit-for-bit.
+* **Precision Gain Matching & Normalization:** Use **AmbiLevel** to adjust the volume of Ambisonic assets or normalize them to a target True Peak while strictly preserving the spatial phase relationship between all channels (Linked-Gain).
 * **Unified Transport Flow:** Seamlessly switch between tracks with **"Double-Click to Play"** and **Previous/Next** navigation. Features a surgical transport reset logic and **Scrubber Auto-Resume** to ensure a fluid monitoring experience.
 
 
@@ -82,6 +83,12 @@ This suite eliminates those bottlenecks, allowing audio engineers to process, co
 * **Diffusion**: 16x16 Hadamard-based frequency domain decorrelation for immersive envelopment.
 
 
+13. **AmbiLevel**: Spatial Audio Gain & Normalization Utility.
+* **Linked Channels**: Applies identical gain offset to all channels simultaneously to preserve the spatial soundfield image.
+* **Modes**: Supports Manual dB gain or Two-Pass normalization to a target True Peak.
+* **Output**: Strictly enforces 24-bit PCM WAV.
+
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -137,73 +144,35 @@ The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
 ├── package-lock.json
 ├── postcss.config.js
 ├── public
-|  ├── ambisonics.js
-|  ├── electron-vite.animate.svg
-|  ├── electron-vite.svg
-|  ├── js
-|  └── vite.svg
 ├── py
-|  ├── ambi_data_heuristics.py
-|  ├── ambi_rotate.py
-|  └── format_decoder.py
-├── repo-map.md
 ├── resources
-|  └── scripts
 ├── scripts
-|  ├── test-auto-resume.ts
-|  ├── test-binary-paths.ts
-|  ├── test-binaural.js
-|  ├── test-file-switch-autoplay.ts
-|  ├── test-frontend-url.ts
-|  ├── test-hard-swap.ts
-|  ├── test-obr-pipeline.js
-|  ├── test-queue-click.ts
-|  ├── test-seek-accuracy.ts
-|  ├── test-seek-debounce.ts
-|  ├── test-server.ts
-|  ├── test-stream-start.ts
-|  └── verify-stream-endpoint.js
 ├── src
-|  ├── App.css
 |  ├── App.tsx
-|  ├── assets
 |  ├── components
+|  |  ├── tools
+|  |  |  ├── AmbiLevel.tsx
+|  |  |  └── AmbiTrim.tsx
+|  |  └── ToolViews.tsx
 |  ├── constants.ts
-|  ├── contexts
-|  ├── cpp
-|  ├── index.css
-|  ├── main.tsx
 |  ├── tools
-|  ├── types.ts
-|  ├── utils
-|  └── vite-env.d.ts
+|  |  ├── AmbiData
+|  |  └── AmbiRotate
+|  └── types.ts
+├── electron
+|  ├── handlers
+|  |  ├── AmbiLevel.ts
+|  |  ├── Stereo2Ambix.ts
+|  |  └── index.ts
+|  ├── main.ts
+|  └── preload.ts
 ├── tailwind.config.js
 ├── tests
-|  ├── 3rd Order Ambi Clock Test.wav
-|  ├── check_hrtf_delay.py
-|  ├── check_hrtf_energy.py
-|  ├── check_netcdf_clean.py
-|  ├── debug_rotation_sweep.py
-|  ├── gen_test_signal.py
-|  ├── handlers.test.ts
-|  ├── iamf_recursive.test.ts
-|  ├── ingestion.test.ts
-|  ├── ingestion_router.test.ts
-|  ├── manual_test_out.wav
-|  ├── obr_pipeline.test.ts
-|  ├── settings_merge.test.ts
-|  ├── sweep_in.wav
-|  ├── sweep_out.wav
-|  ├── test_16ch.wav
-|  ├── test_coords.py
-|  ├── test_math.py
-|  ├── test_saf.py
-|  ├── transport_sm.test.ts
-|  └── trim.test.ts
 ├── tsconfig.json
 ├── tsconfig.node.json
 ├── vite.config.ts
-└── vitest.config.ts
+├── vitest.config.ts
+└── xCleanup
 
 
 ## 🧪 Testing

@@ -1,6 +1,6 @@
 # AmbiToolbox - Project State Report
 
-**Date:** March 2, 2026 (Updated)
+**Date:** March 5, 2026 (Updated)
 **Architecture:** Electron Modular Monolith
 
 ## 1. Executive Summary
@@ -24,7 +24,8 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 | **Ambix2Ogg** | 🟢 Ready | `electron/handlers/Ambix2Ogg.ts` | Smart Transcode/Remux. Permission Checks. |
 | **AmbiTrim** | 🟢 Ready | `electron/handlers/trim.ts` | Proxy Workflow (Mid-Side), Lossless Cut (`-c copy`), WaveSurfer Regions. |
 | **AmbiData** | 🟢 Ready | `electron/handlers/AmbiData.ts` | **Complete**: Native IAMF parsing, loudness analysis and UI cards integrated. |
-| **Stereo2Ambix** | 🟡 In Dev | `electron/handlers/Stereo2Ambix.ts` | **Active Development**: Implementing Adaptive PCA-based upmixing and FDN diffusion. |
+| **Stereo2Ambix** | 🟢 Ready | `electron/handlers/Stereo2Ambix.ts` | **Complete**: Adaptive PCA-based upmixing using STFT and frequency-domain diffusion. |
+| **AmbiLevel** | 🟢 Ready | `electron/handlers/AmbiLevel.ts` | **Complete**: Linked-gain normalization and manual offset tool. |
 | **Persistence** | 🟢 Ready | `src/contexts/SettingsContext.tsx` | Saves active tool, bitrates, layouts, and rotation values. |
 | **Global Queue** | 🟢 Ready | `src/components/FileQueue.tsx` | **Unified**: Single shared component for all tools with folding/play indicators. |
 
@@ -36,8 +37,10 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 - **PRP #123**: Native Apple Ingestion (Completed)
 - **PRP #124**: Direct OBU Parsing (Completed)
 - **PRP #125**: Playback & Ingestion Stabilization (Completed)
-- **PRP #126**: Stereo2Ambix (Active)
-- **Phase: Implementation**: Active
+- **PRP #126**: Stereo2Ambix Implementation (Completed)
+- **PRP #127**: Stereo2Ambix DSP Engine Overhaul (Completed)
+- **PRP #128**: AmbiLevel Tool Integration (Completed)
+- **Phase: Maintenance**: Active
 
 ## 4. Directory Structure (Architecture)
 
@@ -108,6 +111,14 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 -   **`PRPs/`**: Project Rollout Proposals and historical logs.
 
 ## 5. Recent Logic Changes
+- **AmbiLevel Tool Integration (PRP #128)**:
+    - **Linked-Gain Logic**: Implemented a core requirement for Ambisonic normalization: applying the exact same gain offset to all channels simultaneously to preserve spherical soundfield phase.
+    - **Dual-Pass Normalization**: Developed a two-pass FFmpeg workflow using `volumedetect` for interleaved max-volume analysis followed by a precision `volume` application to hit target True Peak (dBTP).
+    - **Output Strictness**: Enforced 24-bit PCM WAV rendering across all gain operations to prevent quantization noise artifacts in high-order masters.
+- **Stereo2Ambix DSP Overhaul (PRP #127)**:
+    - **STFT Processing**: Replaced the primitive time-domain PCA loop with a full short-time Fourier transform (STFT) pipeline using 4096-sample Hann windows for frequency-dependent spatial extraction.
+    - **Temporal Smoothing**: Implemented recursive smoothing of the bin-wise covariance matrix to eliminate "flicker" and gating artifacts in the upmixed signal.
+    - **Continuous Diffusion**: Replaced block-reset random seeds with a stable frequency-domain scattering matrix to ensure phase continuity across the diffused ambient field.
 - **Stereo2Ambix Upmixing (PRP #126)**:
     - **Adaptive PCA Decomposition**: Implemented freq-domain Primary/Ambient extraction using Eigen-decomposition of the bin-wise covariance matrix.
     - **Deterministic Caching**: Integrated MD5-based ingestion hashing (mtime + size + params) to instantly bypass redundant computational overhead.

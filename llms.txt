@@ -9,7 +9,8 @@ AmbiToolbox is a unified spatial audio utility suite for macOS, built with Elect
 ## Architecture
 - **Frontend**: React + TypeScript + TailwindCSS.
 - **Backend**: Electron Main Process with Modular Handler Pattern.
-- **Sidecars**: C++ (Google OBR) and Python (NumPy) for audio processing.
+- **Sidecars**: C++ (Google OBR) and Python (NumPy) for advanced DSP (Stereo2Ambix).
+- **Processing**: Standardized FFmpeg-based audio manipulation (AmbiLevel, AmbiSwap).
 
 ## Tech Stack
 - **Electron**: v30.0.1
