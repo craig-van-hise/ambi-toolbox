@@ -21,5 +21,12 @@ This software links to FFmpeg libraries licensed under the LGPL v2.1. In accorda
 ## 4. NO WARRANTY
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY.
 
-## 5. THIRD PARTY ACKNOWLEDGEMENTS
-This software bundles several third-party libraries and assets. Their licenses and notices are contained in the `NOTICE.txt` file redistributed with this application.
+### THIRD PARTY EXECUTABLES
+This software bundles several third-party binaries:
+1. FFmpeg & FFprobe (LGPL v2.1)
+2. APAC Encoder (Proprietary Apple)
+3. IAMF Encoder (BSD-3-Clause)
+4. EBU ADM Renderer (BSD-3-Clause-Clear)
+
+You may replace these binaries in `assets/bin/` with your own compatible versions, provided you comply with their respective licenses.
+

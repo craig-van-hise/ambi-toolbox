@@ -19,6 +19,11 @@ SECTION 1: BINARY EXECUTABLES
    - License: BSD-3-Clause
    - Home: https://github.com/AOMediaCodec/iamf-tools
 
+4. EBU ADM Renderer (ear-utils)
+   - License: BSD-3-Clause-Clear
+   - Home: https://github.com/ebu/ear-utils
+   - Copyright: Copyright (c) 2017-2023, EBU ADM Renderer Contributors. All rights reserved.
+
 ========================================================================
 SECTION 2: NODE.JS LIBRARIES (Production)
 ========================================================================

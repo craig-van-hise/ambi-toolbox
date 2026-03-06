@@ -93,7 +93,15 @@ export const TOOLS: ToolDefinition[] = [
     colorClass: 'text-fuchsia-400',
     btnColorClass: 'bg-fuchsia-600 hover:bg-fuchsia-700',
   },
+  {
+    id: ToolId.Ambix2BW64,
+    label: 'Ambix2BW64',
+    description: 'Converts AmbiX to BW64 with ADM metadata using EBU ADM Renderer.',
+    colorClass: 'text-yellow-400',
+    btnColorClass: 'bg-yellow-600 hover:bg-yellow-700',
+  },
 ];
+
 
 export const BITRATE_OPTIONS = [
   BitrateOption.Low,

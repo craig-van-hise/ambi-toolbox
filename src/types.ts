@@ -12,7 +12,9 @@ export enum ToolId {
   Ambix2Ogg = 'ambix2ogg',
   Stereo2Ambix = 'stereo2ambix',
   AmbiLevel = 'ambilevel',
+  Ambix2BW64 = 'ambix2bw64',
 }
+
 
 export interface ToolDefinition {
   id: ToolId;
@@ -71,6 +73,8 @@ export interface ElectronAPI {
   convertAmbiRotate: (filePaths: string[], rotation: { yaw: number, pitch: number, roll: number }, settings?: any) => Promise<any>;
   convertStereo2Ambix: (filePaths: string[], targetOrder: string, stageWidth: number, envelopment: number, settings?: any) => Promise<any>;
   processAmbiLevel: (filePaths: string[], mode: 'manual' | 'normalize', targetDb: number, settings?: any) => Promise<any>;
+  convertAmbix2BW64: (filePaths: string[], normalization: 'SN3D' | 'N3D', nfcDistance?: number, settings?: any) => Promise<any>;
+
   trim: {
     generateProxy: (filePath: string) => Promise<string>;
     executeTrim: (filePath: string, start: number, end: number, outputDir: string) => Promise<string>;

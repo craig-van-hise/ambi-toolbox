@@ -16,7 +16,9 @@ import {
 } from 'lucide-react';
 import { AmbiTrim } from '../components/tools/AmbiTrim';
 import { AmbiLevelTool } from '../components/tools/AmbiLevel';
+import { Ambix2BW64Tool } from '../components/tools/Ambix2BW64';
 import { AmbiDataTool } from '../tools/AmbiData';
+
 import { FileQueue } from './FileQueue';
 
 interface ToolViewProps {
@@ -978,7 +980,11 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
         case ToolId.AmbiLevel:
           result = await window.electronAPI.processAmbiLevel(filePaths, options.mode, options.targetDb, backendSettings);
           break;
+        case ToolId.Ambix2BW64:
+          result = await window.electronAPI.convertAmbix2BW64(filePaths, options.normalization, options.nfcDistance, backendSettings);
+          break;
       }
+
 
       if (result && !result.success) {
         throw new Error(result.error || "Unknown backend error");
@@ -1061,11 +1067,12 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
                       labelText = ".wav, .amb, .caf, .flac, .mp3 accepted";
                     } else if (tool.id === ToolId.Ambix2Ogg) {
                       labelText = ".wav, .amb, .caf, .flac, .mp3, .opus, .ogg accepted";
-                    } else if (tool.id === ToolId.Ambix2CAF || tool.id === ToolId.AmbiOrder || tool.id === ToolId.AmbiSwap || tool.id === ToolId.Stereo2Ambix) {
+                    } else if (tool.id === ToolId.Ambix2CAF || tool.id === ToolId.AmbiOrder || tool.id === ToolId.AmbiSwap || tool.id === ToolId.Stereo2Ambix || tool.id === ToolId.Ambix2BW64) {
                       // FFmpeg-based tools (highly flexible)
                       allowedExts = ['.wav', '.amb', '.caf', '.opus', '.mp3', '.aac', '.flac', '.ogg'];
                       labelText = ".wav, .amb, .caf, .opus, .mp3, .aac, .flac, .ogg accepted";
                     }
+
 
                     return (
                       <SmartDropZone
@@ -1223,6 +1230,8 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
               {tool.id === ToolId.Ambix2CAF && <Ambix2CafTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
               {tool.id === ToolId.Stereo2Ambix && <Stereo2AmbixTool tool={tool} files={files} onRun={handleRunTask} isProcessing={isProcessing} />}
               {tool.id === ToolId.AmbiLevel && <AmbiLevelTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
+              {tool.id === ToolId.Ambix2BW64 && <Ambix2BW64Tool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
+
 
               {/* AMBIROTATE ACTION BUTTON */}
               {tool.id === ToolId.AmbiRotate && (

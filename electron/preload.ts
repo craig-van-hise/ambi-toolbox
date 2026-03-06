@@ -79,6 +79,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   processAmbiLevel: (filePaths: string[], mode: 'manual' | 'normalize', targetDb: number, settings?: any) =>
     ipcRenderer.invoke('run-task', 'ambilevel', { files: filePaths, mode, targetDb, settings }),
 
+  convertAmbix2BW64: (filePaths: string[], normalization: 'SN3D' | 'N3D', nfcDistance?: number, settings?: any) =>
+    ipcRenderer.invoke('run-task', 'ambix2bw64', { files: filePaths, normalization, nfcDistance, settings }),
+
+
   // AmbiTrim
   trim: {
     generateProxy: (filePath: string) => ipcRenderer.invoke('trim:generateProxy', filePath),

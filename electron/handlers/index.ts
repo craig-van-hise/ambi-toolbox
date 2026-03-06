@@ -11,6 +11,8 @@ import { handleAmbix2APAC } from './Ambix2APAC';
 import { handleAmbix2Ogg } from './Ambix2Ogg';
 import { handleStereo2Ambix } from './Stereo2Ambix';
 import { handleAmbiLevel } from './AmbiLevel';
+import { handleAmbix2BW64 } from './Ambix2BW64';
+
 
 // Handler Interface
 export type TaskHandler = (event: IpcMainInvokeEvent, options: any) => Promise<{ success: boolean; error?: string; data?: any }>;
@@ -29,6 +31,8 @@ handlers['ambix2apac'] = handleAmbix2APAC;
 handlers['ambix2ogg'] = handleAmbix2Ogg;
 handlers['stereo2ambix'] = handleStereo2Ambix;
 handlers['ambilevel'] = handleAmbiLevel;
+handlers['ambix2bw64'] = handleAmbix2BW64;
+
 
 export function registerHandler(toolId: string, handler: TaskHandler) {
     handlers[toolId] = handler;

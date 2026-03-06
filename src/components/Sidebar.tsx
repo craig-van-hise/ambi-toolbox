@@ -25,7 +25,9 @@ const getIcon = (id: ToolId) => {
     case ToolId.AmbiTrim: return <Scissors className="w-5 h-5" />;
     case ToolId.Stereo2Ambix: return <Split className="w-5 h-5" />;
     case ToolId.AmbiLevel: return <ArrowUpToLine className="w-5 h-5" />;
+    case ToolId.Ambix2BW64: return <Axis3d className="w-5 h-5" />;
     default: return <Box className="w-5 h-5" />;
+
   }
 };
 
@@ -43,7 +45,9 @@ const getBorderColor = (id: ToolId) => {
     case ToolId.AmbiTrim: return 'border-teal-400';
     case ToolId.Stereo2Ambix: return 'border-emerald-500';
     case ToolId.AmbiLevel: return 'border-fuchsia-400';
+    case ToolId.Ambix2BW64: return 'border-yellow-400';
     default: return 'border-white';
+
   }
 };
 
