@@ -217,9 +217,19 @@ export async function analyzeAmbiFile(event: IpcMainInvokeEvent, filePath: strin
                     normalizationPrediction: heuristicsData.normalization || 'Unknown',
                     sequencePrediction: heuristicsData.sequence || 'Unknown',
                     confidence: heuristicsData.confidence || 0,
+                    hasADM: heuristicsData.chunks?.has_axml || heuristicsData.chunks?.has_chna,
                     ...spatialMetadata
                 };
+
+                // Override Container Format if ADM/BW64 detected
+                if (result.spatial.hasADM || heuristicsData.chunks?.is_bw64 || heuristicsData.chunks?.is_rf64) {
+                    if (result.containerFormat.toLowerCase().includes('wav')) {
+                        result.containerFormat = 'BW64 / ADM (WAV)';
+                    }
+                }
+
                 event.sender.send('ambi-data-progress', { filePath, phase: 'spatial-final', data: result });
+
             });
         }
 

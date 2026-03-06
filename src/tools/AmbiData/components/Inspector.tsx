@@ -306,6 +306,12 @@ export const Inspector: React.FC<InspectorProps> = ({ file, activeEdits, onEdit,
                                 value={file.spatial.hasAmbisonicGUID ? "Yes (WAVEFORMATEXTENSIBLE)" : "No"}
                                 warningLevel={file.spatial.hasAmbisonicGUID ? 'success' : 'warning'}
                             />
+                            <DataField
+                                label="Is ADM Metadata present?"
+                                value={file.spatial.hasADM ? "Yes (axml/chna chunks found)" : "No"}
+                                warningLevel={file.spatial.hasADM ? 'success' : 'warning'}
+                            />
+
                         </div>
                         <div className="w-full">
                             <DataField

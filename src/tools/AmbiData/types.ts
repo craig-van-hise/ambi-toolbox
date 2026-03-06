@@ -57,7 +57,10 @@ export interface SpatialMetadata {
 
     // Container Specific - WAV/BWF
     hasAmbisonicGUID?: boolean;
+    hasADM?: boolean;
+    admVersion?: string;
     bextDescription?: string; // Editable
+
 
     // Container Specific - Opus/Ogg/WebM/MKV
     channelMappingFamily?: string; // Editable

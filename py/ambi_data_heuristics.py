@@ -11,6 +11,48 @@ import soundfile as sf
 from pathlib import Path
 
 
+def detect_chunks(file_path: str) -> dict:
+    """
+    Scan file for specific BW64 / ADM chunks: ds64, axml, chna
+    """
+    chunks = {
+        "has_ds64": False,
+        "has_axml": False,
+        "has_chna": False,
+        "is_rf64": False,
+        "is_bw64": False
+    }
+    
+    try:
+        with open(file_path, 'rb') as f:
+            # Read first 4096 bytes (usually contains all headers)
+            header = f.read(4096)
+            
+            # Check for RF64 or BW64 magic
+            if header.startswith(b'RF64'):
+                chunks["is_rf64"] = True
+            elif header.startswith(b'BW64'):
+                chunks["is_bw64"] = True
+            
+            # Simple byte scanning for chunk IDs
+            if b'ds64' in header: chunks["has_ds64"] = True
+            if b'axml' in header: chunks["has_axml"] = True
+            if b'chna' in header: chunks["has_chna"] = True
+            
+            # If not found in first 4k, check if it's potentially further in (metadata can be large)
+            if not (chunks["has_axml"] and chunks["has_chna"]):
+                # Scan a bit deeper if needed (e.g. first 64k)
+                f.seek(0)
+                buffer = f.read(65536)
+                if b'axml' in buffer: chunks["has_axml"] = True
+                if b'chna' in buffer: chunks["has_chna"] = True
+                
+    except Exception as e:
+        pass
+        
+    return chunks
+
+
 def analyze_signal(file_path: str, duration: float = 5.0) -> dict:
     """
     Analyze ambisonic audio signal to detect format characteristics
@@ -136,7 +178,13 @@ def main():
         sys.exit(1)
     
     result = analyze_signal(file_path)
+    
+    # Add chunk detection
+    chunks = detect_chunks(file_path)
+    result["chunks"] = chunks
+    
     print(json.dumps(result, indent=2))
+
 
 
 if __name__ == "__main__":
