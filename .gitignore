@@ -167,3 +167,6 @@ test output/
 # AI Studio Artifacts
 AmbiData from AI Studio/
 ffmpeg_build_temp/
+
+# Large Binaries (exceed GitHub 100MB limit)
+assets/bin/ear-utils-mac-arm64

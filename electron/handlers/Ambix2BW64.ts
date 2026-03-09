@@ -1,7 +1,7 @@
 import { IpcMainInvokeEvent } from '../shim';
-import path from 'node:path';
 import { spawn } from 'node:child_process';
-// No longer using getBinaryPath, probeAudio, determineOutputPath from common here
+import { getBinaryPath } from './common';
+// No longer using probeAudio, determineOutputPath from common here
 // as they are handled inside the python script for batch processing
 
 
@@ -16,25 +16,25 @@ export async function handleAmbix2BW64(event: IpcMainInvokeEvent, options: {
     try {
         if (!files || files.length === 0) throw new Error("No files provided");
 
-        const scriptPath = path.join(process.cwd(), 'py', 'ambix2bw64.py');
+        const binPath = getBinaryPath('ear-utils-mac-arm64');
 
         // Prepare parameters
-        const pythonArgs = [
-            scriptPath,
+        // The binary includes the script logic, so we pass arguments directly
+        const binArgs = [
             '--files', JSON.stringify(files),
             '--norm', normalization
         ];
 
         if (nfcDistance !== undefined) {
-            pythonArgs.push('--nfcDist', nfcDistance.toString());
+            binArgs.push('--nfcDist', nfcDistance.toString());
         }
 
         if (settings?.outputDir) {
-            pythonArgs.push('--outDir', settings.outputDir);
+            binArgs.push('--outDir', settings.outputDir);
         }
 
         await new Promise<void>((resolve, reject) => {
-            const child = spawn('python3', pythonArgs);
+            const child = spawn(binPath, binArgs);
 
             child.stdout.on('data', d => {
                 const chunk = d.toString();
@@ -52,7 +52,7 @@ export async function handleAmbix2BW64(event: IpcMainInvokeEvent, options: {
 
             child.on('close', code => {
                 if (code === 0) resolve();
-                else reject(new Error(`Conversion failed with code ${code}. Check if 'ear-utils' is installed (pip install ear-utils).`));
+                else reject(new Error(`Conversion failed with code ${code}.`));
             });
 
             child.on('error', err => reject(err));

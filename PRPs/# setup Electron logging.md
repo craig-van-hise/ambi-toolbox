@@ -1,6 +1,9 @@
+status: ✅ Completed
+
 # Product Requirements Prompt (PRP): Automated Unified Logging System
 
 ## Objective
+status: ✅ Completed
 Implement an automated logging system for this Electron + Vite project that captures both Terminal (Main Process) and DevTools (Renderer Process) output into a single, concatenated `dev-debug.log` file in the project root.
 
 ## Technical Requirements

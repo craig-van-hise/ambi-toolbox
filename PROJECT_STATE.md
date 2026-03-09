@@ -15,6 +15,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 | **Frontend UI** | 🟢 Ready | React + Tailwind | Scoped Progress, Auto-Scroll, Drag & Drop. |
 | **Transport UI** | 🟢 Ready | `src/components/Transport.tsx` | **Frontend Complete**: Condensed UI, Icons, Settings Modal. **Backend Ready**: Playback logic wired to `electron/main.ts` streaming server (Stereo Downmix). |
 | **Ambix2Opus** | 🟢 Ready | `electron/handlers/Ambix2Opus.ts` | Uses `ffprobe` for robust channel detection. |
+| **Ambix2BW64** | 🟢 Ready | `electron/handlers/Ambix2BW64.ts` | **Complete**: Integrated `ear-utils` via standalone binary for ADM metadata. |
 | **Ambix2Bin** | 🟢 Ready | `electron/handlers/Ambix2Bin.ts` | Uses **Neumann KU100 (CC-BY)** & **MIT KEMAR** HRTFs. Fixed static path resolution and enum alignment. |
 | **Ambix2IAMF** | 🟢 Ready | `electron/handlers/Ambix2IAMF.ts` | Generates textproto config and runs `iamf-enc`. |
 | **AmbiOrder** | 🟢 Ready | `electron/handlers/AmbiOrder.ts` | Uses `channelmap` filter. Dynamic Order Detection. Fixed FFmpeg syntax. |
@@ -40,6 +41,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 - **PRP #126**: Stereo2Ambix Implementation (Completed)
 - **PRP #127**: Stereo2Ambix DSP Engine Overhaul (Completed)
 - **PRP #128**: AmbiLevel Tool Integration (Completed)
+- **PRP #129**: Ambix2BW64 Integration (Completed)
 - **Phase: Maintenance**: Active
 
 ## 4. Directory Structure (Architecture)
@@ -111,6 +113,10 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 -   **`PRPs/`**: Project Rollout Proposals and historical logs.
 
 ## 5. Recent Logic Changes
+- **Ambix2BW64 Tool Integration (PRP #129)**:
+    - **Standalone Binary Provisioning**: Packaged the `ear-utils` Python library into an `arm64` macOS executable using PyInstaller, eliminating the need for a local Python environment for ADM conversion.
+    - **ADM Metadata Injection**: Integrated EBU ADM Renderer logic to convert Ambisonic (AmbiX) PCM streams into BW64 containers with standard-compliant ADM metadata blocks.
+    - **Batch Processing Handler**: Implemented a robust backend handler that spawns the internal binary with JSON-encoded file lists and normalization toggles, supporting real-time status reporting to the UI.
 - **AmbiLevel Tool Integration (PRP #128)**:
     - **Linked-Gain Logic**: Implemented a core requirement for Ambisonic normalization: applying the exact same gain offset to all channels simultaneously to preserve spherical soundfield phase.
     - **Dual-Pass Normalization**: Developed a two-pass FFmpeg workflow using `volumedetect` for interleaved max-volume analysis followed by a precision `volume` application to hit target True Peak (dBTP).
