@@ -118,7 +118,7 @@ def run_tests():
 
     # TEST 3: Raw Bitstream Duration
     print("[TEST 3] Raw Bitstream Duration Fallback")
-    test_file = "test_000007.iamf"
+    test_file = os.path.join(os.path.dirname(__file__), "fixtures", "test_000007.iamf")
     if not os.path.exists(test_file):
         print(f"  SKIP: {test_file} not found")
         failures += 1

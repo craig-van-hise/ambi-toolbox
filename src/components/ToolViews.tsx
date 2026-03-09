@@ -2,685 +2,41 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   ToolId,
   ToolDefinition,
-  BitrateOption,
-  AmbisonicOrder,
-  AmbiFormat,
-  HrtfProfile
 } from '../types';
-import { BITRATE_OPTIONS } from '../constants';
+
+// Contexts & Hooks
+import { useSettings } from '../contexts/SettingsContext';
+import { usePlayback } from '../contexts/PlaybackContext';
+import { useFileQueue } from '../hooks/useFileQueue';
+
+// Components
+import { FileQueue } from './FileQueue';
+import { Transport } from './Transport';
 import { SmartDropZone } from './SmartDropZone';
-import { AmbiRotateTool, AmbiRotateHandle } from '../tools/AmbiRotate';
-import {
-  ArrowRight,
-  ChevronDown
-} from 'lucide-react';
-import { AmbiTrim } from '../components/tools/AmbiTrim';
+
+// Tool Components
 import { AmbiLevelTool } from '../components/tools/AmbiLevel';
 import { Ambix2BW64Tool } from '../components/tools/Ambix2BW64';
 import { AmbiDataTool } from '../tools/AmbiData';
+import { AmbiTrim } from '../components/tools/AmbiTrim';
+import { AmbiRotateTool, AmbiRotateHandle } from '../tools/AmbiRotate';
 
-import { FileQueue } from './FileQueue';
+// Modularized Tool Views
+import { BitrateConverterView } from './tools/BitrateConverterView';
+import { Ambix2ApacView } from './tools/Ambix2ApacView';
+import { Ambix2BinView } from './tools/Ambix2BinView';
+import { AmbiOrderView } from './tools/AmbiOrderView';
+import { AmbiSwapView } from './tools/AmbiSwapView';
+import { Ambix2CafView } from './tools/Ambix2CafView';
+import { Ambix2OggView } from './tools/Ambix2OggView';
+import { Stereo2AmbixView } from './tools/Stereo2AmbixView';
 
 interface ToolViewProps {
   tool: ToolDefinition;
 }
 
-import { useSettings } from '../contexts/SettingsContext';
-import { useToolState } from '../contexts/ToolStateContext';
-import { usePlayback } from '../contexts/PlaybackContext';
-import { MediaFile, FileType } from '../tools/AmbiData/types';
-import { Transport } from './Transport';
-
-// ----------------------------------------------------------------------
-// SHARED COMPONENTS
-// ----------------------------------------------------------------------
-
-// ----------------------------------------------------------------------
-// TOOL SPECIFIC IMPLEMENTATIONS
-// ----------------------------------------------------------------------
-
-// ----------------------------------------------------------------------
-// TOOL SPECIFIC IMPLEMENTATIONS
-// ----------------------------------------------------------------------
-
-const BitrateConverter: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
-  const { settings, updateSettings } = useSettings();
-  const [bitrate, setBitrate] = useState<BitrateOption>(() => {
-    return settings.toolSettings?.[tool.id]?.bitrate || BitrateOption.High;
-  });
-
-  const handleBitrateChange = (val: BitrateOption) => {
-    setBitrate(val);
-    updateSettings({
-      toolSettings: {
-        ...settings.toolSettings,
-        [tool.id]: { ...settings.toolSettings?.[tool.id], bitrate: val }
-      }
-    });
-  };
-
-  return (
-    <div className="w-full">
-      <div className="flex flex-col gap-4 mb-4">
-        <div className="w-full">
-          <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Target Bitrate (per channel)</label>
-          <div className="relative">
-            <select
-              value={bitrate}
-              onChange={(e) => handleBitrateChange(e.target.value as BitrateOption)}
-              className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-blue-500 appearance-none text-white"
-            >
-              {BITRATE_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>{opt}</option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-gray-500 pointer-events-none" />
-          </div>
-        </div>
-
-        <button
-          onClick={() => onRun({ bitrate })}
-          disabled={isProcessing}
-          className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
-        >
-          {isProcessing ? 'Converting...' : 'Convert'}
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const Ambix2ApacTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
-  const { settings, updateSettings } = useSettings();
-  const [bitrate, setBitrate] = useState<string>(() => {
-    return settings.toolSettings[tool.id]?.bitrate || 'Medium (96 kbps)';
-  });
-
-  const handleBitrateChange = (val: string) => {
-    setBitrate(val);
-    updateSettings({
-      toolSettings: {
-        ...settings.toolSettings,
-        [tool.id]: { ...settings.toolSettings[tool.id], bitrate: val }
-      }
-    });
-  };
-
-  const options = [
-    'Low (64 kbps)',
-    'Medium (96 kbps)',
-    'High (128 kbps)',
-    'Pro (192 kbps)'
-  ];
-
-  return (
-    <div className="w-full">
-      <div className="flex flex-col gap-4 mb-4">
-        <div className="w-full">
-          <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Target Bitrate (per channel)</label>
-          <div className="relative">
-            <select
-              value={bitrate}
-              onChange={(e) => handleBitrateChange(e.target.value)}
-              className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-cyan-500 appearance-none text-white"
-            >
-              {options.map((opt) => (
-                <option key={opt} value={opt}>{opt}</option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-gray-500 pointer-events-none" />
-          </div>
-        </div>
-
-        <button
-          onClick={() => onRun({ bitrate })}
-          disabled={isProcessing}
-          className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
-        >
-          {isProcessing ? 'Encoding...' : 'Encode to APAC'}
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const Ambix2BinTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
-  const { settings, updateSettings } = useSettings();
-  const [profile, setProfile] = useState<HrtfProfile>(() => {
-    return settings.toolSettings?.[tool.id]?.hrtfProfile || HrtfProfile.Neumann;
-  });
-  // State to hold the path of the custom SOFA file
-  const [customSofaPath, setCustomSofaPath] = useState<string | null>(() => {
-    return settings.toolSettings?.[tool.id]?.customSofaPath || null;
-  });
-
-  const handleProfileChange = async (val: HrtfProfile) => {
-    if (val === HrtfProfile.Custom) {
-      try {
-        const lastDir = settings.toolSettings?.globalPlayback?.lastSofaDir || undefined;
-        const result = await window.electronAPI.selectFiles({
-          properties: ['openFile'],
-          defaultPath: lastDir,
-          filters: [
-            { name: 'SOFA Files', extensions: ['sofa'] },
-            { name: 'All Files', extensions: ['*'] }
-          ]
-        });
-
-        if (result && result.length > 0) {
-          const selectedPath = result[0];
-          setCustomSofaPath(selectedPath);
-          setProfile(HrtfProfile.Custom); // Only set to Custom if file selected
-
-          // Save directory to settings
-          const dirPath = selectedPath.substring(0, selectedPath.lastIndexOf('/'));
-
-          // Persist (store 'Custom' in settings, AND store path, and save directory)
-          updateSettings(prev => ({
-            toolSettings: {
-              ...prev.toolSettings,
-              globalPlayback: {
-                ...prev.toolSettings?.globalPlayback,
-                lastSofaDir: dirPath
-              },
-              [tool.id]: {
-                ...prev.toolSettings?.[tool.id],
-                hrtfProfile: val,
-                customSofaPath: selectedPath
-              }
-            }
-          }));
-        } else {
-          // Cancelled: Do nothing? Or revert select? 
-          // If we don't update state, select remains on old value naturally.
-        }
-      } catch (err) {
-        console.error("Failed to select custom SOFA:", err);
-      }
-    } else {
-      setProfile(val);
-      // Don't clear custom path, just switch profile. User might switch back.
-
-      updateSettings(prev => ({
-        toolSettings: {
-          ...prev.toolSettings,
-          [tool.id]: {
-            ...prev.toolSettings?.[tool.id],
-            hrtfProfile: val
-            // customSofaPath is preserved in settings
-          }
-        }
-      }));
-    }
-  };
-
-  return (
-    <div className="w-full">
-      <div className="flex flex-col gap-4 mb-4">
-        <div className="w-full">
-          <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">HRTF Profile</label>
-          <div className="relative">
-            <select
-              value={profile}
-              onChange={(e) => handleProfileChange(e.target.value as HrtfProfile)}
-              className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-white appearance-none text-white"
-            >
-              <option value={HrtfProfile.Neumann}>{HrtfProfile.Neumann}</option>
-              <option value={HrtfProfile.Kemar}>{HrtfProfile.Kemar}</option>
-              <option value={HrtfProfile.Custom}>{HrtfProfile.Custom}</option>
-            </select>
-            <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-gray-500 pointer-events-none" />
-          </div>
-          {/* Show selected file path if Custom */}
-          {profile === HrtfProfile.Custom && customSofaPath && (
-            <p className="text-[10px] text-green-400 mt-1 font-mono break-all">
-              Using: {customSofaPath.split('/').pop()}
-            </p>
-          )}
-        </div>
-
-        <button
-          onClick={() => onRun({ hrtfProfile: profile === HrtfProfile.Custom ? customSofaPath : profile })}
-          disabled={isProcessing || (profile === HrtfProfile.Custom && !customSofaPath)}
-          className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
-        >
-          {isProcessing ? 'Converting...' : 'Convert'}
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const AmbiOrderTool: React.FC<{ tool: ToolDefinition, files: File[], onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, files, onRun, isProcessing }) => {
-  const { settings, updateSettings } = useSettings();
-  const [targetOrder, setTargetOrder] = useState<string>(() => {
-    return settings.toolSettings?.[tool.id]?.targetOrder || AmbisonicOrder.Second;
-  });
-  const [detectedOrder, setDetectedOrder] = useState<string>('Unknown');
-
-  const handleOrderChange = (val: string) => {
-    setTargetOrder(val);
-    updateSettings({
-      toolSettings: {
-        ...settings.toolSettings,
-        [tool.id]: { ...settings.toolSettings?.[tool.id], targetOrder: val }
-      }
-    });
-  };
-
-  React.useEffect(() => {
-    if (files.length > 0) {
-      const path = (files[0] as any).path;
-      // Use standard analyzeAmbiFile
-      window.electronAPI.analyzeAmbiFile(path).then((result: any) => {
-        if (result && result.audio) {
-          const ch = result.audio.channelCount;
-          if (ch === 4) setDetectedOrder(AmbisonicOrder.First);
-          else if (ch === 9) setDetectedOrder(AmbisonicOrder.Second);
-          else if (ch === 16) setDetectedOrder(AmbisonicOrder.Third);
-          else if (ch === 25) setDetectedOrder(AmbisonicOrder.Fourth);
-          else if (ch === 36) setDetectedOrder('5th');
-          else if (ch === 49) setDetectedOrder('6th');
-          else setDetectedOrder('Custom/Unknown');
-        }
-      }).catch((err: any) => {
-        console.error("Analysis failed", err);
-        setDetectedOrder('Unknown');
-      });
-    } else {
-      setDetectedOrder('None');
-    }
-  }, [files]);
-
-  // Dynamic Options
-  const options = [
-    AmbisonicOrder.Third,
-    AmbisonicOrder.Second,
-    AmbisonicOrder.First,
-    AmbisonicOrder.Zero
-  ].filter(opt => {
-    if (detectedOrder === 'Unknown' || detectedOrder === 'None') return true;
-
-    const orderMap: Record<string, number> = {
-      [AmbisonicOrder.Zero]: 0,
-      [AmbisonicOrder.First]: 1,
-      [AmbisonicOrder.Second]: 2,
-      [AmbisonicOrder.Third]: 3,
-      [AmbisonicOrder.Fourth]: 4
-    };
-
-    const current = orderMap[detectedOrder];
-    const target = orderMap[opt];
-    if (current === undefined) return true;
-    return target < current;
-  });
-
-  return (
-    <div className="w-full flex flex-col gap-4">
-      {/* Detection Info - Compact */}
-      <div className={`w-full px-4 py-2 rounded border flex flex-col justify-center h-[42px] ${detectedOrder !== 'Unknown' && detectedOrder !== 'None' ? 'bg-blue-500/10 border-blue-500/30' : 'bg-[#1E1E1E] border-studio-border'}`}>
-        <div className="flex justify-between items-center">
-          <span className="text-[10px] text-gray-500 uppercase leading-none">Detected</span>
-          <span className="text-sm font-bold text-white leading-none">{detectedOrder}</span>
-        </div>
-      </div>
-
-      <div className="w-full">
-        <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Output Order</label>
-        <div className="relative">
-          <select
-            value={targetOrder}
-            onChange={(e) => handleOrderChange(e.target.value)}
-            className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-blue-500 appearance-none text-white"
-          >
-            {options.length > 0 ? options.map(opt => (
-              <option key={opt} value={opt}>{opt}</option>
-            )) : <option disabled>No lower orders available</option>}
-          </select>
-          <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-gray-500 pointer-events-none" />
-        </div>
-      </div>
-
-      <button
-        onClick={() => onRun({ targetOrder })}
-        disabled={isProcessing || options.length === 0}
-        className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
-      >
-        {isProcessing ? 'Reducing...' : 'Reduce'}
-      </button>
-    </div>
-  );
-};
-
-const AmbiSwapTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
-  const { settings, updateSettings } = useSettings();
-  const [inputFormat, setInputFormat] = useState<AmbiFormat>(() => {
-    return settings.toolSettings?.[tool.id]?.inputFormat || AmbiFormat.AmbiX;
-  });
-
-  const handleFormatChange = (val: AmbiFormat) => {
-    setInputFormat(val);
-    updateSettings({
-      toolSettings: {
-        ...settings.toolSettings,
-        [tool.id]: { ...settings.toolSettings?.[tool.id], inputFormat: val }
-      }
-    });
-  };
-
-  const isAmbixInput = inputFormat === AmbiFormat.AmbiX;
-
-  return (
-
-    <div className="w-full flex flex-col gap-4">
-      {/* Format Toggle */}
-      <div className="flex bg-[#1E1E1E] rounded-md border border-studio-border p-1 w-full justify-center">
-        <button
-          onClick={() => handleFormatChange(AmbiFormat.AmbiX)}
-          className={`flex-1 px-3 py-1.5 rounded text-xs font-bold transition-all ${isAmbixInput ? 'bg-orange-500 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'}`}
-        >
-          AmbiX
-        </button>
-        <button
-          onClick={() => handleFormatChange(AmbiFormat.FuMa)}
-          className={`flex-1 px-3 py-1.5 rounded text-xs font-bold transition-all ${!isAmbixInput ? 'bg-orange-500 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'}`}
-        >
-          FuMa
-        </button>
-      </div>
-
-      <div className="flex items-center justify-center gap-2 text-gray-500 text-xs">
-        <span>{isAmbixInput ? 'AmbiX' : 'FuMa'}</span>
-        <ArrowRight size={14} />
-        <span>{isAmbixInput ? 'FuMa' : 'AmbiX'}</span>
-      </div>
-
-      <button
-        onClick={() => onRun({ direction: isAmbixInput ? 'AmbixToFuMa' : 'FuMaToAmbix' })}
-        disabled={isProcessing}
-        className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
-      >
-        {isProcessing ? 'Swapping...' : 'Swap Format'}
-      </button>
-    </div>
-  );
-};
-
-
-
-const Ambix2CafTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
-  const { settings, updateSettings } = useSettings();
-  const [layout, setLayout] = useState(() => {
-    return settings.toolSettings?.[tool.id]?.layout || 'discrete';
-  });
-  const [bitDepth, setBitDepth] = useState(() => {
-    return settings.toolSettings?.[tool.id]?.bitDepth || '24';
-  });
-
-  const handleLayoutChange = (val: string) => {
-    setLayout(val);
-    updateSettings({
-      toolSettings: {
-        ...settings.toolSettings,
-        [tool.id]: { ...settings.toolSettings?.[tool.id], layout: val }
-      }
-    });
-  };
-
-  const handleBitDepthChange = (val: string) => {
-    setBitDepth(val);
-    updateSettings({
-      toolSettings: {
-        ...settings.toolSettings,
-        [tool.id]: { ...settings.toolSettings?.[tool.id], bitDepth: val }
-      }
-    });
-  };
-
-
-  return (
-    <div className="w-full flex flex-col gap-4">
-      <div className="w-full">
-        <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Layout Tag</label>
-        <div className="relative">
-          <select
-            value={layout}
-            onChange={(e) => handleLayoutChange(e.target.value)}
-            className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-gray-500 appearance-none text-white"
-          >
-            <option value="discrete">Discrete (Default)</option>
-            <option value="hoa">HOA ACN SN3D</option>
-          </select>
-          <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-gray-500 pointer-events-none" />
-        </div>
-      </div>
-
-      <div className="w-full">
-        <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Bit Depth</label>
-        <div className="relative">
-          <select
-            value={bitDepth}
-            onChange={(e) => handleBitDepthChange(e.target.value)}
-            className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-gray-500 appearance-none text-white"
-          >
-            <option value="24">24-bit</option>
-            <option value="32">32-bit</option>
-            <option value="16">16-bit</option>
-          </select>
-          <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-gray-500 pointer-events-none" />
-        </div>
-      </div>
-
-      <button
-        onClick={() => onRun({ layout, bitDepth })}
-        disabled={isProcessing}
-        className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
-      >
-        {isProcessing ? 'Converting...' : 'Convert'}
-      </button>
-    </div>
-  );
-};
-
-const Ambix2OggTool: React.FC<{ tool: ToolDefinition, files: File[], onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, files, onRun, isProcessing }) => {
-  const { settings, updateSettings } = useSettings();
-  const [bitrate, setBitrate] = useState<BitrateOption>(() => {
-    return settings.toolSettings?.[tool.id]?.bitrate || BitrateOption.High;
-  });
-
-  const handleBitrateChange = (val: BitrateOption) => {
-    setBitrate(val);
-    updateSettings({
-      toolSettings: {
-        ...settings.toolSettings,
-        [tool.id]: { ...settings.toolSettings?.[tool.id], bitrate: val }
-      }
-    });
-  };
-
-  // Logic: Check if any file is .opus/.ogg
-  // If so, we force "Passthrough" mode and disable bitrate.
-  const [isPassthrough, setIsPassthrough] = useState(false);
-
-  useEffect(() => {
-    if (files.length > 0) {
-      const hasOpus = files.some(f => f.name.toLowerCase().endsWith('.opus') || f.name.toLowerCase().endsWith('.ogg'));
-      setIsPassthrough(hasOpus);
-    } else {
-      setIsPassthrough(false);
-    }
-  }, [files]);
-
-  return (
-    <div className="w-full">
-      <div className="flex flex-col gap-4 mb-4">
-        <div className="w-full">
-          <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">
-            {isPassthrough ? 'Target Bitrate (Passthrough Active)' : 'Target Bitrate (per channel)'}
-          </label>
-          <div className="relative">
-            <select
-              value={bitrate}
-              onChange={(e) => handleBitrateChange(e.target.value as BitrateOption)}
-              disabled={isPassthrough}
-              className={`w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-teal-500 appearance-none text-white transition-opacity ${isPassthrough ? 'opacity-50 cursor-not-allowed text-gray-500' : ''}`}
-            >
-              {BITRATE_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>{opt}</option>
-              ))}
-            </select>
-            {!isPassthrough && <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-gray-500 pointer-events-none" />}
-          </div>
-          {isPassthrough && (
-            <p className="text-[10px] text-teal-400 mt-1 font-mono">
-              * Source is already Opus/Ogg. Stream copy enabled (Lossless).
-            </p>
-          )}
-        </div>
-
-        <button
-          onClick={() => onRun({ bitrate: isPassthrough ? null : bitrate })} // Pass null bitrate if passthrough
-          disabled={isProcessing}
-          className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
-        >
-          {isProcessing ? 'Processing...' : (isPassthrough ? 'Wrap to Ogg' : 'Convert to Ogg')}
-        </button>
-      </div>
-    </div>
-  );
-};
-
-
-
-// ----------------------------------------------------------------------
-// MAIN SWITCHER
-// ----------------------------------------------------------------------
-
-// ----------------------------------------------------------------------
-// MAIN SWITCHER
-// ----------------------------------------------------------------------
-
-const Stereo2AmbixTool: React.FC<{ tool: ToolDefinition, files?: File[], onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
-  const { settings, updateSettings } = useSettings();
-  const [targetOrder, setTargetOrder] = useState<string>(() => {
-    return settings.toolSettings?.[tool.id]?.targetOrder || AmbisonicOrder.Third;
-  });
-  const [stageWidth, setStageWidth] = useState<number>(() => {
-    return settings.toolSettings?.[tool.id]?.stageWidth ?? 90;
-  });
-  const [envelopment, setEnvelopment] = useState<number>(() => {
-    return settings.toolSettings?.[tool.id]?.envelopment ?? 50;
-  });
-
-  const handleOrderChange = (val: string) => {
-    setTargetOrder(val);
-    updateSettings({
-      toolSettings: {
-        ...settings.toolSettings,
-        [tool.id]: { ...settings.toolSettings?.[tool.id], targetOrder: val }
-      }
-    });
-  };
-
-  const handleWidthChange = (val: number) => {
-    setStageWidth(val);
-    updateSettings({
-      toolSettings: {
-        ...settings.toolSettings,
-        [tool.id]: { ...settings.toolSettings?.[tool.id], stageWidth: val }
-      }
-    });
-  };
-
-  const handleEnvelopmentChange = (val: number) => {
-    setEnvelopment(val);
-    updateSettings({
-      toolSettings: {
-        ...settings.toolSettings,
-        [tool.id]: { ...settings.toolSettings?.[tool.id], envelopment: val }
-      }
-    });
-  };
-
-  const options = [
-    AmbisonicOrder.First,
-    AmbisonicOrder.Second,
-    AmbisonicOrder.Third,
-    AmbisonicOrder.Fourth,
-    AmbisonicOrder.Fifth,
-    AmbisonicOrder.Sixth,
-    AmbisonicOrder.Seventh,
-  ];
-
-  return (
-    <div className="w-full flex flex-col gap-4">
-      <div className="w-full">
-        <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Target HOA Order</label>
-        <div className="relative">
-          <select
-            value={targetOrder}
-            onChange={(e) => handleOrderChange(e.target.value)}
-            className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-emerald-500 appearance-none text-white"
-          >
-            {options.map(opt => (
-              <option key={opt} value={opt}>{opt}</option>
-            ))}
-          </select>
-          <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-gray-500 pointer-events-none" />
-        </div>
-      </div>
-
-      <div className="w-full">
-        <div className="flex justify-between items-center mb-1">
-          <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Stage Width</label>
-          <span className="text-xs font-mono text-gray-300">{stageWidth}%</span>
-        </div>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={stageWidth}
-          onChange={(e) => handleWidthChange(parseInt(e.target.value, 10))}
-          className="w-full accent-emerald-500 hover:accent-emerald-400 transition-all cursor-pointer"
-        />
-        <div className="flex justify-between text-[10px] text-gray-500 uppercase mt-1">
-          <span>Mono</span>
-          <span>Wide</span>
-        </div>
-      </div>
-
-      <div className="w-full">
-        <div className="flex justify-between items-center mb-1">
-          <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">3D Envelopment (FDN)</label>
-          <span className="text-xs font-mono text-gray-300">{envelopment}%</span>
-        </div>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={envelopment}
-          onChange={(e) => handleEnvelopmentChange(parseInt(e.target.value, 10))}
-          className="w-full accent-emerald-500 hover:accent-emerald-400 transition-all cursor-pointer"
-        />
-        <div className="flex justify-between text-[10px] text-gray-500 uppercase mt-1">
-          <span>Dry</span>
-          <span>Immersive</span>
-        </div>
-      </div>
-
-      <button
-        onClick={() => onRun({ targetOrder, stageWidth, envelopment })}
-        disabled={isProcessing}
-        className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
-      >
-        {isProcessing ? 'Upmixing...' : 'Upmix to AmbiX'}
-      </button>
-    </div>
-  );
-};
-
 export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
-  const { globalFiles, setGlobalFiles, selectedFileId, setSelectedFileId } = useToolState();
+  const { settings } = useSettings();
   const {
     state: playerState,
     togglePlayPause,
@@ -696,7 +52,15 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     setCurrentFile
   } = usePlayback();
 
-  // Navigation Logic (moved from Context to break circularity)
+  const {
+    queue: globalFiles,
+    addFiles,
+    clearQueue,
+    setActiveFile,
+    selectedFileId
+  } = useFileQueue();
+
+  // Navigation Logic
   const currentIndex = globalFiles.findIndex(f => f.id === selectedFileId);
   const canNext = currentIndex >= 0 && currentIndex < globalFiles.length - 1;
   const canPrev = currentIndex > 0;
@@ -704,7 +68,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
   const handleNext = () => {
     if (canNext) {
       const nextId = globalFiles[currentIndex + 1].id;
-      setSelectedFileId(nextId);
+      setActiveFile(nextId);
       setCurrentFile(nextId, true);
     }
   };
@@ -712,17 +76,15 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
   const handlePrev = () => {
     if (canPrev) {
       const prevId = globalFiles[currentIndex - 1].id;
-      setSelectedFileId(prevId);
+      setActiveFile(prevId);
       setCurrentFile(prevId, true);
     }
   };
+
   // Map global MediaFile[] back to File[] for compatibility with existing components
-  // We create synthetic File objects that have the properties we need
   const files = React.useMemo(() => globalFiles.map(mf => {
-    // Create a dummy File object with the right path/name properties
-    // The actual File object data isn't persisted, but path/name are what matters for backend
     const f = new File([], mf.name + mf.extension);
-    Object.defineProperty(f, 'path', { value: mf.id }); // ID is the full path
+    Object.defineProperty(f, 'path', { value: mf.id });
     return f;
   }), [globalFiles]);
 
@@ -736,8 +98,6 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // RESIZABLE PARTITION STATE
-  // Standard tools usually have a large top / small bottom.
-  // AmbiRotate prefers a more balanced split.
   const [topHeightPercent, setTopHeightPercent] = useState(tool.id === ToolId.AmbiRotate ? 45 : 70);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -752,7 +112,6 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     const containerRect = containerRef.current.getBoundingClientRect();
     const relativeY = e.clientY - containerRect.top;
     const newPercent = (relativeY / containerRect.height) * 100;
-    // Clamp between 10% and 90%
     const clamped = Math.max(10, Math.min(newPercent, 90));
     setTopHeightPercent(clamped);
   }, [isDragging]);
@@ -761,7 +120,6 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     setIsDragging(false);
   }, []);
 
-  // Global event listeners for drag
   useEffect(() => {
     if (isDragging) {
       window.addEventListener('mousemove', handleMouseMove);
@@ -782,14 +140,12 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
 
   useEffect(() => {
     if (files.length > 0 && queueRef.current) {
-      // Short delay to ensure rendering
       setTimeout(() => {
         queueRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 100);
     }
   }, [files.length]);
 
-  // Auto-scroll to Progress when processing starts
   useEffect(() => {
     if ((isProcessing || statusMsg) && progressRef.current) {
       setTimeout(() => {
@@ -802,33 +158,19 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     if (!window.electronAPI) return;
 
     const unsubProgress = window.electronAPI.onProgress((data: any) => {
-      // PRO: Scope progress to tool
-      // If scalar (legacy/AmbiRotate?), assume global or ignore? 
-      // All our updated handlers send object { progress, toolId }
-      // If we receive a number, it might be from a legacy path or AmbiRotate if it used this.
-      // But AmbiRotate uses separate IPC.
-
       let p = 0;
       if (typeof data === 'number') {
-        // Fallback for any missed handler or legacy behavior:
-        // If we mistakenly get a number, we can't filter it. 
-        // But we updated all. 
         p = data;
       } else if (data && typeof data === 'object') {
-        if (data.toolId && data.toolId !== tool.id) return; // Ignore other tools
+        if (data.toolId && data.toolId !== tool.id) return;
         p = data.progress;
       }
-
-      console.log(`[ToolView:${tool.id}] Received Progress:`, p);
       setProgress(p);
     });
 
-    // Listen for status updates from backend (e.g. "Processing 1/5: file.wav")
     const unsubStatus = window.electronAPI.on('task-status', (data: any) => {
-      // Scope status msg
       let msg = '';
       if (typeof data === 'string') {
-        // Fallback
         msg = data;
       } else if (data && typeof data === 'object') {
         if (data.toolId && data.toolId !== tool.id) return;
@@ -836,7 +178,6 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
       }
       if (msg) {
         setStatusMsg(msg);
-        // Also ensure processing state is true if we get a status
         setIsProcessing(true);
       }
     });
@@ -846,91 +187,6 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
       unsubStatus();
     };
   }, [tool.id]);
-
-  // active file selection (linked to global context)
-  const activeFileIndex = React.useMemo(() => {
-    const idx = globalFiles.findIndex(f => f.id === selectedFileId);
-    return idx === -1 ? 0 : idx;
-  }, [globalFiles, selectedFileId]);
-
-  const setActiveFileIndex = (index: number) => {
-    if (globalFiles[index]) {
-      setSelectedFileId(globalFiles[index].id);
-    }
-  };
-
-  // Sync Current File to Playback Context 
-  // REMOVED (PRP #125): Syncing selected file to active player automatically kills streams when browsing metadata.
-
-  // Auto-selection logic: select first file if none selected
-  useEffect(() => {
-    if (!selectedFileId && globalFiles.length > 0) {
-      setSelectedFileId(globalFiles[0].id);
-    }
-  }, [globalFiles.length, selectedFileId, setSelectedFileId]);
-
-
-  // Ref for Rotator (to trigger render from footer)
-  const rotatorRef = useRef<AmbiRotateHandle>(null);
-
-  // Handlers
-  const handleFilesDropped = (newDropFiles: File[]) => {
-    const newMediaFiles: MediaFile[] = newDropFiles.map((f: any) => {
-      const path = f.path;
-      const name = f.name;
-      const extension = name.includes('.') ? '.' + name.split('.').pop() : '';
-
-      // Determine file type from extension
-      const videoExtensions = ['.mp4', '.mov', '.webm', '.mkv', '.avi', '.m4v', '.aivu'];
-      const type = videoExtensions.includes(extension.toLowerCase()) ? FileType.Video : FileType.Audio;
-
-      return {
-        id: path,
-        name: name.replace(extension, ''),
-        extension,
-        path,
-        type,
-        size: 'Pending...',
-        containerFormat: 'Unknown',
-        duration: '--:--',
-        bitRate: '--',
-        audio: { codec: 'Unknown', sampleRate: 0, bitDepth: 0, channelCount: 0, ambisonicOrder: 0 },
-        loudness: { integrated: 0, range: 0, truePeak: 0 },
-        health: { clippingCount: 0, dcOffsetWarning: false, emptyStreamWarning: false },
-        spatial: {
-          formatPrediction: 'Unknown',
-          normalizationPrediction: 'Unknown',
-          hasAmbisonicGUID: false,
-          hasSA3DAtom: false
-        },
-        isAnalyzing: false,
-        loadedPhases: []
-      };
-    });
-
-    setGlobalFiles(prev => {
-      const existingIds = new Set(prev.map(f => f.id));
-      const uniqueNewFiles = newMediaFiles.filter(f => !existingIds.has(f.id));
-      return [...prev, ...uniqueNewFiles];
-    });
-  };
-
-  const handleClearFiles = () => {
-    setGlobalFiles([]);
-    setSelectedFileId('');
-    setStatusMsg(null);
-    setActiveFileIndex(0);
-  };
-
-  // Helper to sync AmbiRotate selection
-  const handleSelectFile = (index: number) => {
-    setActiveFileIndex(index);
-    // Explicit click handler collapse logic is redundant with the effect below, 
-    // but we can keep or remove. The effect is safer.
-  };
-
-
-  const { settings } = useSettings();
 
   const handleRunTask = async (options: any) => {
     if (files.length === 0) return;
@@ -943,7 +199,6 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
         return p;
       });
 
-      // Prepare Settings Object for Backend
       const backendSettings = {
         outputDir: settings.outputMode === 'custom' ? settings.customOutputDir : undefined,
         autoCreateFolder: settings.autoCreateFolder
@@ -952,7 +207,6 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
       let result;
       switch (tool.id) {
         case ToolId.Ambix2Ogg:
-          // Just like Opus/IAMF but maps to our new handler
           result = await window.electronAPI.convertAmbix2Ogg(filePaths, options.bitrate, backendSettings);
           break;
         case ToolId.Ambix2Opus:
@@ -985,7 +239,6 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
           break;
       }
 
-
       if (result && !result.success) {
         throw new Error(result.error || "Unknown backend error");
       }
@@ -999,143 +252,143 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     }
   };
 
-  // Safe file paths mapping for Queue
   const processedFiles = files.map((f, i) => ({
     name: f.name,
     path: (f as any).path || 'Memory File',
     index: i
   }));
 
-  // PERSISTENCE LOGIC FOR AMBIROTATE - REMOVED (Redundant with global state)
-  // The infinite loop was caused here by syncing 'files' (a new array ref every render) to 'ambiFiles'.
-  // We now pass 'files' directly to AmbiRotateTool.
+  // Refs for Tool Integration
+  const rotatorRef = useRef<AmbiRotateHandle>(null);
 
-  // SPECIAL CASE: AmbiTrim handles its own full-screen layout (PRP #54/55)
+  // SPECIAL CASE: AmbiTrim handles its own full-screen layout
   if (tool.id === ToolId.AmbiTrim) {
     return <AmbiTrim tool={tool} />;
   }
 
-  // SPECIAL CASE: AmbiData has its own layout (PRP #76)
+  // SPECIAL CASE: AmbiData has its own layout
   if (tool.id === ToolId.AmbiData) {
     return <AmbiDataTool tool={tool} files={files as any[]} isProcessing={isProcessing} />;
   }
 
-  return (
-    <div className="h-screen flex flex-col overflow-hidden">
+  const renderToolSpecificControls = () => {
+    switch (tool.id) {
+      case ToolId.Ambix2Ogg:
+        return <Ambix2OggView tool={tool} files={files} onRun={handleRunTask} isProcessing={isProcessing} />;
+      case ToolId.Ambix2Opus:
+      case ToolId.Ambix2IAMF:
+        return <BitrateConverterView tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />;
+      case ToolId.Ambix2APAC:
+        return <Ambix2ApacView tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />;
+      case ToolId.Ambix2Bin:
+        return <Ambix2BinView tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />;
+      case ToolId.AmbiOrder:
+        return <AmbiOrderView tool={tool} files={files} onRun={handleRunTask} isProcessing={isProcessing} />;
+      case ToolId.AmbiSwap:
+        return <AmbiSwapView tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />;
+      case ToolId.Ambix2CAF:
+        return <Ambix2CafView tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />;
+      case ToolId.Stereo2Ambix:
+        return <Stereo2AmbixView tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />;
+      case ToolId.AmbiLevel:
+        return <AmbiLevelTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />;
+      case ToolId.Ambix2BW64:
+        return <Ambix2BW64Tool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />;
+      case ToolId.AmbiRotate:
+        return (
+          <AmbiRotateTool
+            ref={rotatorRef}
+            tool={tool}
+            files={files}
+            activeIndex={currentIndex === -1 ? 0 : currentIndex}
+            onIndexChange={(idx) => {
+              if (globalFiles[idx]) setActiveFile(globalFiles[idx].id);
+            }}
+            onRun={handleRunTask}
+            isProcessing={isProcessing}
+            isVisible={tool.id === ToolId.AmbiRotate}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
+  const dropZoneAllowedExts = (() => {
+    switch (tool.id) {
+      case ToolId.Ambix2IAMF: return ['.wav'];
+      case ToolId.Ambix2APAC: return ['.wav', '.caf'];
+      case ToolId.Ambix2Bin:
+      case ToolId.AmbiRotate: return ['.wav', '.flac', '.ogg', '.caf'];
+      case ToolId.Ambix2Opus: return ['.wav', '.amb', '.caf', '.flac', '.mp3'];
+      default: return ['.wav', '.amb', '.caf', '.opus', '.mp3', '.aac', '.flac', '.ogg'];
+    }
+  })();
+
+  const dropZoneLabel = (() => {
+    switch (tool.id) {
+      case ToolId.Ambix2IAMF: return ".wav accepted";
+      case ToolId.Ambix2APAC: return ".wav, .caf accepted";
+      case ToolId.Ambix2Bin:
+      case ToolId.AmbiRotate: return ".wav, .flac, .ogg, .caf accepted";
+      case ToolId.Ambix2Opus: return ".wav, .amb, .caf, .flac, .mp3 accepted";
+      case ToolId.Ambix2Ogg: return ".wav, .amb, .caf, .flac, .mp3, .opus, .ogg accepted";
+      default: return ".wav, .amb, .caf, .opus, .mp3, .aac, .flac, .ogg accepted";
+    }
+  })();
+
+  return (
+    <div className="h-screen flex flex-col overflow-hidden text-white">
       <div ref={containerRef} className="flex-1 flex flex-col relative overflow-hidden">
-        {/* TOP PARTITION (Input / Queue / Messages) */}
-        <div
-          style={{ height: `${topHeightPercent}%` }}
-          className="w-full flex flex-col overflow-hidden relative bg-[#18181b]"
-        >
+        {/* TOP PARTITION */}
+        <div style={{ height: `${topHeightPercent}%` }} className="w-full flex flex-col overflow-hidden relative bg-[#18181b]">
           <div className="flex-1 overflow-y-auto pt-8 pb-4 flex flex-col relative">
-            {/* TOOL HEADER */}
             <div className="px-8 mb-6 flex-none">
               <header>
-                <h2 className={`text-3xl font-bold mb-2 ${tool.colorClass}`}>
-                  {tool.label}
-                </h2>
-                <p className="text-gray-400 text-lg font-light">
-                  {tool.description}
-                </p>
+                <h2 className={`text-3xl font-bold mb-2 ${tool.colorClass}`}>{tool.label}</h2>
+                <p className="text-gray-400 text-lg font-light">{tool.description}</p>
               </header>
             </div>
 
-            {/* INPUT SECTION (Collapsible for AmbiRotate) */}
             <div className="px-8 flex-none flex flex-col gap-4 relative z-10">
-              {/* The Actual Input Body */}
               <div className="flex flex-col gap-4">
-                {/* Drop Zone */}
                 <div className={`${files.length > 0 ? 'h-20' : (tool.id === ToolId.AmbiRotate ? 'h-32' : 'h-48')} transition-all duration-300`}>
-                  {(() => {
-                    // DEFINE TOOL-SPECIFIC CONFIGURATION
-                    let allowedExts = ['.wav', '.amb', '.caf', '.opus', '.mp3', '.aac', '.flac', '.ogg'];
-                    let labelText: string | undefined = undefined;
-
-                    if (tool.id === ToolId.Ambix2IAMF) {
-                      allowedExts = ['.wav'];
-                      labelText = ".wav accepted";
-                    } else if (tool.id === ToolId.Ambix2APAC) {
-                      allowedExts = ['.wav', '.caf'];
-                      labelText = ".wav, .caf accepted";
-                    } else if (tool.id === ToolId.Ambix2Bin || tool.id === ToolId.AmbiRotate) {
-                      allowedExts = ['.wav', '.flac', '.ogg', '.caf'];
-                      labelText = ".wav, .flac, .ogg, .caf accepted";
-                    } else if (tool.id === ToolId.Ambix2Opus) {
-                      allowedExts = ['.wav', '.amb', '.caf', '.flac', '.mp3'];
-                      labelText = ".wav, .amb, .caf, .flac, .mp3 accepted";
-                    } else if (tool.id === ToolId.Ambix2Ogg) {
-                      labelText = ".wav, .amb, .caf, .flac, .mp3, .opus, .ogg accepted";
-                    } else if (tool.id === ToolId.Ambix2CAF || tool.id === ToolId.AmbiOrder || tool.id === ToolId.AmbiSwap || tool.id === ToolId.Stereo2Ambix || tool.id === ToolId.Ambix2BW64) {
-                      // FFmpeg-based tools (highly flexible)
-                      allowedExts = ['.wav', '.amb', '.caf', '.opus', '.mp3', '.aac', '.flac', '.ogg'];
-                      labelText = ".wav, .amb, .caf, .opus, .mp3, .aac, .flac, .ogg accepted";
-                    }
-
-
-                    return (
-                      <SmartDropZone
-                        className="h-full w-full"
-                        allowedExtensions={allowedExts}
-                        label={labelText}
-                        compact={files.length > 0}
-                        onFilesLoaded={(loadedFiles) => {
-                          const processed = loadedFiles.map(f => {
-                            if (typeof f === 'string') {
-                              const name = f.split('/').pop() || f;
-                              return { name, path: f } as File;
-                            }
-                            return f;
-                          });
-                          handleFilesDropped(processed as File[]);
-                        }}
-                        onDrop={(e) => {
-                          if (e.dataTransfer.files) {
-                            handleFilesDropped(Array.from(e.dataTransfer.files));
-                          }
-                        }}
-                      />
-                    );
-                  })()}
+                  <SmartDropZone
+                    className="h-full w-full"
+                    allowedExtensions={dropZoneAllowedExts}
+                    label={dropZoneLabel}
+                    compact={files.length > 0}
+                    onFilesLoaded={(loadedFiles) => {
+                      const processed = loadedFiles.map(f => typeof f === 'string' ? { name: f.split('/').pop() || f, path: f } : f);
+                      addFiles(processed as File[]);
+                    }}
+                    onDrop={(e) => {
+                      if (e.dataTransfer.files) addFiles(Array.from(e.dataTransfer.files));
+                    }}
+                  />
                 </div>
 
-                {/* Queue */}
                 {files.length > 0 && (
                   <div ref={queueRef} className="mt-4">
                     <FileQueue
                       files={processedFiles}
                       selectedId={selectedFileId}
-                      onSelect={(id) => {
-                        // Handle selection mapping
-                        const idx = processedFiles.findIndex(f => f.path === id);
-                        if (idx >= 0) handleSelectFile(idx);
-                      }}
+                      onSelect={setActiveFile}
                       onPlay={(id, shouldPlay) => {
-                        const idx = processedFiles.findIndex(f => f.path === id);
-                        if (idx >= 0) {
-                          handleSelectFile(idx);
-                          setCurrentFile(id, shouldPlay ?? true);
-                        }
+                        setActiveFile(id);
+                        setCurrentFile(id, shouldPlay ?? true);
                       }}
-                      onClear={handleClearFiles}
+                      onClear={clearQueue}
                       playingFileId={playerState.currentFile}
                       isPlaying={playerState.isPlaying}
                     />
                   </div>
                 )}
 
-                {/* Transport Section */}
                 {files.length > 0 && (
                   <Transport
                     state={playerState}
-                    onPlayPause={() => {
-                      if (!playerState.currentFile && selectedFileId) {
-                        setCurrentFile(selectedFileId, true);
-                      } else {
-                        togglePlayPause();
-                      }
-                    }}
+                    onPlayPause={() => !playerState.currentFile && selectedFileId ? setCurrentFile(selectedFileId, true) : togglePlayPause()}
                     onStop={stop}
                     onNext={handleNext}
                     onPrev={handlePrev}
@@ -1154,7 +407,6 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
               </div>
             </div>
 
-            {/* MESSAGES & PROGRESS */}
             {(statusMsg || isProcessing) && (
               <div ref={progressRef} className="px-8 mt-4 flex flex-col gap-2 flex-none">
                 {statusMsg && (
@@ -1162,111 +414,42 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
                     {statusMsg}
                   </div>
                 )}
-
-                {/* PROGRESS BAR */}
                 {isProcessing && (
                   <div className="w-full bg-gray-800 rounded-full h-2.5 overflow-hidden border border-gray-700">
-                    <div
-                      className="bg-blue-500 h-2.5 rounded-full transition-all duration-300 ease-out"
-                      style={{ width: `${Math.round(progress * 100)}%` }}
-                    />
+                    <div className="bg-blue-500 h-2.5 rounded-full transition-all duration-300 ease-out" style={{ width: `${Math.round(progress * 100)}%` }} />
                   </div>
                 )}
-                {isProcessing && (
-                  <div className="text-right text-[10px] text-gray-500 font-mono">
-                    {Math.round(progress * 100)}%
-                  </div>
-                )}
+                {isProcessing && <div className="text-right text-[10px] text-gray-500 font-mono">{Math.round(progress * 100)}%</div>}
               </div>
             )}
-
-            {/* Spacer for bottom scrolling */}
             <div className="h-8 flex-none"></div>
           </div>
         </div>
 
         {/* DRAGGABLE DIVIDER */}
-
-        <div
-          onMouseDown={handleMouseDown}
-          className="h-0 w-full border-t border-studio-border relative group hover:border-indigo-500/50 transition-colors cursor-row-resize shrink-0"
-        >
-          {/* Invisible Hit Area */}
+        <div onMouseDown={handleMouseDown} className="h-0 w-full border-t border-studio-border relative group hover:border-indigo-500/50 transition-colors cursor-row-resize shrink-0">
           <div className="absolute top-[-6px] bottom-[-6px] left-0 right-0 z-10 cursor-row-resize"></div>
         </div>
 
-        {/* BOTTOM PARTITION (Controls / AmbiRotate Visuals) */}
-        <div
-          style={{ height: `${100 - topHeightPercent}%` }}
-          className="w-full bg-[#18181b] flex flex-col min-h-0 relative"
-        >
+        {/* BOTTOM PARTITION */}
+        <div style={{ height: `${100 - topHeightPercent}%` }} className="w-full bg-[#18181b] flex flex-col min-h-0 relative">
           <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
             <div className="max-w-4xl mx-auto flex flex-col gap-6">
+              {renderToolSpecificControls()}
 
-              {/* AMBIROTATE CONTROLS (Moved Here) */}
-              {/* Persist AmbiRotateTool to keep state, just hide it */}
-              <div className={`w-full ${tool.id === ToolId.AmbiRotate ? '' : 'hidden'}`}>
-                <AmbiRotateTool
-                  ref={rotatorRef}
-                  tool={tool}
-                  files={files}
-                  activeIndex={activeFileIndex}
-                  onIndexChange={(idx) => {
-                    setActiveFileIndex(idx);
-                  }}
-                  onRun={handleRunTask}
-                  isProcessing={isProcessing}
-                  isVisible={tool.id === ToolId.AmbiRotate}
-                />
-              </div>
-
-              {tool.id === ToolId.Ambix2Ogg && <Ambix2OggTool tool={tool} files={files} onRun={handleRunTask} isProcessing={isProcessing} />}
-              {tool.id === ToolId.Ambix2Opus && <BitrateConverter tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
-              {tool.id === ToolId.Ambix2IAMF && <BitrateConverter tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
-              {tool.id === ToolId.Ambix2APAC && <Ambix2ApacTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
-              {tool.id === ToolId.Ambix2Bin && <Ambix2BinTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
-              {tool.id === ToolId.AmbiOrder && <AmbiOrderTool tool={tool} files={files} onRun={handleRunTask} isProcessing={isProcessing} />}
-              {tool.id === ToolId.AmbiSwap && <AmbiSwapTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
-              {tool.id === ToolId.Ambix2CAF && <Ambix2CafTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
-              {tool.id === ToolId.Stereo2Ambix && <Stereo2AmbixTool tool={tool} files={files} onRun={handleRunTask} isProcessing={isProcessing} />}
-              {tool.id === ToolId.AmbiLevel && <AmbiLevelTool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
-              {tool.id === ToolId.Ambix2BW64 && <Ambix2BW64Tool tool={tool} onRun={handleRunTask} isProcessing={isProcessing} />}
-
-
-              {/* AMBIROTATE ACTION BUTTON */}
               {tool.id === ToolId.AmbiRotate && (
                 <button
                   onClick={async () => {
                     if (!rotatorRef.current) return;
                     setIsProcessing(true);
-                    try {
-                      setStatusMsg("Processing Rotation...");
-                      await rotatorRef.current.handleRender();
-                      setStatusMsg("Success!");
-                    } catch (err: any) {
-                      console.error("Rotation UI Error:", err);
-                      setStatusMsg(`Error: ${err.message}`);
-                    } finally {
-                      setIsProcessing(false);
-                    }
+                    const outPath = await rotatorRef.current.runRotation();
+                    setIsProcessing(false);
+                    if (outPath) setStatusMsg(`Success: ${outPath}`);
                   }}
                   disabled={isProcessing || files.length === 0}
-                  className={`
-                            w-full px-8 py-3 rounded-lg font-bold shadow-lg flex items-center justify-center gap-2 transition-all
-                            ${isProcessing || files.length === 0
-                      ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                      : 'bg-red-600 hover:bg-red-500 text-white hover:scale-[1.02] active:scale-95 shadow-red-900/50'
-                    }
-                        `}
+                  className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
                 >
-                  {isProcessing ? (
-                    <>Rendering...</>
-                  ) : (
-                    <>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                      Render Rotated File(s)
-                    </>
-                  )}
+                  {isProcessing ? 'Rotating...' : 'Process Rotation'}
                 </button>
               )}
             </div>

@@ -153,7 +153,7 @@ dist-electron/
 release/
 
 # Cleanup Quarrantine
-xCleanup/
+archive/legacy_scripts/
 
 # Test Files
 *.wav

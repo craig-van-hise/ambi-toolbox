@@ -13,7 +13,7 @@ import {
 import { useSettings } from '../../contexts/SettingsContext';
 
 export interface AmbiRotateHandle {
-    handleRender: () => void;
+    runRotation: () => Promise<string | null>;
 }
 
 interface ExtendedAmbiRotateToolProps extends AmbiRotateToolProps {
@@ -121,21 +121,14 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
     const pauseTimeRef = useRef(0); // Holds the offset when paused/stopped
 
     // RENDER LOGIC (Backend Wiring)
-    const handleRender = async () => {
-        if (files.length === 0) return;
-        // setIsProcessing(true); // Managed by parent via isProcessing prop? No, this component manages its own render logic but `isProcessing` prop is passed down. 
-        // Wait, the AmbiRotateTool receives `isProcessing` as prop. It shouldn't have its own local state for it if it's controlled.
-        // But `handleRender` is imperative.
-        // Let's just comment it out as requested by linter.
+    const handleRender = async (): Promise<string | null> => {
+        if (files.length === 0) return null;
         try {
-            // Prepare Settings Object for Backend
             const backendSettings = {
                 outputDir: settings.outputMode === 'custom' ? settings.customOutputDir : undefined,
                 autoCreateFolder: settings.autoCreateFolder
             };
 
-            // Call the Backend to process the file with current Yaw/Pitch/Roll
-            // We pass the rotation values to the Python backend
             const result = await window.electronAPI.convertAmbiRotate(
                 files.map((f: any) => f.path),
                 { yaw, pitch, roll },
@@ -147,18 +140,15 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
             }
 
             console.log("Render Complete:", result);
-            // Optionally could show a success notification here
-            console.log("Render Success");
+            return result.outputPaths?.[0] || "Success";
         } catch (error) {
             console.error("Render Failed:", error);
-            throw error; // RETHROW so parent can display it
-        } finally {
-            // setIsProcessing(false);
+            throw error;
         }
     };
 
     useImperativeHandle(ref, () => ({
-        handleRender
+        runRotation: handleRender
     }));
 
     // ------------------------------------------------------------------
