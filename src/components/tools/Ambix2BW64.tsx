@@ -3,7 +3,7 @@ import { ToolDefinition } from '../../types';
 import { useSettings } from '../../contexts/SettingsContext';
 import { ChevronDown } from 'lucide-react';
 
-export const Ambix2BW64Tool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
+export const Ambix2BW64Tool: React.FC<{ tool: ToolDefinition }> = ({ tool }) => {
     const { settings, updateSettings } = useSettings();
 
     const [normalization, setNormalization] = useState<'SN3D' | 'N3D'>(() => {
@@ -68,13 +68,6 @@ export const Ambix2BW64Tool: React.FC<{ tool: ToolDefinition, onRun: (opts: any)
                 </p>
             </div>
 
-            <button
-                onClick={() => onRun({ normalization, nfcDistance })}
-                disabled={isProcessing}
-                className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
-            >
-                {isProcessing ? 'Converting...' : 'Process Audio'}
-            </button>
         </div>
     );
 };

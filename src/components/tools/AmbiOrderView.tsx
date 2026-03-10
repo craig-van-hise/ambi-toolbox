@@ -6,11 +6,9 @@ import { useSettings } from '../../contexts/SettingsContext';
 interface AmbiOrderViewProps {
     tool: ToolDefinition;
     files: File[];
-    onRun: (opts: any) => void;
-    isProcessing: boolean;
 }
 
-export const AmbiOrderView: React.FC<AmbiOrderViewProps> = ({ tool, files, onRun, isProcessing }) => {
+export const AmbiOrderView: React.FC<AmbiOrderViewProps> = ({ tool, files }) => {
     const { settings, updateSettings } = useSettings();
     const [targetOrder, setTargetOrder] = useState<string>(() => {
         return settings.toolSettings?.[tool.id]?.targetOrder || AmbisonicOrder.Second;
@@ -98,14 +96,6 @@ export const AmbiOrderView: React.FC<AmbiOrderViewProps> = ({ tool, files, onRun
                     <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-gray-500 pointer-events-none" />
                 </div>
             </div>
-
-            <button
-                onClick={() => onRun({ targetOrder })}
-                disabled={isProcessing || options.length === 0}
-                className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
-            >
-                {isProcessing ? 'Reducing...' : 'Reduce'}
-            </button>
         </div>
     );
 };

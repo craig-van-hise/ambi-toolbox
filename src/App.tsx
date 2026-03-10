@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { ToolView } from './components/ToolViews';
+import { RightSidebar } from './components/RightSidebar';
 import { ToolId } from './types';
 import { TOOLS } from './constants';
 
@@ -21,7 +22,7 @@ const AppContent: React.FC = () => {
   const activeTool = TOOLS.find((t) => t.id === activeToolId) || TOOLS[0];
 
   return (
-    <div className="flex h-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased">
+    <div className="grid grid-cols-[250px_minmax(250px,1fr)_300px] h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased">
       {/* Sidebar Navigation */}
       <Sidebar
         activeTool={activeToolId}
@@ -29,7 +30,7 @@ const AppContent: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 h-screen overflow-hidden flex flex-col relative">
+      <main className="h-screen overflow-hidden flex flex-col relative border-l border-white">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#404040_1px,transparent_1px)] [background-size:16px_16px]"></div>
 
@@ -37,6 +38,9 @@ const AppContent: React.FC = () => {
           <ToolView tool={activeTool} />
         </div>
       </main>
+
+      {/* Right Sidebar */}
+      <RightSidebar tool={activeTool} />
     </div>
   );
 };

@@ -9,7 +9,7 @@ interface Stereo2AmbixViewProps {
     isProcessing: boolean;
 }
 
-export const Stereo2AmbixView: React.FC<Stereo2AmbixViewProps> = ({ tool, onRun, isProcessing }) => {
+export const Stereo2AmbixView: React.FC<Pick<Stereo2AmbixViewProps, 'tool'>> = ({ tool }) => {
     const { settings, updateSettings } = useSettings();
     const [targetOrder, setTargetOrder] = useState<string>(() => {
         return settings.toolSettings?.[tool.id]?.targetOrder || AmbisonicOrder.Third;
@@ -117,13 +117,6 @@ export const Stereo2AmbixView: React.FC<Stereo2AmbixViewProps> = ({ tool, onRun,
                 </div>
             </div>
 
-            <button
-                onClick={() => onRun({ targetOrder, stageWidth, envelopment })}
-                disabled={isProcessing}
-                className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
-            >
-                {isProcessing ? 'Upmixing...' : 'Upmix to AmbiX'}
-            </button>
         </div>
     );
 };

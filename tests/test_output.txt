@@ -1,0 +1,2481 @@
+
+> ambitoolbox@0.9.0-beta test
+> vitest tests/layout.test.tsx
+
+
+[1m[44m DEV [49m[22m [34mv4.0.18 [39m[90m/Users/vv2024/Documents/AI Projects/Spatial Audio/AmbiToolbox[39m
+
+[90mstdout[2m | tests/layout.test.tsx[2m > [22m[2mPhase 1: Global App Structure[2m > [22m[2mshould render the Right Sidebar
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"grid grid-cols-[250px_1fr_300px] h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mdata-testid[39m=[32m"sidebar"[39m
+      [36m>[39m
+        [0mSidebar[0m
+      [36m</div>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"h-screen overflow-hidden flex flex-col relative border-l border-gray-800"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#404040_1px,transparent_1px)] [background-size:16px_16px]"[39m
+        [36m/>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 z-10 h-full flex flex-col"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mdata-testid[39m=[32m"tool-view"[39m
+          [36m>[39m
+            [0mTool View[0m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+      [36m<aside[39m
+        [33mclass[39m=[32m"w-full h-full bg-[#0c0c0e] border-l border-gray-800 flex flex-col"[39m
+        [33mdata-testid[39m=[32m"right-sidebar"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 flex items-center justify-center text-gray-500 text-sm italic"[39m
+        [36m>[39m
+          [0mFile Management[0m
+        [36m</div>[39m
+      [36m</aside>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"grid grid-cols-[250px_1fr_300px] h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mdata-testid[39m=[32m"sidebar"[39m
+      [36m>[39m
+        [0mSidebar[0m
+      [36m</div>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"h-screen overflow-hidden flex flex-col relative border-l border-gray-800"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#404040_1px,transparent_1px)] [background-size:16px_16px]"[39m
+        [36m/>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 z-10 h-full flex flex-col"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mdata-testid[39m=[32m"tool-view"[39m
+          [36m>[39m
+            [0mTool View[0m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+      [36m<aside[39m
+        [33mclass[39m=[32m"w-full h-full bg-[#0c0c0e] border-l border-gray-800 flex flex-col"[39m
+        [33mdata-testid[39m=[32m"right-sidebar"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 flex items-center justify-center text-gray-500 text-sm italic"[39m
+        [36m>[39m
+          [0mFile Management[0m
+        [36m</div>[39m
+      [36m</aside>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m2 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 36[2mms[22m[39m
+     [32m✓[39m should possess the 3-column grid layout classes[32m 20[2mms[22m[39m
+[31m     [31m×[31m should render the Right Sidebar[39m[32m 15[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render the Right Sidebar
+[31m[1mTestingLibraryElementError[22m: Found multiple elements by: [data-testid="right-sidebar"]
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<aside[31m
+  [33mclass[31m=[32m"w-full h-full bg-[#0c0c0e] border-l border-gray-800 flex flex-col"[31m
+  [33mdata-testid[31m=[32m"right-sidebar"[31m
+[36m>[31m
+  [36m<div[31m
+    [33mclass[31m=[32m"flex-1 flex items-center justify-center text-gray-500 text-sm italic"[31m
+  [36m>[31m
+    [0mFile Management[0m
+  [36m</div>[31m
+[36m</aside>[31m
+
+Ignored nodes: comments, script, style
+[36m<aside[31m
+  [33mclass[31m=[32m"w-full h-full bg-[#0c0c0e] border-l border-gray-800 flex flex-col"[31m
+  [33mdata-testid[31m=[32m"right-sidebar"[31m
+[36m>[31m
+  [36m<div[31m
+    [33mclass[31m=[32m"flex-1 flex items-center justify-center text-gray-500 text-sm italic"[31m
+  [36m>[31m
+    [0mFile Management[0m
+  [36m</div>[31m
+[36m</aside>[31m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"grid grid-cols-[250px_1fr_300px] h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"sidebar"[31m
+      [36m>[31m
+        [0mSidebar[0m
+      [36m</div>[31m
+      [36m<main[31m
+        [33mclass[31m=[32m"h-screen overflow-hidden flex flex-col relative border-l border-gray-800"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#404040_1px,transparent_1px)] [background-size:16px_16px]"[31m
+        [36m/>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex-1 z-10 h-full flex flex-col"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mdata-testid[31m=[32m"tool-view"[31m
+          [36m>[31m
+            [0mTool View[0m
+          [36m</div>[31m
+        [36m</div>[31m
+      [36m</main>[31m
+      [36m<aside[31m
+        [33mclass[31m=[32m"w-full h-full bg-[#0c0c0e] border-l border-gray-800 flex flex-col"[31m
+        [33mdata-testid[31m=[32m"right-sidebar"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex-1 flex items-center justify-center text-gray-500 text-sm italic"[31m
+        [36m>[31m
+          [0mFile Management[0m
+        [36m</div>[31m
+      [36m</aside>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"grid grid-cols-[250px_1fr_300px] h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"sidebar"[31m
+      [36m>[31m
+        [0mSidebar[0m
+      [36m</div>[31m
+      [36m<main[31m
+        [33mclass[31m=[32m"h-screen overflow-hidden flex flex-col relative border-l border-gray-800"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#404040_1px,transparent_1px)] [background-size:16px_16px]"[31m
+        [36m/>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex-1 z-10 h-full flex flex-col"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mdata-testid[31m=[32m"tool-view"[31m
+          [36m>[31m
+            [0mTool View[0m
+          [36m</div>[31m
+        [36m</div>[31m
+      [36m</main>[31m
+      [36m<aside[31m
+        [33mclass[31m=[32m"w-full h-full bg-[#0c0c0e] border-l border-gray-800 flex flex-col"[31m
+        [33mdata-testid[31m=[32m"right-sidebar"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex-1 flex items-center justify-center text-gray-500 text-sm italic"[31m
+        [36m>[31m
+          [0mFile Management[0m
+        [36m</div>[31m
+      [36m</aside>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:37[22m[39m
+    [90m 31| [39m        [34mrender[39m([33m<[39m[33mApp[39m [33m/[39m[33m>[39m)[33m;[39m
+    [90m 32| [39m        screen[33m.[39m[34mdebug[39m()[33m;[39m
+    [90m 33| [39m        [35mconst[39m rightSidebar [33m=[39m screen[33m.[39m[34mgetByTestId[39m([32m'right-sidebar'[39m)[33m;[39m
+    [90m   | [39m                                    [31m^[39m
+    [90m 34| [39m        [34mexpect[39m(rightSidebar)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 35| [39m    })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m   Start at [22m 12:46:17
+[2m   Duration [22m 1.03s[2m (transform 123ms, setup 0ms, import 278ms, tests 36ms, environment 603ms)[22m
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2mtests/layout.test.tsx [22m[34mx1 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [32m✓[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 18[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 12:46:35
+[2m   Duration [22m 179ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/App.tsx [22m[34mx2 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [32m✓[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 22[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 12:47:04
+[2m   Duration [22m 188ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/RightSidebar.tsx [22m[34mx3 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [32m✓[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 30[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 12:47:18
+[2m   Duration [22m 339ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/ToolViews.tsx [22m[34mx4 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m0 test[22m[2m)[22m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m [ tests/layout.test.tsx ][22m
+[31m[1mError[22m: Transform failed with 1 error:
+/Users/vv2024/Documents/AI Projects/Spatial Audio/AmbiToolbox/src/components/ToolViews.tsx:302:17: ERROR: Unterminated regular expression[39m
+  Plugin: [35mvite:esbuild[39m
+  File: [36m/Users/vv2024/Documents/AI Projects/Spatial Audio/AmbiToolbox/src/components/ToolViews.tsx[39m:302:17
+[33m  
+  Unterminated regular expression
+  300 |    }
+  301 |    <div className="h-8 flex-none"></div>
+  302 |            </div >
+      |                   ^
+  303 |          </div >
+  304 |  
+  [39m
+[90m [2m❯[22m failureErrorWithLog node_modules/vitest/node_modules/esbuild/lib/main.js:[2m1467:15[22m[39m
+[90m [2m❯[22m node_modules/vitest/node_modules/esbuild/lib/main.js:[2m736:50[22m[39m
+[90m [2m❯[22m responseCallbacks.<computed> node_modules/vitest/node_modules/esbuild/lib/main.js:[2m603:9[22m[39m
+[90m [2m❯[22m handleIncomingPacket node_modules/vitest/node_modules/esbuild/lib/main.js:[2m658:12[22m[39m
+[90m [2m❯[22m Socket.readFromStdout node_modules/vitest/node_modules/esbuild/lib/main.js:[2m581:7[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [2mno tests[22m
+[2m   Start at [22m 12:47:30
+[2m   Duration [22m 0ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/ToolViews.tsx [22m[34mx5 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [32m✓[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 35[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 12:47:56
+[2m   Duration [22m 330ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/tools/AmbiRotate/index.tsx [22m[34mx6 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [32m✓[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 51[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 12:48:53
+[2m   Duration [22m 284ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/tools/AmbiRotate/index.tsx [22m[34mx7 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [32m✓[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 24[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 12:49:23
+[2m   Duration [22m 240ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/ToolViews.tsx [22m[34mx8 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [32m✓[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 26[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 12:49:28
+[2m   Duration [22m 267ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/ToolViews.tsx [22m[34mx9 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [32m✓[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 48[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 12:49:52
+[2m   Duration [22m 308ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/App.tsx [22m[34mx10 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 41[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 40[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[90m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:20:34
+[2m   Duration [22m 540ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/Sidebar.tsx [22m[34mx11 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 27[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 26[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:20:36
+[2m   Duration [22m 160ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/RightSidebar.tsx [22m[34mx12 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 43[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 42[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:20:38
+[2m   Duration [22m 269ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/ToolViews.tsx [22m[34mx13 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 48[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 45[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:20:40
+[2m   Duration [22m 417ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/types.ts [22m[34mx14 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 34[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 32[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:21:02
+[2m   Duration [22m 442ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/constants.ts [22m[34mx15 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 26[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 24[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:21:06
+[2m   Duration [22m 209ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/ToolViews.tsx [22m[34mx16 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 25[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 25[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:21:26
+[2m   Duration [22m 276ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/ToolViews.tsx [22m[34mx17 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 42[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 41[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[90m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:21:56
+[2m   Duration [22m 385ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/AmbiOrderView.tsx [22m[34mx18 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 24[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 23[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:21:57
+[2m   Duration [22m 318ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/ToolViews.tsx [22m[34mx19 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 25[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 24[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:22:05
+[2m   Duration [22m 209ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/AmbiLevel.tsx [22m[34mx20 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 31[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 30[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:22:19
+[2m   Duration [22m 257ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/AmbiSwapView.tsx [22m[34mx21 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 25[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 24[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:22:20
+[2m   Duration [22m 159ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2ApacView.tsx [22m[34mx22 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 31[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 30[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:22:22
+[2m   Duration [22m 230ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/AmbiSwapView.tsx [22m[34mx23 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 34[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 33[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:22:24
+[2m   Duration [22m 248ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2BW64.tsx [22m[34mx24 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 43[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 42[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:22:34
+[2m   Duration [22m 485ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2BinView.tsx [22m[34mx25 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 22[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 21[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:22:36
+[2m   Duration [22m 156ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2CafView.tsx [22m[34mx26 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 49[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 48[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:22:37
+[2m   Duration [22m 228ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2OggView.tsx [22m[34mx27 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 40[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 38[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:22:54
+[2m   Duration [22m 356ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/BitrateConverterView.tsx [22m[34mx28 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 32[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 30[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:22:55
+[2m   Duration [22m 265ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Stereo2AmbixView.tsx [22m[34mx29 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 21[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 20[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:22:56
+[2m   Duration [22m 150ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/AmbiLevel.tsx [22m[34mx30 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 23[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 23[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:23:14
+[2m   Duration [22m 271ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/AmbiSwapView.tsx [22m[34mx31 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 26[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 25[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:23:16
+[2m   Duration [22m 198ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2ApacView.tsx [22m[34mx32 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 26[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 25[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:23:18
+[2m   Duration [22m 151ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2BW64.tsx [22m[34mx33 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 32[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 30[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:23:19
+[2m   Duration [22m 207ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2BinView.tsx [22m[34mx34 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 23[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 22[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:23:21
+[2m   Duration [22m 157ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2CafView.tsx [22m[34mx35 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 27[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 26[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:23:22
+[2m   Duration [22m 191ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/AmbiOrderView.tsx [22m[34mx36 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 23[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 22[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:24:00
+[2m   Duration [22m 308ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2OggView.tsx [22m[34mx37 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 34[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 33[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:24:01
+[2m   Duration [22m 176ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/BitrateConverterView.tsx [22m[34mx38 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 27[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 26[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:24:03
+[2m   Duration [22m 192ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Stereo2AmbixView.tsx [22m[34mx39 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 23[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 22[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:24:04
+[2m   Duration [22m 150ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2ApacView.tsx [22m[34mx40 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 25[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 25[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:24:22
+[2m   Duration [22m 272ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2BW64.tsx [22m[34mx41 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 25[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 24[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:24:32
+[2m   Duration [22m 345ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2ApacView.tsx [22m[34mx42 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 21[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 21[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:24:48
+[2m   Duration [22m 246ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2BinView.tsx [22m[34mx43 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 22[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 21[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:24:50
+[2m   Duration [22m 192ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2CafView.tsx [22m[34mx44 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 23[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 21[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:24:51
+[2m   Duration [22m 143ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2OggView.tsx [22m[34mx45 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 20[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 19[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:24:52
+[2m   Duration [22m 150ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/BitrateConverterView.tsx [22m[34mx46 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 22[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 21[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:24:54
+[2m   Duration [22m 148ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2ApacView.tsx [22m[34mx47 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 21[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 21[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:25:13
+[2m   Duration [22m 272ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2BinView.tsx [22m[34mx48 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 21[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 21[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:25:17
+[2m   Duration [22m 143ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2CafView.tsx [22m[34mx49 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 27[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 26[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:25:22
+[2m   Duration [22m 225ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/Ambix2OggView.tsx [22m[34mx50 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 21[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 20[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:25:26
+[2m   Duration [22m 152ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/BitrateConverterView.tsx [22m[34mx51 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 24[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 24[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:25:34
+[2m   Duration [22m 199ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/tools/AmbiOrderView.tsx [22m[34mx52 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 25[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 23[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:25:35
+[2m   Duration [22m 200ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/ToolViews.tsx [22m[34mx53 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 39[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 38[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:25:46
+[2m   Duration [22m 298ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/ToolViews.tsx [22m[34mx54 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 71[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 70[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:26:14
+[2m   Duration [22m 346ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/ToolViews.tsx [22m[34mx55 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 38[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 36[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:26:15
+[2m   Duration [22m 228ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/tools/AmbiData/index.tsx [22m[34mx56 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 20[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 20[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:26:24
+[2m   Duration [22m 220ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/tools/AmbiRotate/index.tsx [22m[34mx57 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 24[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 23[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:26:26
+[2m   Duration [22m 157ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/types.ts [22m[34mx58 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 37[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 36[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:26:45
+[2m   Duration [22m 305ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/tools/AmbiRotate/index.tsx [22m[34mx59 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 25[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 24[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:26:47
+[2m   Duration [22m 166ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/tools/AmbiRotate/index.tsx [22m[34mx60 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 21[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 21[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:26:57
+[2m   Duration [22m 218ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/tools/AmbiRotate/index.tsx [22m[34mx61 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 36[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 35[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:27:31
+[2m   Duration [22m 288ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/tools/AmbiRotate/index.tsx [22m[34mx62 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 29[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 29[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(450px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(450px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:27:40
+[2m   Duration [22m 223ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/App.tsx [22m[34mx63 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 29[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 27[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(480px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(480px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:51:56
+[2m   Duration [22m 331ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/tools/AmbiRotate/index.tsx [22m[34mx64 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 22[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 21[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(480px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(480px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:55:16
+[2m   Duration [22m 249ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/Transport.tsx [22m[34mx65 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 22[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 21[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(480px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(480px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:55:19
+[2m   Duration [22m 267ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/Transport.tsx [22m[34mx66 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 22[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 21[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(480px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(480px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:56:18
+[2m   Duration [22m 254ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/ToolViews.tsx [22m[34mx67 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 56[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 53[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(480px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(480px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:56:20
+[2m   Duration [22m 553ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/App.tsx [22m[34mx68 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 23[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 22[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(250px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(250px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 14:36:19
+[2m   Duration [22m 280ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/tools/AmbiRotate/index.tsx [22m[34mx69 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 27[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 26[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(250px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_3[7m0[27m0px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(250px,[27m1fr[7m)[27m_3[7m2[27m0px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 14:36:52
+[2m   Duration [22m 237ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/tools/AmbiRotate/index.tsx [22m[34mx70 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 93[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 92[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(250px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_300px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(250px,[27m1fr[7m)[27m_300px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[90m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 14:39:50
+[2m   Duration [22m 848ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/App.tsx [22m[34mx71 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 23[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 22[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(250px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_300px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(250px,[27m1fr[7m)[27m_300px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 14:39:52
+[2m   Duration [22m 241ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/tools/AmbiRotate/index.tsx [22m[34mx72 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 23[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 22[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(250px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_300px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(250px,[27m1fr[7m)[27m_300px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 14:58:23
+[2m   Duration [22m 318ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/tools/AmbiRotate/index.tsx [22m[34mx73 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 26[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 25[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(250px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_300px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(250px,[27m1fr[7m)[27m_300px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 14:58:56
+[2m   Duration [22m 257ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/tools/AmbiRotate/index.tsx [22m[34mx74 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 40[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 40[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(250px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_300px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(250px,[27m1fr[7m)[27m_300px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 14:59:14
+[2m   Duration [22m 285ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/Transport.tsx [22m[34mx75 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 32[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 31[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(250px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_300px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(250px,[27m1fr[7m)[27m_300px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 15:00:11
+[2m   Duration [22m 311ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/components/Transport.tsx [22m[34mx76 [34m[39m
+       [2m Filename pattern: [22m[34mtests/layout.test.tsx[39m
+
+ [31m❯[39m tests/layout.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 25[2mms[22m[39m
+[31m     [31m×[31m should render correct 3-column layout[39m[32m 24[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/layout.test.tsx[2m > [22mPhase 1: Global App Structure[2m > [22mshould render correct 3-column layout
+[31m[1mAssertionError[22m: expected 'grid grid-cols-[250px_minmax(250px,1f…' to contain 'grid-cols-[250px_1fr_300px]'[39m
+
+Expected: [32m"grid-cols-[250px_1fr_300px]"[39m
+Received: [31m"[7mgrid [27mgrid-cols-[250px_[7mminmax(250px,[27m1fr[7m)[27m_300px][7m h-screen w-screen bg-studio-bg text-studio-text overflow-hidden font-sans antialiased[27m"[39m
+
+[36m [2m❯[22m tests/layout.test.tsx:[2m33:42[22m[39m
+    [90m 31| [39m        [35mconst[39m rootContainer [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.grid'[39m)[33m;[39m
+    [90m 32| [39m        [34mexpect[39m(rootContainer)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 33| [39m        expect(rootContainer?.className).toContain('grid-cols-[250px_1…
+    [90m   | [39m                                         [31m^[39m
+    [90m 34| [39m
+    [90m 35| [39m        [90m// Check Right Sidebar[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 15:00:20
+[2m   Duration [22m 288ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m

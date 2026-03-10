@@ -2,14 +2,8 @@ import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 're
 import { AmbiRotateToolProps } from '../../types';
 import { NativeRotator } from './NativeRotator';
 import { WavDecoder } from '../../utils/WavDecoder';
-import { Timeline } from './components/Timeline';
 import { Knob } from './components/Knob';
-import {
-    Play, Pause, Square, Repeat,
-    Disc, MoveHorizontal,
-    Trash2,
-    SkipBack, SkipForward
-} from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { useSettings } from '../../contexts/SettingsContext';
 
 export interface AmbiRotateHandle {
@@ -96,7 +90,7 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
 
     // Timeline / Transport
     const [duration, setDuration] = useState(0);
-    const [progress, setProgress] = useState(0);
+    const [progress, setProgress] = useState(0); // Tracks playback position (used by engine; no longer displayed)
 
     // Loop State
     const [isLooping, setIsLooping] = useState(false);
@@ -107,7 +101,6 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
     const [isLoading, setIsLoading] = useState(false);
     const [loadingProgress, setLoadingProgress] = useState(0);
     const [loadingMessage, setLoadingMessage] = useState("");
-    // const [isProcessing, setIsProcessing] = useState(false); // Used in parent now
 
     // Refs
     const audioContextRef = useRef<AudioContext | null>(null);
@@ -453,13 +446,7 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
         }
     }, [yaw, pitch, roll]);
 
-    // Timeline Handlers
-    const handleSeek = (time: number) => {
-        setProgress(time);
-        pauseTimeRef.current = time;
-        if (isPlaying) playAudio(time);
-    };
-
+    // Loop Change Handlers
     const handleLoopChange = (inTime: number, outTime: number) => {
         setLoopIn(inTime);
         setLoopOut(outTime);
@@ -473,13 +460,6 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
         const newVal = !isLooping;
         setIsLooping(newVal);
         if (sourceNodeRef.current) sourceNodeRef.current.loop = newVal;
-    };
-
-    const formatTime = (seconds: number) => {
-        const m = Math.floor(seconds / 60);
-        const s = Math.floor(seconds % 60);
-        const ms = Math.floor((seconds % 1) * 10);
-        return `${m}:${s.toString().padStart(2, '0')}.${ms}`;
     };
 
     const doUpsideDown = () => handleRollChange(Math.abs(roll - 180) < 1 ? 0 : 180);
@@ -538,27 +518,27 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
                     </div>
 
                     {/* ROW 2: 3D CARDS */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="flex flex-wrap justify-center gap-4">
 
                         {/* YAW CARD */}
-                        <div className="bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-col justify-between shadow-[0_0_15px_rgba(0,0,0,0.5)] relative overflow-hidden group min-h-[100px]">
+                        <div className="bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-row items-center justify-between shadow-[0_0_15px_rgba(0,0,0,0.5)] relative overflow-hidden group min-h-[100px]">
                             <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
-                            <label className="text-gray-400 font-bold text-xs tracking-wider z-10">YAW</label>
-
-                            <div className="flex-1 flex items-center justify-center z-10 my-1">
+                            <div className="flex flex-col justify-between h-full z-10">
+                                <label className="text-gray-400 font-bold text-xs tracking-wider">YAW</label>
                                 <span className="text-3xl font-bold text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]">
                                     {Math.round(yaw)}°
                                 </span>
+                                <div className="h-2" />
                             </div>
 
-                            <div className="flex items-center gap-2 z-10 px-2">
-                                <input
-                                    type="range"
-                                    min="-180" max="180"
+                            <div className="relative z-10 pr-2">
+                                <Knob
                                     value={yaw}
-                                    onChange={(e) => handleYawChange(Number(e.target.value))}
-                                    className="flex-1 h-1.5 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-blue-500 hover:accent-blue-400"
+                                    min={-180} max={180}
+                                    onChange={handleYawChange}
+                                    size={60}
+                                    color="#3b82f6"
                                 />
                             </div>
                         </div>
@@ -572,19 +552,17 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
                                 <span className="text-3xl font-bold text-green-500 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">
                                     {Math.round(pitch)}°
                                 </span>
-                                <div className="h-2" /> {/* Spacer */}
+                                <div className="h-2" />
                             </div>
 
-                            <div className="h-full flex flex-col items-center justify-center py-1 z-10">
-                                <div className="h-20 flex items-center">
-                                    <input
-                                        type="range"
-                                        min="-90" max="90"
-                                        value={pitch}
-                                        onChange={(e) => handlePitchChange(Number(e.target.value))}
-                                        className="w-20 h-1.5 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-green-500 -rotate-90 hover:accent-green-400"
-                                    />
-                                </div>
+                            <div className="relative z-10 pr-2">
+                                <Knob
+                                    value={pitch}
+                                    min={-90} max={90}
+                                    onChange={handlePitchChange}
+                                    size={60}
+                                    color="#22c55e"
+                                />
                             </div>
                         </div>
 
@@ -611,66 +589,6 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
                             </div>
                         </div>
 
-                    </div>
-
-                    {/* ROW 3: TRANSPORT */}
-                    <div className="bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-col gap-2 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
-
-                        {/* SCRUB BAR (TIMELINE) */}
-                        <div className="w-full px-1">
-                            <Timeline
-                                duration={duration}
-                                currentTime={progress}
-                                loopIn={loopIn}
-                                loopOut={loopOut}
-                                isLooping={isLooping}
-                                onSeek={handleSeek}
-                                onLoopChange={handleLoopChange}
-                            />
-                        </div>
-
-                        {/* CONTROLS ROW */}
-                        <div className="flex justify-between items-center mt-1">
-
-                            {/* PLAYBACK BUTTONS */}
-                            <div className="flex items-center gap-3">
-                                <button onClick={togglePlayPause} className="text-gray-200 hover:text-white transition">
-                                    {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
-                                </button>
-
-                                <button onClick={() => loadTrack(currentFileIndex - 1)} disabled={currentFileIndex === 0} className="text-gray-400 hover:text-white disabled:opacity-30 transition">
-                                    <SkipBack size={18} fill="currentColor" />
-                                </button>
-
-                                <button onClick={() => loadTrack(currentFileIndex + 1)} disabled={currentFileIndex >= files.length - 1} className="text-gray-400 hover:text-white disabled:opacity-30 transition">
-                                    <SkipForward size={18} fill="currentColor" />
-                                </button>
-
-                                <button onClick={() => performStop(false)} className="text-gray-400 hover:text-red-400 transition ml-2">
-                                    <Square size={16} fill="currentColor" />
-                                </button>
-                            </div>
-
-                            {/* TIME & LOOP */}
-                            <div className="flex items-center gap-4">
-                                <span className="text-base font-mono text-white tracking-widest font-light">
-                                    {formatTime(progress)} <span className="text-gray-600">/</span> {formatTime(duration)}
-                                </span>
-
-                                <button
-                                    onClick={handleLoopToggle}
-                                    className={`p-1.5 rounded-lg border ${isLooping ? 'bg-gray-800 border-gray-600 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
-                                >
-                                    <Repeat size={16} />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* FOOTER */}
-                    <div className="flex justify-between text-[10px] text-gray-500 font-mono px-1 uppercase tracking-widest">
-                        <span className="flex items-center gap-2"><Disc size={12} /> BINAURAL MONITOR</span>
-                        <span className="flex items-center gap-2">STATUS: {isReady ? <span className="text-green-500">READY</span> : "WAITING"} <MoveHorizontal size={12} /></span>
                     </div>
 
                 </div>

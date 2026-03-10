@@ -12,8 +12,8 @@ import { Transport } from '../../components/Transport';
 
 interface AmbiDataToolProps {
     tool: ToolDefinition;
-    files: MediaFile[];
-    isProcessing: boolean;
+    files?: MediaFile[];
+    isProcessing?: boolean;
 }
 
 const MIN_HEIGHT_PERCENT = 10;

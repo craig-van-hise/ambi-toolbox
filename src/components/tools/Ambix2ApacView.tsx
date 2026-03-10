@@ -5,11 +5,9 @@ import { useSettings } from '../../contexts/SettingsContext';
 
 interface Ambix2ApacViewProps {
     tool: ToolDefinition;
-    onRun: (opts: any) => void;
-    isProcessing: boolean;
 }
 
-export const Ambix2ApacView: React.FC<Ambix2ApacViewProps> = ({ tool, onRun, isProcessing }) => {
+export const Ambix2ApacView: React.FC<Ambix2ApacViewProps> = ({ tool }) => {
     const { settings, updateSettings } = useSettings();
     const [bitrate, setBitrate] = useState<string>(() => {
         return settings.toolSettings?.[tool.id]?.bitrate || 'Medium (96 kbps)';
@@ -26,7 +24,7 @@ export const Ambix2ApacView: React.FC<Ambix2ApacViewProps> = ({ tool, onRun, isP
     };
 
     const options = [
-        'Low (64 kbps)',
+        'Economy (64 kbps)',
         'Medium (96 kbps)',
         'High (128 kbps)',
         'Pro (192 kbps)'
@@ -50,14 +48,6 @@ export const Ambix2ApacView: React.FC<Ambix2ApacViewProps> = ({ tool, onRun, isP
                         <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-gray-500 pointer-events-none" />
                     </div>
                 </div>
-
-                <button
-                    onClick={() => onRun({ bitrate })}
-                    disabled={isProcessing}
-                    className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
-                >
-                    {isProcessing ? 'Encoding...' : 'Encode to APAC'}
-                </button>
             </div>
         </div>
     );

@@ -3,7 +3,7 @@ import { ToolDefinition } from '../../types';
 import { useSettings } from '../../contexts/SettingsContext';
 import { ChevronDown } from 'lucide-react';
 
-export const AmbiLevelTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) => void, isProcessing: boolean }> = ({ tool, onRun, isProcessing }) => {
+export const AmbiLevelTool: React.FC<{ tool: ToolDefinition }> = ({ tool }) => {
     const { settings, updateSettings } = useSettings();
 
     const [mode, setMode] = useState<'manual' | 'normalize'>(() => {
@@ -68,13 +68,6 @@ export const AmbiLevelTool: React.FC<{ tool: ToolDefinition, onRun: (opts: any) 
                 </p>
             </div>
 
-            <button
-                onClick={() => onRun({ mode, targetDb })}
-                disabled={isProcessing || isNaN(targetDb)}
-                className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
-            >
-                {isProcessing ? 'Processing...' : 'Process Audio'}
-            </button>
         </div>
     );
 };

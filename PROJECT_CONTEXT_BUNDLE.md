@@ -1,0 +1,734 @@
+### FILE: project_tree.txt
+
+
+/Users/vv2024/Documents/AI Projects/Spatial Audio/AmbiToolbox
+├── GEMINI_CONTEXT.log
+├── LICENSE
+├── NOTICE.txt
+├── PROJECT_STATE.md
+├── README.md
+├── archive
+|  └── legacy_scripts
+├── assets
+|  ├── Jost-700-Bold.ttf
+|  ├── MaterialIcons-Regular.ttf
+|  ├── Montserrat-Variable.ttf
+|  ├── Roboto-Regular.ttf
+|  ├── ambisonics_icon.svg
+|  ├── bin
+|  |  ├── __MACOSX
+|  |  ├── apac-enc
+|  |  ├── ear-utils-mac-arm64
+|  |  ├── ffmpeg
+|  |  ├── ffprobe
+|  |  ├── iamf-enc
+|  |  └── obr_stream
+|  ├── bin_evermeet
+|  |  └── ffmpeg
+|  ├── ffmpeg80arm.zip
+|  ├── ffmpeg_evermeet.zip
+|  ├── hrtf
+|  |  ├── H3_48K_24bit_256tap_FIR_SOFA.sofa
+|  |  ├── MIT_KEMAR_Normal.sofa
+|  |  └── Neumann_KU100_48k.sofa
+|  ├── ic_check.svg
+|  ├── ic_dark_mode.svg
+|  ├── ic_error.svg
+|  ├── ic_folder_open.svg
+|  ├── ic_folder_upload.svg
+|  ├── ic_light_mode.svg
+|  ├── ic_music.svg
+|  ├── ic_settings.svg
+|  └── vv_logo.png
+├── dev-debug.log
+├── docs
+|  ├── ### The "Clean Blueprint" Infographic Style Guide.md
+|  ├── Accepted File Types by Tool.md
+|  ├── AmbiData file types list.md
+|  ├── EULA.md
+|  ├── PROJECT_CONTEXT_BUNDLE.md
+|  ├── PROJECT_STATE_AmbiData.md
+|  ├── README_AmbiData.md
+|  └── reports
+|     ├── 2026-02-07_REPO_REPORT.md
+|     ├── 2026-03-09_REPO_REPORT.md
+|     ├── AMBIROTATE_BINAURAL_REPORT.md
+|     ├── AMBIX2BIN_REPORT.md
+|     ├── FAILURE_REPORT_PRP79.md
+|     ├── refactoring_recommendations.md
+|     └── repo-map.md
+├── electron
+|  ├── StreamServer.ts
+|  ├── electron-env.d.ts
+|  ├── handlers
+|  |  ├── AmbiData.ts
+|  |  ├── AmbiLevel.ts
+|  |  ├── AmbiOrder.ts
+|  |  ├── AmbiRotate.ts
+|  |  ├── AmbiSwap.ts
+|  |  ├── Ambix2APAC.ts
+|  |  ├── Ambix2BW64.ts
+|  |  ├── Ambix2Bin.ts
+|  |  ├── Ambix2CAF.ts
+|  |  ├── Ambix2IAMF.ts
+|  |  ├── Ambix2Ogg.ts
+|  |  ├── Ambix2Opus.ts
+|  |  ├── DialogHandler.ts
+|  |  ├── FileHandler.ts
+|  |  ├── IamfParser.ts
+|  |  ├── IngestionRouter.ts
+|  |  ├── MetadataParser.ts
+|  |  ├── ObrHandler.ts
+|  |  ├── PythonHeuristics.ts
+|  |  ├── Stereo2Ambix.ts
+|  |  ├── TrimHandler.ts
+|  |  ├── WaveParser.ts
+|  |  ├── common.ts
+|  |  ├── iamf-config-generator.ts
+|  |  ├── index.ts
+|  |  ├── scripts
+|  |  |  ├── requirements.txt
+|  |  |  └── saf_wrapper.py
+|  |  └── trim.ts
+|  ├── main.ts
+|  ├── preload.ts
+|  ├── shim.ts
+|  └── utils
+|     └── FfWrapper.ts
+├── electron-builder.json5
+├── guides
+|  ├── IAMF (Immersive Audio Model and Formats) : Eclipsa Audio Ecosystem.png
+|  ├── IAMF Metadata.png
+|  ├── IAMF Muxing Workflow.png
+|  ├── guide_to_spatial_audio_metadata_scaffold.html
+|  └── iamf.html
+├── index.html
+├── llms.txt
+├── native
+|  └── apac-enc
+|     └── main.swift
+├── package-lock.json
+├── package.json
+├── postcss.config.js
+├── project_tree.txt
+├── public
+|  ├── ambisonics.js
+|  ├── electron-vite.animate.svg
+|  ├── electron-vite.svg
+|  ├── js
+|  |  └── JSAmbisonics.min.js
+|  └── vite.svg
+├── py
+|  ├── __pycache__
+|  |  └── stereo_to_ambix.cpython-313.pyc
+|  ├── ambi_data_heuristics.py
+|  ├── ambi_rotate.py
+|  ├── ambix2bw64.py
+|  ├── format_decoder.py
+|  └── stereo_to_ambix.py
+├── release
+|  └── 0.9.0-beta
+|     ├── YourAppName-Mac-0.9.0-beta-Installer.dmg
+|     ├── YourAppName-Mac-0.9.0-beta-Installer.dmg.blockmap
+|     ├── builder-debug.yml
+|     ├── builder-effective-config.yaml
+|     ├── latest-mac.yml
+|     └── mac-arm64
+|        └── YourAppName.app
+|           └── Contents
+├── resources
+|  └── scripts
+|     └── rotator.py
+├── scripts
+|  ├── make_repo_map.py
+|  ├── parse_debug.ts
+|  ├── test-auto-resume.ts
+|  ├── test-binary-paths.ts
+|  ├── test-binaural.js
+|  ├── test-file-switch-autoplay.ts
+|  ├── test-frontend-url.ts
+|  ├── test-hard-swap.ts
+|  ├── test-obr-pipeline.js
+|  ├── test-queue-click.ts
+|  ├── test-seek-accuracy.ts
+|  ├── test-seek-debounce.ts
+|  ├── test-server.ts
+|  ├── test-stream-start.ts
+|  └── verify-stream-endpoint.js
+├── src
+|  ├── App.css
+|  ├── App.tsx
+|  ├── assets
+|  |  └── react.svg
+|  ├── components
+|  |  ├── DropZone.tsx
+|  |  ├── FileQueue.tsx
+|  |  ├── Modal.tsx
+|  |  ├── SettingsModal.tsx
+|  |  ├── Sidebar.tsx
+|  |  ├── SmartDropZone.tsx
+|  |  ├── ToolViews.tsx
+|  |  ├── Transport.tsx
+|  |  └── tools
+|  |     ├── AmbiLevel.tsx
+|  |     ├── AmbiOrderView.tsx
+|  |     ├── AmbiSwapView.tsx
+|  |     ├── AmbiTrim.css
+|  |     ├── AmbiTrim.tsx
+|  |     ├── Ambix2ApacView.tsx
+|  |     ├── Ambix2BW64.tsx
+|  |     ├── Ambix2BinView.tsx
+|  |     ├── Ambix2CafView.tsx
+|  |     ├── Ambix2OggView.tsx
+|  |     ├── BitrateConverterView.tsx
+|  |     ├── Stereo2AmbixView.tsx
+|  |     └── TimeInput.tsx
+|  ├── constants.ts
+|  ├── contexts
+|  |  ├── AudioEngineContext.tsx
+|  |  ├── SettingsContext.tsx
+|  |  ├── ToolStateContext.tsx
+|  |  └── TransportContext.tsx
+|  ├── cpp
+|  |  ├── CMakeLists.txt
+|  |  ├── obr_stream.cc
+|  |  └── vendor
+|  |     └── obr
+|  |        ├── BUILD
+|  |        ├── CMakeLists.txt
+|  |        ├── CONTRIBUTING.md
+|  |        ├── LICENSE
+|  |        ├── MODULE.bazel
+|  |        ├── PATENTS
+|  |        ├── README.md
+|  |        ├── WORKSPACE
+|  |        ├── docs
+|  |        ├── external
+|  |        └── obr
+|  ├── hooks
+|  |  └── useFileQueue.ts
+|  ├── index.css
+|  ├── main.tsx
+|  ├── tools
+|  |  ├── AmbiData
+|  |  |  ├── components
+|  |  |  |  ├── Inspector.tsx
+|  |  |  |  └── InspectorComponents.tsx
+|  |  |  ├── index.tsx
+|  |  |  ├── index.tsx.bak
+|  |  |  └── types.ts
+|  |  └── AmbiRotate
+|  |     ├── NativeRotator.ts
+|  |     ├── components
+|  |     |  ├── Knob.tsx
+|  |     |  └── Timeline.tsx
+|  |     └── index.tsx
+|  ├── types.ts
+|  ├── utils
+|  |  ├── WavDecoder.ts
+|  |  └── time-formatters.ts
+|  └── vite-env.d.ts
+├── tailwind.config.js
+├── terminal.log
+├── test_output
+|  └── trim_tests
+|     └── output
+├── tests
+|  ├── 3rd Order Ambi Clock Test.wav
+|  ├── __pycache__
+|  |  └── test_stereo2ambix.cpython-313-pytest-9.0.2.pyc
+|  ├── check_hrtf_delay.py
+|  ├── check_hrtf_energy.py
+|  ├── check_netcdf_clean.py
+|  ├── debug_rotation_sweep.py
+|  ├── fixtures
+|  |  ├── test_000007.iamf
+|  |  └── test_output.webm
+|  ├── gen_test_signal.py
+|  ├── handlers.test.ts
+|  ├── iamf_recursive.test.ts
+|  ├── ingestion.test.ts
+|  ├── ingestion_router.test.ts
+|  ├── manual_test_out.wav
+|  ├── obr_pipeline.test.ts
+|  ├── settings_merge.test.ts
+|  ├── stereo2ambix.test.ts
+|  ├── sweep_in.wav
+|  ├── sweep_out.wav
+|  ├── test_16ch.wav
+|  ├── test_coords.py
+|  ├── test_iamf_parser.py
+|  ├── test_math.py
+|  ├── test_saf.py
+|  ├── test_stereo2ambix.py
+|  ├── test_stereo_to_ambix.py
+|  ├── transport_sm.test.ts
+|  ├── trim.test.ts
+|  └── useFileQueue.test.tsx
+├── tsconfig.json
+├── tsconfig.node.json
+├── vite.config.ts
+└── vitest.config.ts
+
+directory: 1452 file: 10681
+
+ignored: directory (153)
+
+
+[2K[1G
+
+### FILE: PROJECT_STATE.md
+
+# AmbiToolbox - Project State Report
+
+**Date:** March 5, 2026 (Updated)
+**Architecture:** Electron Modular Monolith
+
+## 1. Executive Summary
+The **AmbiToolbox** has been successfully re-architected into a unified **Electron application**. This move consolidates the previously disparate Python and Swift utilities into a single, cohesive interface built with **React** (Frontend) and **TypeScript** (Backend Handlers).
+
+**Global Status:** 🟢 **Operational / In Active Development**
+
+## 2. Component Status
+
+| Component | Status | Backend Implementation | Notes |
+| :--- | :--- | :--- | :--- |
+| **Frontend UI** | 🟢 Ready | React + Tailwind | Scoped Progress, Auto-Scroll, Drag & Drop. |
+| **Transport UI** | 🟢 Ready | `src/components/Transport.tsx` | **Frontend Complete**: Condensed UI, Icons, Settings Modal. **Backend Ready**: Playback logic wired to `electron/main.ts` streaming server (Stereo Downmix). |
+| **Ambix2Opus** | 🟢 Ready | `electron/handlers/Ambix2Opus.ts` | Uses `ffprobe` for robust channel detection. |
+| **Ambix2BW64** | 🟢 Ready | `electron/handlers/Ambix2BW64.ts` | **Complete**: Integrated `ear-utils` via standalone binary for ADM metadata. |
+| **Ambix2Bin** | 🟢 Ready | `electron/handlers/Ambix2Bin.ts` | Uses **Neumann KU100 (CC-BY)** & **MIT KEMAR** HRTFs. Fixed static path resolution and enum alignment. |
+| **Ambix2IAMF** | 🟢 Ready | `electron/handlers/Ambix2IAMF.ts` | Generates textproto config and runs `iamf-enc`. |
+| **AmbiOrder** | 🟢 Ready | `electron/handlers/AmbiOrder.ts` | Uses `channelmap` filter. Dynamic Order Detection. Fixed FFmpeg syntax. |
+| **AmbiSwap** | 🟢 Ready | `electron/handlers/AmbiSwap.ts` | Supports 1st-3rd Order. Enforces 24-bit PCM. |
+| **AmbiRotate** | 🟢 Ready | `py/ambi_rotate.py` (NumPy) | Chunked Processing for Memory Efficiency. Real-time Progress. **Fixed Infinite Loop** |
+| **Ambix2CAF** | 🟢 Ready | `electron/handlers/Ambix2CAF.ts` | Supports Discrete & HOA Layouts. |
+| **Ambix2Ogg** | 🟢 Ready | `electron/handlers/Ambix2Ogg.ts` | Smart Transcode/Remux. Permission Checks. |
+| **AmbiTrim** | 🟢 Ready | `electron/handlers/trim.ts` | Proxy Workflow (Mid-Side), Lossless Cut (`-c copy`), WaveSurfer Regions. |
+| **AmbiData** | 🟢 Ready | `electron/handlers/AmbiData.ts` | **Complete**: Native IAMF parsing, loudness analysis and UI cards integrated. |
+| **Stereo2Ambix** | 🟢 Ready | `electron/handlers/Stereo2Ambix.ts` | **Complete**: Adaptive PCA-based upmixing using STFT and frequency-domain diffusion. |
+| **AmbiLevel** | 🟢 Ready | `electron/handlers/AmbiLevel.ts` | **Complete**: Linked-gain normalization and manual offset tool. |
+| **Persistence** | 🟢 Ready | `src/contexts/SettingsContext.tsx` | Saves active tool, bitrates, layouts, and rotation values. |
+| **Global Queue** | 🟢 Ready | `src/components/FileQueue.tsx` | **Unified**: Single shared component for all tools with folding/play indicators. |
+
+## 3. Status (PRP Hierarchy)
+- **PRP 0 - 100**: Completed (Legacy Migration)
+- **PRP #101 - #120**: Completed (Core Pipeline Hardening)
+- **PRP #121**: Decoder Pipeline Refactor (Completed)
+- **PRP #122**: Proprietary Format Router (Completed)
+- **PRP #123**: Native Apple Ingestion (Completed)
+- **PRP #124**: Direct OBU Parsing (Completed)
+- **PRP #125**: Playback & Ingestion Stabilization (Completed)
+- **PRP #126**: Stereo2Ambix Implementation (Completed)
+- **PRP #127**: Stereo2Ambix DSP Engine Overhaul (Completed)
+- **PRP #128**: AmbiLevel Tool Integration (Completed)
+- **PRP #129**: Ambix2BW64 Integration (Completed)
+- **Phase: Maintenance**: Active
+
+## 4. Directory Structure (Architecture)
+
+```text
+├── package.json
+├── package-lock.json
+├── postcss.config.js
+├── public
+|  ├── ambisonics.js
+|  ├── electron-vite.animate.svg
+|  ├── electron-vite.svg
+|  ├── js
+|  └── vite.svg
+|  ├── AmbiData.ts
+|  ├── AmbiOrder.ts
+|  ├── AmbiRotate.ts
+|  ├── AmbiSwap.ts
+|  ├── Ambix2APAC.ts
+|  ├── Ambix2Bin.ts
+|  ├── Ambix2CAF.ts
+|  ├── Ambix2IAMF.ts
+|  ├── Ambix2Ogg.ts
+|  ├── Ambix2Opus.ts
+|  ├── Stereo2Ambix.ts
+|  ├── common.ts
+|  ├── index.ts
+|  └── trim.ts
+├── main.ts
+├── preload.ts
+└── shim.ts
+|
+├── py
+|  ├── ambi_data_heuristics.py
+|  ├── ambi_rotate.py
+|  ├── format_decoder.py
+|  └── stereo_to_ambix.py
+|
+├── tests
+|  ├── handlers.test.ts
+|  ├── iamf_recursive.test.ts
+|  ├── ingestion.test.ts
+|  ├── ingestion_router.test.ts
+|  ├── obr_pipeline.test.ts
+|  ├── settings_merge.test.ts
+|  ├── stereo2ambix.test.ts
+|  ├── test_stereo2ambix.py
+|  ├── transport_sm.test.ts
+|  └── trim.test.ts
+├── tsconfig.json
+├── tsconfig.node.json
+├── vite.config.ts
+└── vitest.config.ts
+```
+
+-   **`src/`**: Frontend Source (React/Vite).
+    -   `components/ToolViews.tsx`: Main UI for all tools (Consumes Global State).
+    -   `components/FileQueue.tsx`: **Unified Queue** component (Merged Styles & Interaction).
+    -   `components/Transport.tsx`: Audio transport controls (Play/Pause, Seek, Volume).
+    -   `contexts/PlaybackContext.tsx`: Global audio state management.
+-   **`electron/`**: Main Process Source.
+    -   `handlers/`: Individual tool backend logic (Modular Handler Pattern).
+    -   `main.ts`: Application entry point and IPC router.
+    -   `shim.ts`: Bridge imports for handlers.
+-   **`resources/scripts/`**: Python Subsystem.
+    -   `ambi_rotate.py`: Ambisonic Rotation Script (NumPy + Scipy + SoundFile).
+-   **`assets/`**: Static Resources (`bin/`, `hrtf/`).
+-   **`xCleanup/`**: Quantined legacy files (Gitignored).
+-   **`PRPs/`**: Project Rollout Proposals and historical logs.
+
+## 5. Recent Logic Changes
+- **Ambix2BW64 Tool Integration (PRP #129)**:
+    - **Standalone Binary Provisioning**: Packaged the `ear-utils` Python library into an `arm64` macOS executable using PyInstaller, eliminating the need for a local Python environment for ADM conversion.
+    - **ADM Metadata Injection**: Integrated EBU ADM Renderer logic to convert Ambisonic (AmbiX) PCM streams into BW64 containers with standard-compliant ADM metadata blocks.
+    - **Batch Processing Handler**: Implemented a robust backend handler that spawns the internal binary with JSON-encoded file lists and normalization toggles, supporting real-time status reporting to the UI.
+- **AmbiLevel Tool Integration (PRP #128)**:
+    - **Linked-Gain Logic**: Implemented a core requirement for Ambisonic normalization: applying the exact same gain offset to all channels simultaneously to preserve spherical soundfield phase.
+    - **Dual-Pass Normalization**: Developed a two-pass FFmpeg workflow using `volumedetect` for interleaved max-volume analysis followed by a precision `volume` application to hit target True Peak (dBTP).
+    - **Output Strictness**: Enforced 24-bit PCM WAV rendering across all gain operations to prevent quantization noise artifacts in high-order masters.
+- **Stereo2Ambix DSP Overhaul (PRP #127)**:
+    - **STFT Processing**: Replaced the primitive time-domain PCA loop with a full short-time Fourier transform (STFT) pipeline using 4096-sample Hann windows for frequency-dependent spatial extraction.
+    - **Temporal Smoothing**: Implemented recursive smoothing of the bin-wise covariance matrix to eliminate "flicker" and gating artifacts in the upmixed signal.
+    - **Continuous Diffusion**: Replaced block-reset random seeds with a stable frequency-domain scattering matrix to ensure phase continuity across the diffused ambient field.
+- **Stereo2Ambix Upmixing (PRP #126)**:
+    - **Adaptive PCA Decomposition**: Implemented freq-domain Primary/Ambient extraction using Eigen-decomposition of the bin-wise covariance matrix.
+    - **Deterministic Caching**: Integrated MD5-based ingestion hashing (mtime + size + params) to instantly bypass redundant computational overhead.
+    - **Stabilization**: Fixed Python I/O tail-flush bug and implemented 2ch fallback for the OBR preview pipeline to prevent crashes.
+- **Playback & Ingestion Stabilization (PRP #125)**:
+    - **Recursive OBU Scanning**: Hardened `IamfParser.ts` directly resolving the "0 channel" playback issue when reading nested Immersive Audio Model and Formats (`.iamf`) payload streams.
+    - **Deterministic Ingestion Caching**: Integrated stat-based (`path` + `size` + `mtime`) `md5` hashing into `IngestionRouter` assuring unique deterministic proxy cache hits. This eliminates playback "ghosting" when manipulating identically named target files.
+    - **FileQueue Race Condition Resolution**: Isolated `onClick` from `onDoubleClick` events inside `FileQueue` utilizing strict `preventDefault` propagation. Eliminated aggressive asynchronous UI clobbering within `ToolViews.tsx` that previously nuked playback buffers indiscriminately upon single-click browsing.
+    - **Double-Click Same File Bug**: Fixed `setCurrentFile` bug forcing full buffer purge when double-clicking currently active streams; streams now properly re-initialize playback. Fixed `AmbiData` component Transport Next/Prev navigation.
+- **Decoder Pipeline Refactor (PRP #121)**:
+    - **Strict HOA/Discrete Separation**: Refactored the decoder pipeline to strictly apply the `-map 0:a:0` argument only to container formats (e.g., `.aivu`, `.mp4`, `.mkv`, `.mov`, `.webm`, `.m4a`) while preserving raw files like `.wav` and `.amb`.
+- **Native Apple Ingestion (PRP #123)**:
+    - **afconvert Proxying**: Implemented re-routing of Apple Immersive Video (`.aivu`) files through macOS's native `/usr/bin/afconvert` utility. This bypasses FFmpeg's `apac` decoder limitations and generates a high-fidelity 32-bit Float `.wav` proxy for the streaming pipeline.
+    - **Adaptive Pipeline**: Updated `ObrHandler.ts` and `main.ts` to strictly handle standard video containers while allowing proxy `.wav` files to stream with 1-to-1 discrete mapping.
+    - **Infrastructure Stability**: Eliminated the `no decoder found` crashes previously caused by proprietary Apple spatial audio formats. Verified via `tests/ingestion.test.ts`.
+- **7th-Order Truncation & Pipeline Hardening (PRP #116 - #118)**:
+    - **Robust Truncation**: Implemented discrete `channelmap` filtering in `ObrHandler.ts` to successfully downscale 7th-order (64ch) files to the renderer's 4th-order (25ch) limit. This bypasses FFmpeg's layout constraints.
+    - **Error Hardening**: Enhanced pipeline cleanup logic to explicitly reap child processes and destroy response sockets upon encoder failure, preventing UI "waiting" hangs.
+    - **Buffer Safety**: Capped browser-side `WavDecoder` to 32 channels for UI visualization to ensure stability with high-channel files.
+- **Buffering & Burst Encoding (PRP #111 - #114)**:
+    - **Deep Buffering (PRP #111)**: Implemented 10MB `highWaterMark` allocations for all IPC pipes and the HTTP response stream to eliminate micro-stutters.
+    - **Prime Buffer (PRP #113)**: Introduced a custom `PrimeBuffer` Transform stream that holds 48KB (~1.5s) of encoded Opus data before initial transmission, ensuring the browser's media buffer is never starved at startup.
+    - **Burst Encoding (PRP #114)**: Removed the `-re` (real-time) throttling flag from both OBR and Legacy pipelines, allowing the CPU to burst-fill the buffers instantly on play or seek.
+- **Stereo Monitoring Filter (PRP #108)**:
+    - **M/S Stereo Folddown**: Replaced standard channel-summing with a specialized cardioid-based stereo downmix for Ambisonic previews (monitoring mode). This prevents rear-hemisphere phase cancellation when listening without headphones.
+
+
+
+### FILE: README.md
+
+
+# AmbiToolbox
+
+**AmbiToolbox** is a unified spatial audio utility suite for macOS, built with **Electron, React, and TypeScript**.
+It consolidates multiple audio conversion tools into a single, modular application.
+
+## 🎯 Purpose & Workflow
+
+AmbiToolbox is designed to act as a "Swiss Army Knife" for spatial audio production pipelines. While Ambisonics is a powerful format, working with it often requires opening heavy Digital Audio Workstations (DAWs) for simple tasks or memorizing complex FFmpeg arguments in the command line.
+
+This suite eliminates those bottlenecks, allowing audio engineers to process, convert, and QC spatial audio assets in a standalone environment. It is built to save time on repetitive tasks and ensure interoperability between different spatial audio standards.
+
+### Common Use Cases
+
+* **Vision Pro & Apple Ecosystem Delivery:** Rapidly encode master files into the **APAC** codec (Apple Spatial Audio) or **CAF** containers without navigating Xcode scripts or DAW render queues.
+* **Web & VR Optimization:** Compress high-order Ambisonics into **Opus** (Ogg) using **Ambix2Opus** with correct channel mapping for web-based VR players, reducing file size while maintaining spatial fidelity.
+* **Instant Quality Control (QC):** Quickly render a binaural downmix using **Ambix2Bin** to check a mix on headphones without loading a DAW session or setting up a routing matrix.
+* **Format Rescue:** Solve "wrong channel order" or "wrong normalization" issues by instantly swapping between **AmbiX (ACN/SN3D)** and **FuMa** formats using **AmbiSwap** without data loss.
+* **Next-Gen Streaming Delivery:** Prepare assets for modern open-standard streaming (like YouTube or Samsung devices) by encoding to **IAMF** (Immersive Audio Model and Formats) using **Ambix2IAMF**.
+* **Asset Downscaling:** Use **AmbiOrder** to reduce a 3rd Order master file into 1st Order for mobile game engines (Unity/Unreal) or hardware with limited channel counts.
+* **Orientation Correction:** Fix recordings made with a misaligned or upside-down microphone by applying 3-axis rotation (Yaw/Pitch/Roll) in real-time with **AmbiRotate** before committing to a new file.
+* **Lossless Trimming:** Use **AmbiTrim** to cut unwanted sections from massive multi-channel master files without re-encoding, preserving the original audio data bit-for-bit.
+* **Precision Gain Matching & Normalization:** Use **AmbiLevel** to adjust the volume of Ambisonic assets or normalize them to a target True Peak while strictly preserving the spatial phase relationship between all channels (Linked-Gain).
+* **Unified Transport Flow:** Seamlessly switch between tracks with **"Double-Click to Play"** and **Previous/Next** navigation. Features a surgical transport reset logic and **Scrubber Auto-Resume** to ensure a fluid monitoring experience.
+
+
+---
+
+## 🛠 Features
+
+### Tools
+
+1. **Ambix2Opus**: Convert Ambisonics (.wav/.amb) to Opus (.opus) with proper channel mapping (Family 2).
+* Supports 1st, 2nd, 3rd, 4th Order.
+* Configurable quality.
+
+
+2. **Ambix2Bin**: Render Ambisonics to Binaural Stereo using SOFA HRTF files.
+* Built-in Neumann KU100 and KEMAR profiles (fixed path resolution).
+* Powered by custom FFmpeg build with `sofalizer` support.
+
+
+3. **Ambix2IAMF**: Encode Ambisonics to IAMF (Immersive Audio Model and Formats).
+* Generates Type 2 (Ombisonic) IAMF streams.
+
+
+4. **Ambix2CAF**: Convert to Apple CAF format (Discrete or HOA/ACN Layouts).
+5. **Ambix2APAC**: Encode Ambisonics to Apple Spatial Audio Codec (APAC) for visionOS.
+* Native macOS 14+ encoder.
+
+
+6. **AmbiOrder**: Reduce Ambisonic Order (e.g., 3rd -> 1st) with dynamic input detection.
+7. **AmbiSwap**: Convert between ACN/SN3D (AmbiX) and FuMa (MaxN).
+* *Crucial*: Enforced 24-bit PCM output to prevent gain-normalization data loss.
+
+
+8. **AmbiRotate**: Real-time Rotation Preview.
+* **Hybrid Native Engine**:
+* **Order 1 (Ch 1-3)**: Full 3-Axis Matrix (Yaw/Pitch/Roll).
+* **Order >1 (Ch 4+)**: Infinite-Order Sectorial Yaw (Optimized).
+* *Monitoring*: Real-time **Binaural Rendering** (Google OBR) via internal HTTP streaming server. Supports up to **4th Order (25ch)** natively, with automatic truncation for higher-order files (7th Order/64ch).
+
+
+9. **AmbiTrim**: Lossless trimming for high-channel-count files.
+* Proxy workflow (Mid-Side stereo) for instant waveform editing.
+* **Stream Copy**: Output uses `-c copy` to preserve original codec and bit depth.
+
+
+10. **AmbiData**: Comprehensive file analysis and metadata inspection.
+*   **Adaptive UI**: 5-Card Layout with dynamic stream selection.
+*   **IAMF Support**: Deep analysis of IAMF OBU structures (Scene-Based/Channel-Based).
+*   **Metrics**: EBUR128 loudness (Integrated, LRA, True Peak) and signal health (clipping, DC offset).
+*   **Heuristics**: Python-based spatial format prediction (AmbiX/FuMa) for WAV/AmbiX.
+
+
+11. **Ambix2Ogg**: Ambisonic Ogg/Opus Wrapper.
+* **Smart Transcode**: Converts WAV/AMB to Opus with mapping family 2.
+* **Instant Remux**: Detects existing Opus files and wraps them in Ogg container without re-encoding (Pass-Through).
+
+
+12. **Stereo2Ambix**: Upmix Stereo to High-Order Ambisonics.
+* **Adaptive PCA**: Separates Primary and Ambient signals for precise spatialization.
+* **Diffusion**: 16x16 Hadamard-based frequency domain decorrelation for immersive envelopment.
+
+
+13. **AmbiLevel**: Spatial Audio Gain & Normalization Utility.
+* **Linked Channels**: Applies identical gain offset to all channels simultaneously to preserve the spatial soundfield image.
+* **Modes**: Supports Manual dB gain or Two-Pass normalization to a target True Peak.
+* **Output**: Strictly enforces 24-bit PCM WAV.
+
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+* **Node.js** (v18+)
+* **Python 3** (for Ambix2Bin binaural rendering backend)
+
+### Installation
+
+1. Clone the repository.
+2. Install dependencies:
+```bash
+npm install
+
+```
+
+
+
+### Running in Development
+
+```bash
+npm run dev
+
+```
+
+(Binaries for ffmpeg/ffprobe/iamf-enc/obr_stream are expected in `assets/bin/`)
+
+### Building for Production
+
+```bash
+npm run build
+```
+
+The output can be found in `release/` (DMG/Installer) or `dist/` (Web bundle).
+
+## 🏗 Architecture
+
+* **Frontend**: React + TypeScript + TailwindCSS (`src/`)
+* **Backend**: Electron Main Process (`electron/`)
+* **Handlers**: `electron/handlers/` (Modular Handler Pattern)
+* **Bridge**: `electron/preload.ts` (Unified Bridge: `window.electron` and `window.electronAPI`)
+* **Sidecars**: `src/cpp/` (C++ Native Addons/Binaries - Google OBR)
+* **Python Subsystem**: `resources/scripts/` (NumPy/Audio Processing scripts)
+* **Unified UI Pattern**: All tools use a shared resizable partition system in `src/components/ToolViews.tsx` and a consolidated **Unified FileQueue** in `src/components/FileQueue.tsx`.
+* **Streaming Engine**: Precise 3-stage OBR pipeline (`Decoder` -> `OBR` -> `Encoder`) with EPIPE-hardened inter-process piping.
+
+* **Cleanup**: Legacy/Vestigial files moved to `xCleanup/` (Gitignored).
+* **Workflows**: Extensive automation workflows available in `.agent/workflows/` for project management and CI tasks.
+
+## 📂 Project Structure
+
+├── package.json
+├── package-lock.json
+├── postcss.config.js
+├── public
+├── py
+├── resources
+├── scripts
+├── src
+|  ├── App.tsx
+|  ├── components
+|  |  ├── tools
+|  |  |  ├── AmbiLevel.tsx
+|  |  |  └── AmbiTrim.tsx
+|  |  └── ToolViews.tsx
+|  ├── constants.ts
+|  ├── tools
+|  |  ├── AmbiData
+|  |  └── AmbiRotate
+|  └── types.ts
+├── electron
+|  ├── handlers
+|  |  ├── AmbiLevel.ts
+|  |  ├── Stereo2Ambix.ts
+|  |  └── index.ts
+|  ├── main.ts
+|  └── preload.ts
+├── tailwind.config.js
+├── tests
+├── tsconfig.json
+├── tsconfig.node.json
+├── vite.config.ts
+├── vitest.config.ts
+└── xCleanup
+
+
+## 🧪 Testing
+
+Run integration tests for the backend logic:
+
+```bash
+npm run test
+
+```
+
+---
+
+##  Ambix2APAC: Apple Dependencies & Requirements
+
+The **Ambix2APAC** tool utilizes the native Apple Positional Audio Codec (APAC) to provide high-fidelity spatial audio compression optimized for the Apple Vision Pro and visionOS ecosystem. Because this tool relies on proprietary Apple frameworks, the following requirements must be met:
+
+### 1. Operating System Requirements
+
+* **Encoding (macOS):** Requires **macOS 14.0 (Sonoma)** or later. The system-level APAC encoder was officially introduced to support visionOS development workflows.
+* **Playback (Target Devices):**
+* **Apple Vision Pro:** Supported natively on all versions of visionOS.
+* **iOS/iPadOS:** Requires **iOS 17.0+** or **iPadOS 17.0+** for native APAC decoding.
+* **macOS:** Requires **macOS 14.0+** for playback via AVFoundation-based applications.
+
+
+
+### 2. Technical Capabilities
+
+* **Ambisonic Orders:** The native system encoder currently supports **1st (4ch), 2nd (9ch), and 3rd (16ch)** order Ambisonics. Support for up to **5th order (36ch)** is available in specific profiles.
+* **Channel Layout:** This tool strictly enforces the **HOA_ACN_SN3D** (High-Order Ambisonics, ACN ordering, SN3D normalization) layout tag, which is the mandatory metadata standard for Apple's spatial audio rendering.
+* **Recommended Bitrates:** * **1st Order:** ~384 kbps (total).
+* **3rd Order:** ~768 kbps (total).
+* *Note: Our implementation uses a "Per-Channel" logic (e.g., 96kbps/ch) to maintain consistent quality across all orders.*
+
+
+
+### 3. Build & Development Requirements
+
+* **Swift Environment:** Compilation of the `apac-enc` sidecar requires **Xcode 15.0+** or the **Command Line Tools for Xcode 15.0+** to access the necessary Core Audio headers.
+* **Frameworks Used:** * `AVFoundation`: For high-level media writing (`AVAssetWriter`).
+* `AudioToolbox`: For low-level codec identifiers and channel layout tagging.
+
+
+
+### 4. Hardware Support
+
+* **Apple Silicon Recommended:** While Intel Macs running macOS 14+ can technically encode APAC, **Apple Silicon (M1/M2/M3/M5)** is highly recommended for optimal performance when processing high-order (3rd+) spatial audio files.
+
+### FILE: .agent/workflows/commerical-release.md
+
+---
+command: /commercial-release
+description: "Scans the entire AmbiToolbox architecture (Electron, Python, Binaries) to generate a compliant EULA and NOTICE file. Handles project expansions dynamically."
+permissions:
+  terminal: read
+  filesystem: read/write
+---
+
+# Agent Persona
+You are the **AmbiToolbox Compliance Officer**. You understand the hybrid architecture of this project: Electron (Node.js), Python (scripts), and bundled Binaries (`assets/bin/`). Your job is to ignore the proprietary code (handlers/UI) and hunt specifically for **Third-Party Intellectual Property** that requires legal attribution.
+
+# Execution Standard
+- **The "Expansion" Check:** You must scan multiple locations to catch new tools:
+  1.  `assets/bin/` (Did the user add a new executable?)
+  2.  `package.json` (Did the user `npm install` a new library?)
+  3.  `py/` or `requirements.txt` (Did the user add a Python dependency?)
+  4.  `**/*.sofa` (Did the user add new HRTF data files?)
+
+- **LGPL Firewall (FFmpeg):** If `assets/bin/ffmpeg` is found, you MUST enable the EULA "Reverse Engineering Exception."
+- **Data Licensing:** If `.sofa` files are found, verify they are not "Non-Commercial" (CC-BY-NC). If uncertain, flag them.
+
+# Workflow Steps
+
+1.  **Deep Scan (Inventory)**
+    - **Binaries:** List all files in `assets/bin/`.
+      - *Note:* Identify `ffmpeg`, `iamf-enc`, `apac-enc` specifically.
+    - **Node Modules:** Read `package.json` -> `dependencies` (skip `devDependencies`).
+    - **Python Backend:** Check `py/` for any apparent third-party imports or a `requirements.txt`.
+    - **Assets:** Recursively search for `.sofa` files (HRTF profiles).
+
+2.  **Drafting NOTICE.txt (Attribution)**
+    - **Header:** "AmbiToolbox - Third Party Notices".
+    - **Section 1: Binary Executables**
+      - For `ffmpeg`: Write LGPL v2.1 Notice.
+      - For `apac-enc`: Write "Apple Proprietary Framework - Copyright Apple Inc."
+      - For others: Generic copyright placeholder.
+    - **Section 2: Node.js Libraries**
+      - List all production dependencies found in Step 1 with their license type (MIT/Apache).
+    - **Section 3: Audio Data (HRTF)**
+      - If `.sofa` files exist: "Contains HRTF data. Check individual files for license terms." (Or specific attribution if known, e.g., KEMAR).
+
+3.  **Drafting EULA.md (Contract)**
+    - **Header:** "End User License Agreement for AmbiToolbox".
+    - **Grant:** Non-exclusive, non-transferable.
+    - **Restrictions:**
+      - Standard "No Reverse Engineering" clause.
+      - **Dynamic Injection:** IF `ffmpeg` exists -> "EXCEPTION: You may modify the software solely for the purpose of debugging your changes to the LGPL-licensed libraries."
+    - **Liability:** Standard "AS IS" and limitation of liability caps.
+
+4.  **Drafting Root LICENSE (The Cover Sheet)**
+    - Overwrite `LICENSE` (or `LICENSE.md`) in the root:
+      > "Copyright (c) [Year] [Your Name/Company]. All Rights Reserved.
+      >
+      > This software is proprietary.
+      > Source code in `src/`, `electron/`, and `py/` is confidential.
+      > Distribution is governed by `EULA.md`.
+      > Third-party attributions are listed in `NOTICE.txt`."
+
+5.  **Final Report**
+    - Output a summary of what was found:
+      - "Binaries tracked: [List]"
+      - "NPM Deps tracked: [Count]"
+      - "Python/Data assets flagged: [List]"
+    - **Critical Warning:** If new `.sofa` files or Python scripts were found, ask the user to manually verify their licenses before shipping.
+
+# Output
+1.  `NOTICE.txt` (Updated with all current assets).
+2.  `EULA.md` (Legally robust).
+3.  `LICENSE` (Proprietary marker).
+

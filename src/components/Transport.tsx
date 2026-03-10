@@ -7,14 +7,7 @@ import { useTransport } from '../contexts/TransportContext';
 import { useAudioEngine } from '../contexts/AudioEngineContext';
 import { Modal } from './Modal';
 
-interface TransportProps {
-    canNext: boolean;
-    canPrev: boolean;
-    onNext: () => void;
-    onPrev: () => void;
-}
-
-// -- Custom Rounded Icons --
+// -- Legacy Custom Rounded Icons (from commit e6c6ca7) --
 
 const IconPrev = () => (
     <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
@@ -43,7 +36,7 @@ const IconPause = () => (
 
 const IconNext = () => (
     <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
-        <path d="M16 6a1 1 0 0 1 1 1v10a1 1 1 0 1 1-2 0V7a1 1 0 0 1 1-1zm-9.54-.02a1 1 0 0 0-1.54.84v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.69l-8.14-5.17z" />
+        <path d="M16 6a1 1 0 0 1 1 1v10a1 1 0 1 1-2 0V7a1 1 0 0 1 1-1zm-9.54-.02a1 1 0 0 0-1.54.84v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.69l-8.14-5.17z" />
     </svg>
 );
 
@@ -71,6 +64,17 @@ const IconMute = () => (
         <line x1="17" y1="9" x2="23" y2="15" />
     </svg>
 );
+
+interface TransportProps {
+    canNext: boolean;
+    canPrev: boolean;
+    onNext: () => void;
+    onPrev: () => void;
+}
+
+// -- Custom Rounded Icons --
+
+// Icons are now imported from lucide-react
 
 export const Transport: React.FC<TransportProps> = ({
     canNext,
@@ -222,7 +226,7 @@ export const Transport: React.FC<TransportProps> = ({
             </div>
 
             {/* Bottom Row: Controls */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-y-4">
                 <div className="flex items-center gap-2">
                     <button
                         onClick={onPrev}
@@ -306,8 +310,8 @@ export const Transport: React.FC<TransportProps> = ({
                         </div>
                     </button>
 
-                    <div className="flex items-center gap-2 bg-[#27272a] px-2.5 py-1 rounded-md">
-                        <button onClick={() => setVolume(volume === 0 ? 0.8 : 0)} className="text-gray-400 hover:text-white">
+                    <div className="flex items-center gap-2 bg-[#27272a] px-2.5 py-1 rounded-md shrink-0 min-w-0">
+                        <button onClick={() => setVolume(volume === 0 ? 0.8 : 0)} className="text-gray-400 hover:text-white shrink-0">
                             <div className="w-5 h-5">
                                 {volume === 0 ? <IconMute /> : <IconVolume />}
                             </div>
@@ -319,7 +323,7 @@ export const Transport: React.FC<TransportProps> = ({
                             step={0.01}
                             value={volume}
                             onChange={(e) => setVolume(Number(e.target.value))}
-                            className="w-16 accent-blue-400 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                            className="w-16 accent-blue-400 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer shrink"
                         />
                     </div>
                 </div>

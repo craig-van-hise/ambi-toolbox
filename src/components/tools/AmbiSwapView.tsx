@@ -9,7 +9,7 @@ interface AmbiSwapViewProps {
     isProcessing: boolean;
 }
 
-export const AmbiSwapView: React.FC<AmbiSwapViewProps> = ({ tool, onRun, isProcessing }) => {
+export const AmbiSwapView: React.FC<Pick<AmbiSwapViewProps, 'tool'>> = ({ tool }) => {
     const { settings, updateSettings } = useSettings();
     const [inputFormat, setInputFormat] = useState<AmbiFormat>(() => {
         return settings.toolSettings?.[tool.id]?.inputFormat || AmbiFormat.AmbiX;
@@ -20,7 +20,11 @@ export const AmbiSwapView: React.FC<AmbiSwapViewProps> = ({ tool, onRun, isProce
         updateSettings({
             toolSettings: {
                 ...settings.toolSettings,
-                [tool.id]: { ...settings.toolSettings?.[tool.id], inputFormat: val }
+                [tool.id]: {
+                    ...settings.toolSettings?.[tool.id],
+                    inputFormat: val,
+                    direction: val === AmbiFormat.AmbiX ? 'AmbixToFuMa' : 'FuMaToAmbix'
+                }
             }
         });
     };
@@ -50,13 +54,6 @@ export const AmbiSwapView: React.FC<AmbiSwapViewProps> = ({ tool, onRun, isProce
                 <span>{isAmbixInput ? 'FuMa' : 'AmbiX'}</span>
             </div>
 
-            <button
-                onClick={() => onRun({ direction: isAmbixInput ? 'AmbixToFuMa' : 'FuMaToAmbix' })}
-                disabled={isProcessing}
-                className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
-            >
-                {isProcessing ? 'Swapping...' : 'Swap Format'}
-            </button>
         </div>
     );
 };

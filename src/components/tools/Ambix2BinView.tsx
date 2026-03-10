@@ -5,72 +5,56 @@ import { useSettings } from '../../contexts/SettingsContext';
 
 interface Ambix2BinViewProps {
     tool: ToolDefinition;
-    onRun: (opts: any) => void;
-    isProcessing: boolean;
 }
 
-export const Ambix2BinView: React.FC<Ambix2BinViewProps> = ({ tool, onRun, isProcessing }) => {
+export const Ambix2BinView: React.FC<Ambix2BinViewProps> = ({ tool }) => {
     const { settings, updateSettings } = useSettings();
     const [profile, setProfile] = useState<HrtfProfile>(() => {
         return settings.toolSettings?.[tool.id]?.hrtfProfile || HrtfProfile.Neumann;
     });
-    const [customSofaPath, setCustomSofaPath] = useState<string | null>(() => {
-        return settings.toolSettings?.[tool.id]?.customSofaPath || null;
+    const [customSofaPath, setCustomSofaPath] = useState<string>(() => {
+        return settings.toolSettings?.[tool.id]?.customSofaPath || '';
     });
 
     const handleProfileChange = async (val: HrtfProfile) => {
         if (val === HrtfProfile.Custom) {
-            try {
-                const lastDir = settings.toolSettings?.globalPlayback?.lastSofaDir || undefined;
-                const result = await window.electronAPI.selectFiles({
-                    properties: ['openFile'],
-                    defaultPath: lastDir,
-                    filters: [
-                        { name: 'SOFA Files', extensions: ['sofa'] },
-                        { name: 'All Files', extensions: ['*'] }
-                    ]
-                });
-
-                if (result && result.length > 0) {
-                    const selectedPath = result[0];
-                    setCustomSofaPath(selectedPath);
-                    setProfile(HrtfProfile.Custom);
-
-                    const dirPath = selectedPath.includes('/')
-                        ? selectedPath.substring(0, selectedPath.lastIndexOf('/'))
-                        : '';
-
-                    updateSettings(prev => ({
-                        toolSettings: {
-                            ...prev.toolSettings,
-                            globalPlayback: {
-                                ...prev.toolSettings?.globalPlayback,
-                                lastSofaDir: dirPath
-                            },
-                            [tool.id]: {
-                                ...prev.toolSettings?.[tool.id],
-                                hrtfProfile: val,
-                                customSofaPath: selectedPath
-                            }
+            const result = await (window as any).electronAPI.selectSofaFile();
+            if (result && !result.canceled) {
+                const path = result.filePaths[0];
+                setCustomSofaPath(path);
+                setProfile(val);
+                updateSettings({
+                    toolSettings: {
+                        ...settings.toolSettings,
+                        [tool.id]: {
+                            ...settings.toolSettings?.[tool.id],
+                            hrtfProfile: val,
+                            customSofaPath: path
                         }
-                    }));
-                }
-            } catch (err) {
-                console.error("Failed to select custom SOFA:", err);
+                    }
+                });
             }
         } else {
             setProfile(val);
-            updateSettings(prev => ({
+            updateSettings({
                 toolSettings: {
-                    ...prev.toolSettings,
+                    ...settings.toolSettings,
                     [tool.id]: {
-                        ...prev.toolSettings?.[tool.id],
+                        ...settings.toolSettings?.[tool.id],
                         hrtfProfile: val
                     }
                 }
-            }));
+            });
         }
     };
+
+    const profiles = [
+        { label: 'Neumann KU100 (Balanced)', value: HrtfProfile.Neumann },
+        { label: 'Generic (Diffuse)', value: HrtfProfile.Generic },
+        { label: 'Sennheiser Ambeo', value: HrtfProfile.Ambeo },
+        { label: 'Google Rez (Spatial)', value: HrtfProfile.GoogleRez },
+        { label: 'Custom (.sofa)...', value: HrtfProfile.Custom }
+    ];
 
     return (
         <div className="w-full">
@@ -81,11 +65,11 @@ export const Ambix2BinView: React.FC<Ambix2BinViewProps> = ({ tool, onRun, isPro
                         <select
                             value={profile}
                             onChange={(e) => handleProfileChange(e.target.value as HrtfProfile)}
-                            className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-white appearance-none text-white"
+                            className="w-full bg-[#1E1E1E] border border-studio-border rounded px-4 py-2 text-sm focus:outline-none focus:border-studio-accent appearance-none text-white"
                         >
-                            <option value={HrtfProfile.Neumann}>{HrtfProfile.Neumann}</option>
-                            <option value={HrtfProfile.Kemar}>{HrtfProfile.Kemar}</option>
-                            <option value={HrtfProfile.Custom}>{HrtfProfile.Custom}</option>
+                            {profiles.map((p) => (
+                                <option key={p.value} value={p.value}>{p.label}</option>
+                            ))}
                         </select>
                         <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-gray-500 pointer-events-none" />
                     </div>
@@ -95,14 +79,6 @@ export const Ambix2BinView: React.FC<Ambix2BinViewProps> = ({ tool, onRun, isPro
                         </p>
                     )}
                 </div>
-
-                <button
-                    onClick={() => onRun({ hrtfProfile: profile === HrtfProfile.Custom ? customSofaPath : profile })}
-                    disabled={isProcessing || (profile === HrtfProfile.Custom && !customSofaPath)}
-                    className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${tool.btnColorClass}`}
-                >
-                    {isProcessing ? 'Converting...' : 'Convert'}
-                </button>
             </div>
         </div>
     );

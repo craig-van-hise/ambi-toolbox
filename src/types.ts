@@ -20,6 +20,7 @@ export interface ToolDefinition {
   id: ToolId;
   label: string;
   description: string;
+  actionLabel: string;
   colorClass: string; // Tailwind text color class
   btnColorClass: string; // Tailwind bg color class for primary actions
 }
@@ -34,6 +35,9 @@ export enum BitrateOption {
 export enum HrtfProfile {
   Neumann = 'Generic (Neumann KU100)',
   Kemar = 'Generic (KEMAR)',
+  Generic = 'Generic (Diffuse)',
+  Ambeo = 'Sennheiser Ambeo',
+  GoogleRez = 'Google Rez (Spatial)',
   Custom = 'Load Custom .sofa...',
 }
 
@@ -56,8 +60,8 @@ export enum AmbiFormat {
 export interface AmbiRotateToolProps {
   tool: ToolDefinition;
   files: any[];
-  isProcessing: boolean;
-  onRun: (options: any) => void;
+  isProcessing?: boolean;
+  onRun?: (options: any) => void;
 }
 
 export interface ElectronAPI {
