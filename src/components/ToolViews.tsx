@@ -6,7 +6,8 @@ import {
 
 // Contexts & Hooks
 import { useSettings } from '../contexts/SettingsContext';
-import { usePlayback } from '../contexts/PlaybackContext';
+import { useTransport } from '../contexts/TransportContext';
+import { useAudioEngine } from '../contexts/AudioEngineContext';
 import { useFileQueue } from '../hooks/useFileQueue';
 
 // Components
@@ -38,19 +39,13 @@ interface ToolViewProps {
 export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
   const { settings } = useSettings();
   const {
-    state: playerState,
-    togglePlayPause,
-    stop,
-    seek,
-    commitSeek,
-    setVolume,
-    toggleLoop,
-    setLoopPoints,
-    toggleHeadphones,
-    setHrtfProfile,
-    setCustomSofaPath,
+    isPlaying,
+    currentFile: playingFileId,
     setCurrentFile
-  } = usePlayback();
+  } = useTransport();
+
+  // Engine state is handled internally by Transport component
+  useAudioEngine();
 
   const {
     queue: globalFiles,
@@ -379,27 +374,16 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
                         setCurrentFile(id, shouldPlay ?? true);
                       }}
                       onClear={clearQueue}
-                      playingFileId={playerState.currentFile}
-                      isPlaying={playerState.isPlaying}
+                      playingFileId={playingFileId}
+                      isPlaying={isPlaying}
                     />
                   </div>
                 )}
 
                 {files.length > 0 && (
                   <Transport
-                    state={playerState}
-                    onPlayPause={() => !playerState.currentFile && selectedFileId ? setCurrentFile(selectedFileId, true) : togglePlayPause()}
-                    onStop={stop}
                     onNext={handleNext}
                     onPrev={handlePrev}
-                    onSeek={seek}
-                    onCommitSeek={commitSeek}
-                    onVolumeChange={setVolume}
-                    onToggleLoop={toggleLoop}
-                    onToggleHeadphones={toggleHeadphones}
-                    onSetHrtfProfile={setHrtfProfile}
-                    onSetCustomSofaPath={setCustomSofaPath}
-                    onSetLoopPoints={setLoopPoints}
                     canNext={canNext}
                     canPrev={canPrev}
                   />

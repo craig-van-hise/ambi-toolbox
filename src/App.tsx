@@ -6,7 +6,8 @@ import { TOOLS } from './constants';
 
 import { SettingsProvider, useSettings } from './contexts/SettingsContext';
 import { ToolStateProvider } from './contexts/ToolStateContext';
-import { PlaybackProvider } from './contexts/PlaybackContext';
+import { AudioEngineProvider } from './contexts/AudioEngineContext';
+import { TransportProvider } from './contexts/TransportContext';
 
 const AppContent: React.FC = () => {
   const { settings, updateSettings } = useSettings();
@@ -44,9 +45,11 @@ const App: React.FC = () => {
   return (
     <SettingsProvider>
       <ToolStateProvider>
-        <PlaybackProvider>
-          <AppContent />
-        </PlaybackProvider>
+        <AudioEngineProvider>
+          <TransportProvider>
+            <AppContent />
+          </TransportProvider>
+        </AudioEngineProvider>
       </ToolStateProvider>
     </SettingsProvider>
   );
