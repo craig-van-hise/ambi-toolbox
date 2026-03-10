@@ -118,10 +118,11 @@ export const TOOLS: ToolDefinition[] = [
 
 
 export const BITRATE_OPTIONS = [
-  BitrateOption.Low,
-  BitrateOption.Medium,
-  BitrateOption.High,
-  BitrateOption.Highest,
+  { label: 'Low (32kbps)', value: BitrateOption.Low },
+  { label: 'Medium (64kbps)', value: BitrateOption.Medium },
+  { label: 'High (96kbps)', value: BitrateOption.High },
+  { label: 'Ultra (128kbps)', value: BitrateOption.Ultra },
+  { label: 'Technical Max (256kbps)', value: BitrateOption.TechMax }
 ];
 
 export const ACCEPTED_AUDIO_FORMATS = [

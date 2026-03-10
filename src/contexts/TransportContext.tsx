@@ -111,13 +111,21 @@ export const TransportProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }, [isPlaying, audioRef]);
 
     const commitSeekInternal = (time: number, resume: boolean) => {
+        if (!currentFile) {
+            console.warn('[Transport] commitSeekInternal: no currentFile, seek aborted.');
+            return;
+        }
         setStreamOffset(time);
         setCurrentTime(time);
-        commitStream(currentFile!, channels, time, Date.now());
+        commitStream(currentFile, channels, time, Date.now());
         if (resume) setIsPlaying(true);
     };
 
-    const play = () => !isRebuilding && setIsPlaying(true);
+    const play = () => {
+        if (!isRebuilding && currentFile && audioRef.current?.src && audioRef.current.src !== 'about:blank') {
+            setIsPlaying(true);
+        }
+    };
     const pause = () => setIsPlaying(false);
     const stop = () => {
         setIsPlaying(false);
@@ -130,7 +138,11 @@ export const TransportProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         }
     };
 
-    const togglePlayPause = () => !isRebuilding && setIsPlaying(prev => !prev);
+    const togglePlayPause = () => {
+        if (isRebuilding) return;
+        if (!currentFile || !audioRef.current?.src || audioRef.current.src === 'about:blank') return;
+        setIsPlaying(prev => !prev);
+    };
     const toggleLoop = () => setIsLooping(prev => !prev);
     const setLoopPoints = (inTime: number, outTime: number) => {
         setLoopIn(inTime);

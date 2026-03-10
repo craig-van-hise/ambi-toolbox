@@ -26,19 +26,18 @@ export interface ToolDefinition {
 }
 
 export enum BitrateOption {
-  Low = 'Low (32kbps)',
-  Medium = 'Medium (64kbps)',
-  High = 'High (96kbps)',
-  Highest = 'Highest (128kbps)',
+  Low = '32000',
+  Medium = '64000',
+  High = '96000',
+  Ultra = '128000',
+  TechMax = '256000',
 }
 
 export enum HrtfProfile {
-  Neumann = 'Generic (Neumann KU100)',
-  Kemar = 'Generic (KEMAR)',
-  Generic = 'Generic (Diffuse)',
-  Ambeo = 'Sennheiser Ambeo',
-  GoogleRez = 'Google Rez (Spatial)',
-  Custom = 'Load Custom .sofa...',
+  Neumann = 'Neumann_KU100_48k.sofa',
+  Kemar = 'MIT_KEMAR_Normal.sofa',
+  H3 = 'H3_48K_24bit_256tap_FIR_SOFA.sofa',
+  Custom = 'CUSTOM',
 }
 
 export enum AmbisonicOrder {

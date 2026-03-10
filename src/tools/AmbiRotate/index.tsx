@@ -517,65 +517,76 @@ export const AmbiRotateTool = forwardRef<AmbiRotateHandle, ExtendedAmbiRotateToo
                         </button>
                     </div>
 
-                    {/* ROW 2: 3D CARDS */}
+                    {/* ROW 2: 3D CARDS — restored from git a5ea12e + Phase 2 layout constraints */}
                     <div className="flex flex-wrap justify-center gap-4">
 
-                        {/* YAW CARD */}
-                        <div className="bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-row items-center justify-between shadow-[0_0_15px_rgba(0,0,0,0.5)] relative overflow-hidden group min-h-[100px]">
+                        {/* YAW CARD — Horizontal Slider (native input[type=range]) */}
+                        <div className="w-[160px] shrink-0 bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-col justify-between shadow-[0_0_15px_rgba(0,0,0,0.5)] relative overflow-hidden group min-h-[100px]">
                             <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
-                            <div className="flex flex-col justify-between h-full z-10">
-                                <label className="text-gray-400 font-bold text-xs tracking-wider">YAW</label>
-                                <span className="text-3xl font-bold text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]">
+                            <label className="text-gray-400 font-bold text-xs tracking-wider z-10">YAW</label>
+
+                            <div className="flex-1 flex items-center justify-center z-10 my-1">
+                                <span className={`font-bold text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)] transition-all ${`${Math.round(yaw)}°`.length >= 5 ? 'text-xl' :
+                                        `${Math.round(yaw)}°`.length >= 4 ? 'text-2xl' :
+                                            `${Math.round(yaw)}°`.length >= 3 ? 'text-3xl' : 'text-4xl'
+                                    }`}>
                                     {Math.round(yaw)}°
                                 </span>
-                                <div className="h-2" />
                             </div>
 
-                            <div className="relative z-10 pr-2">
-                                <Knob
+                            <div className="flex items-center gap-2 z-10 px-2">
+                                <input
+                                    type="range"
+                                    min="-180" max="180"
                                     value={yaw}
-                                    min={-180} max={180}
-                                    onChange={handleYawChange}
-                                    size={60}
-                                    color="#3b82f6"
+                                    onChange={(e) => handleYawChange(Number(e.target.value))}
+                                    className="flex-1 h-1.5 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-blue-500 hover:accent-blue-400"
                                 />
                             </div>
                         </div>
 
-                        {/* PITCH CARD */}
-                        <div className="bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-row items-center justify-between shadow-[0_0_15px_rgba(0,0,0,0.5)] relative overflow-hidden group min-h-[100px]">
+                        {/* PITCH CARD — Vertical Slider (native input[type=range] rotated -90deg) */}
+                        <div className="w-[160px] shrink-0 bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-row items-center justify-between shadow-[0_0_15px_rgba(0,0,0,0.5)] relative overflow-hidden group min-h-[100px]">
                             <div className="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
                             <div className="flex flex-col justify-between h-full z-10">
                                 <label className="text-gray-400 font-bold text-xs tracking-wider">PITCH</label>
-                                <span className="text-3xl font-bold text-green-500 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">
+                                <span className={`font-bold text-green-500 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)] transition-all ${`${Math.round(pitch)}°`.length >= 5 ? 'text-xl' :
+                                        `${Math.round(pitch)}°`.length >= 4 ? 'text-2xl' :
+                                            `${Math.round(pitch)}°`.length >= 3 ? 'text-3xl' : 'text-4xl'
+                                    }`}>
                                     {Math.round(pitch)}°
                                 </span>
                                 <div className="h-2" />
                             </div>
 
-                            <div className="relative z-10 pr-2">
-                                <Knob
-                                    value={pitch}
-                                    min={-90} max={90}
-                                    onChange={handlePitchChange}
-                                    size={60}
-                                    color="#22c55e"
-                                />
+                            <div className="h-full flex flex-col items-center justify-center py-1 z-10">
+                                <div className="h-20 flex items-center">
+                                    <input
+                                        type="range"
+                                        min="-90" max="90"
+                                        value={pitch}
+                                        onChange={(e) => handlePitchChange(Number(e.target.value))}
+                                        className="w-20 h-1.5 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-green-500 -rotate-90 hover:accent-green-400"
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        {/* ROLL CARD */}
-                        <div className="bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-row items-center justify-between shadow-[0_0_15px_rgba(0,0,0,0.5)] relative overflow-hidden group min-h-[100px]">
+                        {/* ROLL CARD — Radial Knob SVG */}
+                        <div className="w-[160px] shrink-0 bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-row items-center justify-between shadow-[0_0_15px_rgba(0,0,0,0.5)] relative overflow-hidden group min-h-[100px]">
                             <div className="absolute inset-0 bg-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
                             <div className="flex flex-col justify-between h-full z-10">
                                 <label className="text-gray-400 font-bold text-xs tracking-wider">ROLL</label>
-                                <span className="text-3xl font-bold text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">
+                                <span className={`font-bold text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)] transition-all ${`${Math.round(roll)}°`.length >= 5 ? 'text-xl' :
+                                        `${Math.round(roll)}°`.length >= 4 ? 'text-2xl' :
+                                            `${Math.round(roll)}°`.length >= 3 ? 'text-3xl' : 'text-4xl'
+                                    }`}>
                                     {Math.round(roll)}°
                                 </span>
-                                <div className="h-2" /> {/* Spacer */}
+                                <div className="h-2" />
                             </div>
 
                             <div className="relative z-10 pr-2">

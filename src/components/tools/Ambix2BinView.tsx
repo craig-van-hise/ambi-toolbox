@@ -49,10 +49,9 @@ export const Ambix2BinView: React.FC<Ambix2BinViewProps> = ({ tool }) => {
     };
 
     const profiles = [
-        { label: 'Neumann KU100 (Balanced)', value: HrtfProfile.Neumann },
-        { label: 'Generic (Diffuse)', value: HrtfProfile.Generic },
-        { label: 'Sennheiser Ambeo', value: HrtfProfile.Ambeo },
-        { label: 'Google Rez (Spatial)', value: HrtfProfile.GoogleRez },
+        { label: 'Neumann KU100 (48k)', value: HrtfProfile.Neumann },
+        { label: 'MIT KEMAR (Normal)', value: HrtfProfile.Kemar },
+        { label: 'H3 FIR (256tap)', value: HrtfProfile.H3 },
         { label: 'Custom (.sofa)...', value: HrtfProfile.Custom }
     ];
 
