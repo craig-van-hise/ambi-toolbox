@@ -85,7 +85,6 @@ export const Transport: React.FC<TransportProps> = ({
         volume,
         currentTime,
         duration,
-        currentFile,
         loopIn,
         loopOut,
         togglePlayPause,
@@ -94,8 +93,7 @@ export const Transport: React.FC<TransportProps> = ({
         commitSeek,
         setVolume,
         toggleLoop,
-        setLoopPoints,
-        setCurrentFile
+        setLoopPoints
     } = useTransport();
 
     const {

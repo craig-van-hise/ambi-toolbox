@@ -1,7 +1,6 @@
 import { IpcMainInvokeEvent } from '../shim';
-import { spawn } from 'node:child_process';
-import path from 'node:path';
-import { getFfmpegPath, probeAudio, determineOutputPath } from './common';
+import { probeAudio, determineOutputPath } from './common';
+import { FfWrapper } from '../utils/FfWrapper';
 
 export async function handleAmbiOrder(event: IpcMainInvokeEvent, options: {
     files: string[];
@@ -14,7 +13,6 @@ export async function handleAmbiOrder(event: IpcMainInvokeEvent, options: {
         if (!files || files.length === 0) throw new Error("No files provided");
 
         const results = [];
-        const ffmpegPath = getFfmpegPath();
 
         // Map target order to channel count
         // 1st -> 4ch, 2nd -> 9ch, 3rd -> 16ch
@@ -57,7 +55,7 @@ export async function handleAmbiOrder(event: IpcMainInvokeEvent, options: {
                 outputPath
             ];
 
-            const statusMsg = `Processing ${i + 1}/${files.length}: ${path.basename(inputPath)}`;
+            const statusMsg = `Processing ${i + 1}/${files.length}: ${inputPath.split(/[\\/]/).pop()}`;
             // Probe for duration
             let info;
             try {
@@ -73,29 +71,13 @@ export async function handleAmbiOrder(event: IpcMainInvokeEvent, options: {
             console.log(`[AmbiOrder] ${statusMsg}`);
             event.sender.send('task-status', { msg: statusMsg, toolId: 'ambiorder' });
 
-            await new Promise<void>((resolve, reject) => {
-                const child = spawn(ffmpegPath, args);
-
-                child.stderr.on('data', (d) => {
-                    const line = d.toString();
-                    const timeMatch = line.match(/time=(\d{2}):(\d{2}):(\d{2}\.\d{2})/);
-                    if (timeMatch && info.duration > 0) {
-                        const h = parseFloat(timeMatch[1]);
-                        const m = parseFloat(timeMatch[2]);
-                        const s = parseFloat(timeMatch[3]);
-                        const currentSeconds = h * 3600 + m * 60 + s;
-                        const fileProgress = Math.min(Math.max(currentSeconds / info.duration, 0), 1);
-                        const totalProgress = progressBase + (fileProgress * progressScale);
-                        event.sender.send('task-progress', { progress: totalProgress, toolId: 'ambiorder' });
-                    }
-                });
-
-                child.on('close', (code) => {
-                    if (code === 0) resolve();
-                    else reject(new Error(`FFmpeg exited with code ${code}`));
-                });
-
-                child.on('error', (err) => reject(new Error(err.message)));
+            await FfWrapper.run({
+                args,
+                duration: info.duration,
+                event,
+                toolId: 'ambiorder',
+                progressBase,
+                progressScale
             });
 
             results.push(outputPath);
