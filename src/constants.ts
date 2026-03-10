@@ -62,7 +62,7 @@ export const TOOLS: ToolDefinition[] = [
     id: ToolId.AmbiData,
     label: 'AmbiData',
     description: 'Analyze and edit spatial audio metadata & technical specs.',
-    actionLabel: 'Analyze',
+    actionLabel: 'Apply Changes',
     colorClass: 'text-indigo-400',
     btnColorClass: 'bg-indigo-600 hover:bg-indigo-700',
   },

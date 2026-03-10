@@ -16,7 +16,7 @@ import { Transport } from './Transport';
 // Tool Components
 import { AmbiLevelTool } from '../components/tools/AmbiLevel';
 import { Ambix2BW64Tool } from '../components/tools/Ambix2BW64';
-import { AmbiDataTool } from '../tools/AmbiData';
+import { AmbiDataTool, AmbiDataHandle } from '../tools/AmbiData';
 import { AmbiTrim } from '../components/tools/AmbiTrim';
 import { AmbiRotateTool, AmbiRotateHandle } from '../tools/AmbiRotate';
 
@@ -191,12 +191,13 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
   };
 
   const rotatorRef = useRef<AmbiRotateHandle>(null);
+  const dataRef = useRef<AmbiDataHandle>(null);
 
   if (tool.id === ToolId.AmbiTrim) return <AmbiTrim tool={tool} />;
-  if (tool.id === ToolId.AmbiData) return <AmbiDataTool tool={tool} />;
 
   const renderToolSpecificControls = () => {
     switch (tool.id) {
+      case ToolId.AmbiData: return <AmbiDataTool ref={dataRef} tool={tool} />;
       case ToolId.Ambix2Ogg: return <Ambix2OggView tool={tool} files={files} />;
       case ToolId.Ambix2Opus:
       case ToolId.Ambix2IAMF: return <BitrateConverterView tool={tool} />;
@@ -270,6 +271,10 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
               const outPath = await rotatorRef.current.runRotation();
               setIsProcessing(false);
               if (outPath) setStatusMsg(`Success: ${outPath}`);
+            } else if (tool.id === ToolId.AmbiData) {
+              if (!dataRef.current) return;
+              dataRef.current.applyChanges();
+              setStatusMsg("Metadata Applied locally.");
             } else {
               handleRunTask();
             }
