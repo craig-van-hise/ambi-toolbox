@@ -9,34 +9,34 @@ import { FfWrapper } from '../utils/FfWrapper';
  * Downmixes multichannel audio to stereo.
  */
 // PRP #61: Return Buffer for Frontend Diagnostic
-export async function generateProxy(filePath: string): Promise<Buffer> {
+export async function generateProxy(inputPath: string): Promise<Buffer> {
     const tempDir = app.getPath('temp');
     const proxyId = uuidv4();
-    const outputPath = path.join(tempDir, `ambitrim_proxy_${proxyId}.mp3`);
+    const outputPath = path.join(tempDir, `ambitrim_proxy_${proxyId}.wav`);
 
-    console.log(`[AmbiTrim] Generating proxy for: ${filePath}`);
-    console.log(`[AmbiTrim] Output path: ${outputPath}`);
+    // VALIDATION: Fixes potential Code 8 by ensuring path exists and is a string
+    if (!inputPath || typeof inputPath !== 'string') {
+        throw new Error(`[AmbiTrim] Invalid input path provided: ${inputPath}`);
+    }
 
-    // PRP #58: Mid-Side Stereo Proxy (W+Y / W-Y)
-    // c0=W (Omni), c1=Y (Side). 
-    // L = W + Y, R = W - Y.
-    // We use 0.5 Coeff to avoid clipping (since W+Y can be +6dB).
+    // PRP #145: Migration to PCM WAV for universal compatibility
+    // Uses Mid-Side decoding for high-order Ambisonics visualization.
+    // Ensure only the filter output is mapped to avoid Code 8 conflict.
     const args = [
         '-y',
-        '-i', filePath,
-        '-map', '0:a:0',
+        '-i', inputPath,
 
-        // THE FIX: Manual Matrix Decode
+        // THE FIX: Manual Matrix Decode (W+Y / W-Y)
         '-filter_complex', '[0:a:0]pan=stereo|c0=0.5*c0+0.5*c1|c1=0.5*c0-0.5*c1[out]',
         '-map', '[out]',
 
-        // STANDARD FORMATTING
-        '-ar', '44100',          // Force standard Sample Rate
-        '-c:a', 'libmp3lame',    // Explicitly use MP3 encoder
-        '-b:a', '192k',
-        '-map_metadata', '-1',   // Clean metadata
+        // STANDARD FORMATTING (PCM WAV)
+        '-ar', '44100',          
+        '-c:a', 'pcm_s16le',    
+        '-map_metadata', '-1',   
         outputPath
     ];
+
 
     try {
         await FfWrapper.run({

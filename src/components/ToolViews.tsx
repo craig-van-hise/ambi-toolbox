@@ -17,7 +17,7 @@ import { Transport } from './Transport';
 import { AmbiLevelTool } from '../components/tools/AmbiLevel';
 import { Ambix2BW64Tool } from '../components/tools/Ambix2BW64';
 import { AmbiDataTool, AmbiDataHandle } from '../tools/AmbiData';
-import { AmbiTrim } from '../components/tools/AmbiTrim';
+import { AmbiTrim, AmbiTrimHandle } from '../components/tools/AmbiTrim';
 import { AmbiRotateTool, AmbiRotateHandle } from '../tools/AmbiRotate';
 
 // Modularized Tool Views
@@ -192,8 +192,8 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
 
   const rotatorRef = useRef<AmbiRotateHandle>(null);
   const dataRef = useRef<AmbiDataHandle>(null);
+  const trimRef = useRef<AmbiTrimHandle>(null);
 
-  if (tool.id === ToolId.AmbiTrim) return <AmbiTrim tool={tool} />;
 
   const renderToolSpecificControls = () => {
     switch (tool.id) {
@@ -209,6 +209,7 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
       case ToolId.Stereo2Ambix: return <Stereo2AmbixView tool={tool} />;
       case ToolId.AmbiLevel: return <AmbiLevelTool tool={tool} />;
       case ToolId.Ambix2BW64: return <Ambix2BW64Tool tool={tool} />;
+      case ToolId.AmbiTrim: return <AmbiTrim ref={trimRef} tool={tool} />;
       case ToolId.AmbiRotate:
         return (
           <AmbiRotateTool
@@ -275,6 +276,16 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
               if (!dataRef.current) return;
               dataRef.current.applyChanges();
               setStatusMsg("Metadata Applied locally.");
+            } else if (tool.id === ToolId.AmbiTrim) {
+              if (!trimRef.current) return;
+              setIsProcessing(true);
+              try {
+                await trimRef.current.executeTrim();
+              } catch (e: any) {
+                setStatusMsg(`Trim Failed: ${e.message}`);
+              } finally {
+                setIsProcessing(false);
+              }
             } else {
               handleRunTask();
             }

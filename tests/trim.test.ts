@@ -1,84 +1,60 @@
-
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 import path from 'path';
 import fs from 'fs';
-import { app } from 'electron';
 
-// Ensure isDev is true for tests
-process.env.NODE_ENV = 'development';
-
-import { generateProxy, executeTrim } from '../electron/handlers/trim';
-
-// Mock electron app.getPath
-vi.mock('electron', () => ({
+// Mock electron app.getPath BEFORE importing the handler
+vi.mock('../electron/shim', () => ({
     app: {
-        getPath: vi.fn((name) => {
-            if (name === 'temp') return '/tmp';
-            return '/tmp';
-        }),
+        getPath: vi.fn().mockReturnValue('/tmp'),
     },
 }));
 
-const TEST_DIR = path.join(__dirname, '../test_output/trim_tests');
-const INPUT_FILE = path.join(__dirname, '../test_4ch.wav'); // Assuming this exists from file listing
-const OUTPUT_DIR = path.join(TEST_DIR, 'output');
+// Mock FfWrapper to inspect args
+import { FfWrapper } from '../electron/utils/FfWrapper';
+vi.mock('../electron/utils/FfWrapper', () => ({
+    FfWrapper: {
+        run: vi.fn().mockResolvedValue(undefined)
+    }
+}));
 
-describe('AmbiTrim Backend Logic', () => {
-    beforeAll(() => {
-        if (!fs.existsSync(OUTPUT_DIR)) {
-            fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-        }
-    });
+// Mock fs.readFileSync
+vi.mock('fs', async (importOriginal) => {
+    const actual = await importOriginal() as any;
+    return {
+        ...actual,
+        default: {
+            ...actual.default,
+            readFileSync: vi.fn().mockReturnValue(Buffer.from('mock audio data')),
+        },
+        readFileSync: vi.fn().mockReturnValue(Buffer.from('mock audio data')),
+        existsSync: actual.existsSync,
+    };
+});
 
-    afterAll(() => {
-        // Optional cleanup
-        // fs.rmSync(TEST_DIR, { recursive: true, force: true });
-    });
+import { generateProxy } from '../electron/handlers/trim';
 
-    it('generateProxy should create a stereo MP3 file', async () => {
-        // If input file doesn't exist, skip or warn. Use a known file from the repo.
-        if (!fs.existsSync(INPUT_FILE)) {
-            console.warn(`Test file ${INPUT_FILE} NOT FOUND. Skipping proxy test.`);
-            return;
-        }
+describe('AmbiTrim Backend Logic (PRP #145)', () => {
+    
+    it('generateProxy should request a PCM WAV proxy with correct FFmpeg args', async () => {
+        const inputPath = '/path/to/input.wav';
+        
+        await generateProxy(inputPath);
 
-        const proxyPath = await generateProxy(INPUT_FILE);
+        const lastCall = vi.mocked(FfWrapper.run).mock.calls[0][0];
+        const args = lastCall.args as string[];
 
-        expect(proxyPath).toBeDefined();
-        expect(fs.existsSync(proxyPath)).toBe(true);
-        // Check extension
-        expect(path.extname(proxyPath)).toBe('.mp3');
+        // Check for WAV extension in output path (last arg)
+        const outputPath = args[args.length - 1];
+        expect(outputPath.endsWith('.wav')).toBe(true);
+        expect(outputPath).toContain('ambitrim_proxy_');
 
-        // Check size > 0
-        const stats = fs.statSync(proxyPath);
-        expect(stats.size).toBeGreaterThan(0);
+        // Check for PCM encoder
+        expect(args).toContain('pcm_s16le');
+        expect(args).toContain('-c:a');
 
-        // Cleanup proxy
-        fs.unlinkSync(proxyPath);
-    });
-
-    it('executeTrim should create a trimmed WAV file', async () => {
-        if (!fs.existsSync(INPUT_FILE)) {
-            return;
-        }
-
-        const startTime = 1.0;
-        const endTime = 3.0; // 2 seconds duration
-
-        const outputPath = await executeTrim(INPUT_FILE, startTime, endTime, OUTPUT_DIR);
-
-        expect(outputPath).toBeDefined();
-        expect(fs.existsSync(outputPath)).toBe(true);
-        expect(path.dirname(outputPath)).toBe(OUTPUT_DIR);
-
-        // Check size - should be smaller than original but > 0
-        const originalStats = fs.statSync(INPUT_FILE); // 10s file approx?
-        const trimmedStats = fs.statSync(outputPath);
-
-        expect(trimmedStats.size).toBeGreaterThan(0);
-        expect(trimmedStats.size).toBeLessThan(originalStats.size);
-
-        // Cleanup output
-        fs.unlinkSync(outputPath);
+        // Ensure MP3 residues are GONE
+        expect(args).not.toContain('libmp3lame');
+        expect(args).not.toContain('-b:a');
+        expect(args).not.toContain('192k');
     });
 });

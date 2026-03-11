@@ -6,6 +6,7 @@ import { useSettings } from '../contexts/SettingsContext';
 import { useTransport } from '../contexts/TransportContext';
 import { useAudioEngine } from '../contexts/AudioEngineContext';
 import { Modal } from './Modal';
+import { useFileQueue } from '../hooks/useFileQueue';
 
 // -- Legacy Custom Rounded Icons (from commit e6c6ca7) --
 
@@ -91,6 +92,8 @@ export const Transport: React.FC<TransportProps> = ({
         duration,
         loopIn,
         loopOut,
+        currentFile,
+        setCurrentFile,
         togglePlayPause,
         stop,
         seek,
@@ -99,6 +102,8 @@ export const Transport: React.FC<TransportProps> = ({
         toggleLoop,
         setLoopPoints
     } = useTransport();
+
+    const { activeFile } = useFileQueue();
 
     const {
         isRebuilding,
@@ -147,6 +152,18 @@ export const Transport: React.FC<TransportProps> = ({
             window.removeEventListener('mouseup', handleMouseUp);
         };
     }, [dragging, loopIn, loopOut, duration, setLoopPoints]);
+
+    const handlePlayClick = () => {
+        if (isRebuilding) return;
+        // If the transport has no initialized stream, but we have a selected file in the UI...
+        if (!currentFile && activeFile) {
+            // Cold-boot the stream and force playback
+            setCurrentFile(activeFile.path, true);
+        } else {
+            // Otherwise, behave normally
+            togglePlayPause();
+        }
+    };
 
     return (
         <div className="border border-brand-border rounded-lg p-3 bg-[#18181b] flex flex-col gap-2.5 shadow-lg select-none">
@@ -253,7 +270,7 @@ export const Transport: React.FC<TransportProps> = ({
                     </button>
 
                     <button
-                        onClick={isRebuilding ? undefined : togglePlayPause}
+                        onClick={handlePlayClick}
                         className={`w-11 h-9 flex items-center justify-center rounded-md transition-all active:scale-95 shadow-md ${isRebuilding
                             ? 'bg-amber-900/30 text-amber-500 cursor-not-allowed'
                             : isPlaying

@@ -5,6 +5,7 @@
 ├── GEMINI_CONTEXT.log
 ├── LICENSE
 ├── NOTICE.txt
+├── PROJECT_CONTEXT_BUNDLE.md
 ├── PROJECT_STATE.md
 ├── README.md
 ├── archive
@@ -128,7 +129,6 @@
 |  └── stereo_to_ambix.py
 ├── release
 |  └── 0.9.0-beta
-|     ├── YourAppName-Mac-0.9.0-beta-Installer.dmg
 |     ├── YourAppName-Mac-0.9.0-beta-Installer.dmg.blockmap
 |     ├── builder-debug.yml
 |     ├── builder-effective-config.yaml
@@ -164,6 +164,7 @@
 |  |  ├── DropZone.tsx
 |  |  ├── FileQueue.tsx
 |  |  ├── Modal.tsx
+|  |  ├── RightSidebar.tsx
 |  |  ├── SettingsModal.tsx
 |  |  ├── Sidebar.tsx
 |  |  ├── SmartDropZone.tsx
@@ -241,6 +242,7 @@
 |  ├── check_hrtf_energy.py
 |  ├── check_netcdf_clean.py
 |  ├── debug_rotation_sweep.py
+|  ├── env_check.test.ts
 |  ├── fixtures
 |  |  ├── test_000007.iamf
 |  |  └── test_output.webm
@@ -249,6 +251,7 @@
 |  ├── iamf_recursive.test.ts
 |  ├── ingestion.test.ts
 |  ├── ingestion_router.test.ts
+|  ├── layout.test.tsx
 |  ├── manual_test_out.wav
 |  ├── obr_pipeline.test.ts
 |  ├── settings_merge.test.ts
@@ -259,6 +262,7 @@
 |  ├── test_coords.py
 |  ├── test_iamf_parser.py
 |  ├── test_math.py
+|  ├── test_output.txt
 |  ├── test_saf.py
 |  ├── test_stereo2ambix.py
 |  ├── test_stereo_to_ambix.py
@@ -270,9 +274,9 @@
 ├── vite.config.ts
 └── vitest.config.ts
 
-directory: 1452 file: 10681
+directory: 1745 file: 12065
 
-ignored: directory (153)
+ignored: directory (210)
 
 
 [2K[1G
@@ -323,6 +327,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 - **PRP #127**: Stereo2Ambix DSP Engine Overhaul (Completed)
 - **PRP #128**: AmbiLevel Tool Integration (Completed)
 - **PRP #129**: Ambix2BW64 Integration (Completed)
+- **PRP #130**: Architectural De-Godding & Modularization (Completed)
 - **Phase: Maintenance**: Active
 
 ## 4. Directory Structure (Architecture)

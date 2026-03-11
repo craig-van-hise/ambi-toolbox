@@ -1,8 +1,17 @@
+import { useEffect } from 'react';
 import { useToolState } from '../contexts/ToolStateContext';
 import { MediaFile, FileType } from '../tools/AmbiData/types';
 
 export const useFileQueue = () => {
     const { globalFiles, setGlobalFiles, selectedFileId, setSelectedFileId } = useToolState();
+    const activeFile = globalFiles.find(f => f.id === selectedFileId) || null;
+
+    useEffect(() => {
+        // If we have files in the queue, but no active file is selected, select the first one.
+        if (globalFiles.length > 0 && !selectedFileId) {
+            setSelectedFileId(globalFiles[0].id);
+        }
+    }, [globalFiles, selectedFileId, setSelectedFileId]);
 
     const addFiles = (newFiles: File[]) => {
         const newMediaFiles: MediaFile[] = newFiles.map((f: File) => {
@@ -60,7 +69,6 @@ export const useFileQueue = () => {
         setSelectedFileId(id);
     };
 
-    const activeFile = globalFiles.find(f => f.id === selectedFileId) || null;
 
     return {
         queue: globalFiles,

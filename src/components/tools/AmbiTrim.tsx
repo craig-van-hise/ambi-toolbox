@@ -1,29 +1,33 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ToolDefinition } from '../../types';
-import { SmartDropZone } from '../SmartDropZone';
+import { useSettings } from '../../contexts/SettingsContext';
+import { useTransport } from '../../contexts/TransportContext';
+import { useFileQueue } from '../../hooks/useFileQueue';
 import WaveSurfer from 'wavesurfer.js';
 import RegionsPlugin, { Region } from 'wavesurfer.js/dist/plugins/regions.js';
-import { useSettings } from '../../contexts/SettingsContext';
-import './AmbiTrim.css'; // PRP #62/63: Custom Styles (kept for fallback)
-import { PlayIcon, PauseIcon } from '@heroicons/react/24/solid';
-import { TimeInput } from './TimeInput';
+import './AmbiTrim.css'; 
 
-interface AmbiTrimProps {
+
+export interface AmbiTrimProps {
     tool: ToolDefinition;
 }
 
-export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
+export interface AmbiTrimHandle {
+    executeTrim: () => Promise<void>;
+}
+
+export const AmbiTrim = React.forwardRef<AmbiTrimHandle, AmbiTrimProps>(({ tool: _tool }, ref) => {
     const { settings } = useSettings();
-    const [file, setFile] = useState<File | null>(null);
+    const { currentTime, isPlaying, commitSeek } = useTransport();
+    const { activeFile } = useFileQueue();
     const [proxyPath, setProxyPath] = useState<string | null>(null);
     const [isGeneratingProxy, setIsGeneratingProxy] = useState(false);
-    const [isExporting, setIsExporting] = useState(false);
     const [statusMsg, setStatusMsg] = useState<string | null>(null);
 
-    // PRP #63: Editor State
     const [zoomLevel, setZoomLevel] = useState(0); // 0 = Fit to Screen
-    const [isPlaying, setIsPlaying] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+
 
     // WaveSurfer refs
     const containerRef = useRef<HTMLDivElement>(null);
@@ -47,7 +51,7 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
         el.style.border = '0';
         el.style.borderLeft = '0';
         el.style.borderRight = '0';
-        el.style.backgroundColor = 'rgba(20, 184, 166, 0.25)'; // Visible Teal
+        el.style.backgroundColor = 'rgba(168, 85, 247, 0.25)'; // Visible Purple
 
         // 3. Find and Style Handles
         // We look for elements with the 'part' attribute containing 'region-handle'
@@ -87,7 +91,7 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
             flag.style.top = '0';
             flag.style.width = '14px';
             flag.style.height = '14px';
-            flag.style.backgroundColor = '#14b8a6'; // Teal
+            flag.style.backgroundColor = '#a855f7'; // Purple
             flag.style.pointerEvents = 'none';
             flag.style.zIndex = '20';
             flag.style.transition = 'transform 0.1s, background-color 0.1s';
@@ -118,7 +122,7 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
                 // Pole stays white
             };
             handle.onmouseleave = () => {
-                flag.style.backgroundColor = '#14b8a6';
+                flag.style.backgroundColor = '#a855f7';
                 flag.style.transform = 'scale(1)';
             };
 
@@ -151,34 +155,6 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
         }
     };
 
-    const togglePlay = () => {
-        wavesurfer.current?.playPause();
-    };
-
-    // Keyboard Shortcuts
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.code === 'Space') {
-                // Ignore if focus is on an input element
-                const activeTag = document.activeElement?.tagName.toLowerCase();
-                if (activeTag === 'input' || activeTag === 'textarea') return;
-
-                e.preventDefault(); // Prevent scrolling
-                togglePlay();
-            }
-        };
-
-        // Only listen if we have a file loaded (editor is active)
-        if (file) {
-            window.addEventListener('keydown', handleKeyDown);
-        }
-
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [file]); // deps: togglePlay is stable? No, it depends on closure, but wavesurfer ref is stable enough. 
-    // Actually togglePlay definition depends on closure if we put it inside component. 
-    // But wavesurfer.current is a ref. safe.
 
     // Initialize WaveSurfer when proxyPath is ready
     useEffect(() => {
@@ -209,8 +185,8 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
 
                 ws = WaveSurfer.create({
                     container: containerRef.current,
-                    waveColor: '#2DD4BF', // Teal-400
-                    progressColor: '#115E59', // Teal-800
+                    waveColor: '#A855F7', // Purple-500
+                    progressColor: '#6B21A8', // Purple-800
                     cursorColor: '#FF0000', // RED Playhead
                     cursorWidth: 2,
                     barWidth: 2,
@@ -222,23 +198,37 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
                     autoScroll: true,
                     autoCenter: true,
                     normalize: true,
+                    splitChannels: false,
                     backend: 'WebAudio',
+                    mediaControls: false,
                     plugins: [wsRegions],
-                });
+                } as any);
+
+                ws.setVolume(0);
 
                 ws.on('error', (err: any) => {
                     console.error("Wavesurfer Error:", err);
                     if (active) setStatusMsg("Waveform Error: " + (err.message || err));
                 });
 
-                ws.on('play', () => { if (active) setIsPlaying(true); });
-                ws.on('pause', () => { if (active) setIsPlaying(false); });
-                ws.on('finish', () => { if (active) setIsPlaying(false); });
+                ws.on('play', () => {});
+                ws.on('pause', () => {});
+                ws.on('finish', () => {});
 
                 wavesurfer.current = ws;
 
                 // Load audio
                 ws.load(proxyPath);
+
+                // PRP #147: Phase 3 - Seek Interception
+                ws.on('interaction', (newTime: number) => {
+                    commitSeek(newTime);
+                    setIsDragging(false);
+                });
+
+                ws.on('drag', () => {
+                    setIsDragging(true);
+                });
 
                 // On Ready
                 ws.on('ready', () => {
@@ -253,7 +243,7 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
                     const newRegion = wsRegions.addRegion({
                         start: 0,
                         end: dur,
-                        color: 'rgba(45, 212, 191, 0.3)', // Teal-400 transparent
+                        color: 'rgba(168, 85, 247, 0.3)',
                         drag: true,
                         resize: true,
                     });
@@ -325,47 +315,80 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
         };
     }, [proxyPath]);
 
-    const handleFilesDropped = async (files: File[]) => {
-        if (files.length === 0) return;
-        const f = files[0];
-        setFile(f);
-        setStatusMsg(null);
-        setIsGeneratingProxy(true);
+    // PRP #141: Auto-generate proxy when activeFile changes
+    useEffect(() => {
+        if (!activeFile) {
+            setProxyPath(null);
+            setStatusMsg(null);
+            return;
+        }
+
+        const generateProxy = async () => {
+            setStatusMsg(null);
+            setIsGeneratingProxy(true);
+
+            try {
+                const path = activeFile.path;
+                if (!path) throw new Error("File has no path");
+
+                // Call Backend
+                const rawData = await window.electronAPI.trim.generateProxy(path) as any;
+                const isUint8 = rawData instanceof Uint8Array;
+
+                // Blob creation from buffer (slice to avoid SharedArrayBuffer issues)
+                const uint8 = isUint8 ? (rawData as Uint8Array) : new Uint8Array(rawData as number[]);
+                const blob = new Blob([uint8.slice().buffer], { type: 'audio/wav' });
+
+                setProxyPath(URL.createObjectURL(blob));
+
+            } catch (err: any) {
+                console.error("Proxy Gen Error:", err);
+                setStatusMsg("Error: " + err.message);
+            } finally {
+                setIsGeneratingProxy(false);
+            }
+        };
+
+        generateProxy();
+    }, [activeFile]);
+
+    // PRP #148: Phase 1 - Mirror Transport Play/Pause for smooth 60fps internal rendering
+    useEffect(() => {
+        if (!wavesurfer.current) return;
+
+        if (isPlaying) {
+            // Only play if we are not at the absolute end of the file
+            wavesurfer.current.play().catch(() => { });
+        } else {
+            wavesurfer.current.pause();
+        }
+    }, [isPlaying]);
+
+    // PRP #148: Phase 2 - Global Master Clock Sync & Drift Correction
+    useEffect(() => {
+        if (!wavesurfer.current || isDragging) return;
 
         try {
-            const path = (f as any).path;
-            if (!path) throw new Error("File has no path (browser limitation?)");
+            const wsTime = wavesurfer.current.getCurrentTime();
+            const timeDifference = Math.abs(wsTime - currentTime);
 
-            // Call Backend
-            const rawData = await window.electronAPI.trim.generateProxy(path) as any;
-            const isUint8 = rawData instanceof Uint8Array;
-
-            // Blob creation
-            let blob: Blob;
-            if (isUint8) {
-                blob = new Blob([rawData as any], { type: 'audio/mp3' });
-            } else {
-                blob = new Blob([new Uint8Array(rawData)], { type: 'audio/mp3' });
+            // If the visualizer drifts more than 300ms from the master clock, snap it.
+            // This prevents the 4Hz timeupdate event from making the playhead stutter.
+            if (timeDifference > 0.3) {
+                wavesurfer.current.setTime(currentTime);
             }
-
-            setProxyPath(URL.createObjectURL(blob));
-
-        } catch (err: any) {
-            console.error("Proxy Gen Error:", err);
-            setStatusMsg("Error: " + err.message);
-            setFile(null);
-        } finally {
-            setIsGeneratingProxy(false);
+        } catch (e) {
+            // Ignore minor out-of-bounds errors during stream rebuilds
         }
-    };
+    }, [currentTime, isDragging]);
+
 
     const handleExport = async () => {
-        if (!file || !startTime || !endTime) return;
-        setIsExporting(true);
+        if (!activeFile || !startTime || !endTime) return;
         setStatusMsg("Exporting...");
 
         try {
-            const originalPath = (file as any).path;
+            const originalPath = activeFile.path;
             const outputDir = settings.outputMode === 'custom' ? settings.customOutputDir : undefined;
 
             await window.electronAPI.trim.executeTrim(
@@ -379,16 +402,26 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
         } catch (err: any) {
             console.error("Trim Error:", err);
             setStatusMsg("Export Failed: " + err.message);
+            throw err; // Rethrow for parent to handle if needed
         } finally {
-            setIsExporting(false);
+            // Processing state is handled by parent via ref
         }
     };
 
-    // Time formatting helper
+    React.useImperativeHandle(ref, () => ({
+        executeTrim: handleExport
+    }));
 
+    // Time formatting helper
+    const formatTime = (time: number) => {
+        const mins = Math.floor(time / 60);
+        const secs = Math.floor(time % 60);
+        const ms = Math.floor((time % 1) * 100);
+        return `${mins}:${secs.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
+    };
 
     return (
-        <div className="flex flex-col h-full bg-[#18181b] text-white">
+        <div className="flex flex-col flex-1 gap-4 min-h-[400px]">
 
             {/* PRP #70: CSS Fallbacks (mostly generic) */}
             <style>{`
@@ -396,169 +429,80 @@ export const AmbiTrim: React.FC<AmbiTrimProps> = ({ tool: _tool }) => {
                 width: 2px !important;
                 background-color: #ff0000 !important;
               }
-              /* We handle the tricky region/handle stuff in JS now */
             `}</style>
 
-            {/* ... Rest of JSX same as before ... */}
-
-            {/* SECTION A: HEADER (Static) */}
-            <div className="px-8 pt-8 pb-6">
-                <header>
-                    <h2 className="text-3xl font-bold mb-2 text-teal-400">
-                        AmbiTrim
-                    </h2>
-                    <p className="text-gray-400 text-lg font-light">
-                        Lossless trimming for Ambisonic master files.
-                    </p>
-                </header>
-            </div>
-
-            {/* SECTION B: THE WORKSPACE (Dynamic - Flex Grow) */}
-            <div className="flex-1 relative min-h-0 w-full flex flex-col px-8 pb-4">
-                {!file ? (
-                    // STATE 1: Empty DropZone
-                    <div className="h-full border-2 border-dashed border-studio-border rounded-xl flex items-center justify-center bg-[#1E1E1E] overflow-hidden">
-                        <SmartDropZone
-                            className="w-full h-full border-none"
-                            label=".wav, .amb, .caf, .opus, .ogg, .mp3, .flac, .aac accepted"
-                            onFilesLoaded={(files) => {
-                                const processed = files.map(f => {
-                                    if (typeof f === 'string') {
-                                        return { name: window.electronAPI ? f.split(/[/\\]/).pop() : f, path: f } as any as File;
-                                    }
-                                    return f;
-                                });
-                                handleFilesDropped(processed as File[]);
-                            }}
-                            onDrop={(e) => {
-                                if (e.dataTransfer.files) handleFilesDropped(Array.from(e.dataTransfer.files));
-                            }}
-                        />
+            {/* SECTION B: THE WORKSPACE (Unconditional - PRP #143) */}
+            <div className="flex-1 relative min-h-0 w-full flex flex-col">
+                <div className="w-full flex-1 flex flex-col gap-6 bg-[#1E1E1E] rounded-xl p-6 shadow-2xl border border-studio-border overflow-hidden">
+                    
+                    {/* 1. TOP INFO: Filename */}
+                    <div className="flex justify-between items-center border-b border-gray-800 pb-4">
+                        <span className="font-mono text-sm text-purple-300 truncate max-w-[400px]">
+                            {activeFile?.name || "No File Selected"}
+                        </span>
+                        <div className="flex items-center gap-4">
+                            <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">Active File</span>
+                            <div className={`w-2 h-2 rounded-full ${activeFile ? 'bg-purple-500 animate-pulse' : 'bg-gray-700'}`}></div>
+                        </div>
                     </div>
-                ) : (
-                    // STATE 2: SANDWICH EDITOR INTERFACE (PRP #63)
-                    <div className="w-full h-full flex flex-col bg-[#1E1E1E] rounded-lg shadow-inner border border-studio-border overflow-hidden">
 
-                        {/* 1. TOP BAR: Info & Zoom */}
-                        <div className="flex-none flex justify-between items-center px-4 py-2 border-b border-studio-border bg-[#27272a]">
-                            <div className="flex items-center gap-6">
-                                <span className="font-mono text-sm text-teal-300 truncate max-w-[200px]">{file.name}</span>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xs text-gray-400 font-bold uppercase">Zoom</span>
-                                    <input
-                                        type="range" min="0" max="100" value={zoomLevel}
-                                        onChange={handleZoom}
-                                        className="w-32 accent-teal-500 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
-                                        title="0 = Fit to Screen"
-                                    />
+                    {/* 2. WAVEFORM: Fixed Container (PRP #143) */}
+                    <div className="h-[200px] w-full relative bg-gray-900 rounded-md border border-gray-800 overflow-hidden">
+                        {isGeneratingProxy && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 z-20 bg-gray-900/80">
+                                <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                                <span className="text-purple-300 font-medium animate-pulse">Generating Waveform...</span>
+                            </div>
+                        )}
+
+                        {/* The Canvas Container */}
+                        <div ref={containerRef} className="w-full h-full" id="waveform-container"></div>
+                    </div>
+
+                    {/* 3. CONTROLS: Zoom & Time (Vertical Stack with gap-6) */}
+                    <div className="flex flex-col gap-6">
+                        
+                        {/* Zoom Slider */}
+                        <div className="flex items-center gap-6 bg-[#18181b] p-4 rounded-lg border border-gray-800">
+                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest min-w-[60px]">Zoom</label>
+                            <input
+                                type="range" min="0" max="100" value={zoomLevel}
+                                onChange={handleZoom}
+                                className="flex-1 accent-purple-500 h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer hover:accent-purple-400"
+                                title="0 = Fit to Screen"
+                            />
+                            <span className="text-[10px] font-mono text-gray-500 w-12 text-right">
+                                {zoomLevel === 0 ? 'FIT' : `${zoomLevel}%`}
+                            </span>
+                        </div>
+
+                        {/* Time display: Start/End Markers (Transport removed per PRP #143) */}
+                        <div className="flex flex-col gap-1.5 flex-1">
+                            <div className="grid grid-cols-2 gap-6 w-full">
+                                <div className="flex flex-col gap-1.5">
+                                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Trim Start</label>
+                                    <div className="bg-[#18181b] border border-studio-border rounded-lg px-6 py-3 text-xl text-white font-mono text-center shadow-inner">
+                                        {formatTime(startTime)}
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-1.5">
+                                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Trim End</label>
+                                    <div className="bg-[#18181b] border border-studio-border rounded-lg px-6 py-3 text-xl text-white font-mono text-center shadow-inner">
+                                        {formatTime(endTime)}
+                                    </div>
                                 </div>
                             </div>
-                            <button
-                                onClick={() => {
-                                    setFile(null);
-                                    setProxyPath(null);
-                                    if (wavesurfer.current) wavesurfer.current.destroy();
-                                }}
-                                className="text-xs text-red-400 hover:text-red-300 underline"
-                            >
-                                CLOSE
-                            </button>
                         </div>
-
-                        {/* 2. MIDDLE: The Waveform (Flex-Grow) */}
-                        <div className="flex-1 relative bg-[#18181b] overflow-hidden">
-                            {isGeneratingProxy ? (
-                                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 z-20 bg-[#18181b]/80">
-                                    <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
-                                    <span className="text-teal-300 font-medium animate-pulse">Generating Waveform...</span>
-                                </div>
-                            ) : null}
-
-                            {/* The Canvas Container */}
-                            <div ref={containerRef} className="w-full h-full" id="waveform-container"></div>
-                        </div>
-
-                        {/* 3. BOTTOM BAR: Transport & Time */}
-                        <div className="flex-none p-4 bg-[#27272a] border-t border-studio-border">
-                            <div className="flex justify-center mb-4">
-                                <button
-                                    onClick={togglePlay}
-                                    className="bg-white text-black rounded-full p-3 hover:bg-gray-200 transition-colors shadow-lg"
-                                >
-                                    {isPlaying ? (
-                                        <PauseIcon className="w-6 h-6" />
-                                    ) : (
-                                        <PlayIcon className="w-6 h-6" />
-                                    )}
-                                </button>
-                            </div>
-
-                            {/* Time Inputs */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <TimeInput
-                                    label="Start Time"
-                                    value={startTime}
-                                    min={0}
-                                    max={endTime}
-                                    onChange={(val) => {
-                                        setStartTime(val);
-                                        // Update Region
-                                        if (regions.current) {
-                                            const r = regions.current.getRegions()[0];
-                                            if (r) {
-                                                r.setOptions({ start: val, end: endTime });
-                                                styleRegion(r); // Re-apply styles if needed
-                                            }
-                                        }
-                                    }}
-                                />
-                                <TimeInput
-                                    label="End Time"
-                                    value={endTime}
-                                    min={startTime}
-                                    max={_duration}
-                                    onChange={(val) => {
-                                        setEndTime(val);
-                                        // Update Region
-                                        if (regions.current) {
-                                            const r = regions.current.getRegions()[0];
-                                            if (r) {
-                                                r.setOptions({ start: startTime, end: val });
-                                                styleRegion(r);
-                                            }
-                                        }
-                                    }}
-                                />
-                            </div>
-                        </div>
-
                     </div>
-                )}
-            </div>
-
-            {/* SECTION C: THE CONTROL DECK (Main Export Button) */}
-            <div className="flex-none shadow-[0_-4px_20px_rgba(0,0,0,0.5)] border-t border-studio-border bg-[#18181b] p-6 z-30">
-                <div className="max-w-4xl mx-auto flex flex-col gap-6">
-                    {/* Status Bar */}
-                    {statusMsg && (
-                        <div className={`p-3 rounded text-sm font-mono border text-center ${statusMsg.includes("Success") ? "bg-green-900/20 border-green-900/50 text-green-300" : statusMsg.includes("Error") || statusMsg.includes("Failed") ? "bg-red-900/20 border-red-900/50 text-red-300" : "bg-blue-900/20 border-blue-900/50 text-blue-300"}`}>
-                            {statusMsg}
-                        </div>
-                    )}
-
-                    <button
-                        onClick={handleExport}
-                        disabled={!file || isGeneratingProxy || isExporting}
-                        className={`w-full px-8 py-2.5 rounded font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-                        ${!file || isGeneratingProxy || isExporting
-                                ? 'bg-gray-700 text-gray-500'
-                                : 'bg-teal-600 hover:bg-teal-700'
-                            }`}
-                    >
-                        {isExporting ? 'Exporting...' : 'Export Trimmed File'}
-                    </button>
                 </div>
             </div>
+
+            {/* Status Bar */}
+            {statusMsg && (
+                <div className={`p-3 rounded text-sm font-mono border text-center ${statusMsg.includes("Success") ? "bg-green-900/20 border-green-900/50 text-green-300" : statusMsg.includes("Error") || statusMsg.includes("Failed") ? "bg-red-900/20 border-red-900/50 text-red-300" : "bg-blue-900/20 border-blue-900/50 text-blue-300"}`}>
+                    {statusMsg}
+                </div>
+            )}
         </div>
     );
-};
+});
