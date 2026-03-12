@@ -56,7 +56,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTool, onSelectTool }) =>
 
   return (
     <>
-      <aside className="w-64 bg-studio-panel border-r border-white flex flex-col h-screen select-none">
+      <aside className="bg-studio-panel border-r border-white flex flex-col h-screen select-none">
         {/* Header */}
         <div className="p-4 border-b border-studio-border">
           <div className="flex items-center justify-between">

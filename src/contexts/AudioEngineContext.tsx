@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
-import { HrtfProfile } from '../types';
+import { HrtfProfile, ToolId } from '../types';
 import { useSettings } from './SettingsContext';
 
 interface AudioEngineContextType {
@@ -120,6 +120,14 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
         params.append('start', start.toString());
         params.append('_t', nonce.toString());
+
+        // Apply Rotation ONLY if AmbiRotate is the active tool
+        if (settings.lastActiveTool === ToolId.AmbiRotate) {
+            const rot = settings.toolSettings?.['ambirotate'] || { yaw: 0, pitch: 0, roll: 0 };
+            params.append('yaw', rot.yaw.toString());
+            params.append('pitch', rot.pitch.toString());
+            params.append('roll', rot.roll.toString());
+        }
 
         if (!isHeadphonesOn) params.append('render', 'stereo');
 

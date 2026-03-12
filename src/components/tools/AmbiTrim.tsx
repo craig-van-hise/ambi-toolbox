@@ -217,8 +217,12 @@ export const AmbiTrim = React.forwardRef<AmbiTrimHandle, AmbiTrimProps>(({ tool:
 
                 wavesurfer.current = ws;
 
-                // Load audio
-                ws.load(proxyPath);
+                // Safely load and catch unhandled fetch aborts caused by rapid unmounting
+                ws.load(proxyPath).catch((err: any) => {
+                    if (active) {
+                        console.warn("[AmbiTrim] WaveSurfer load aborted or failed:", err.message);
+                    }
+                });
 
                 // PRP #147: Phase 3 - Seek Interception
                 ws.on('interaction', (newTime: number) => {
@@ -350,7 +354,13 @@ export const AmbiTrim = React.forwardRef<AmbiTrimHandle, AmbiTrimProps>(({ tool:
         };
 
         generateProxy();
-    }, [activeFile]);
+
+        return () => {
+            if (proxyPath && proxyPath.startsWith('blob:')) {
+                URL.revokeObjectURL(proxyPath);
+            }
+        };
+    }, [activeFile, proxyPath]);
 
     // PRP #148: Phase 1 - Mirror Transport Play/Pause for smooth 60fps internal rendering
     useEffect(() => {

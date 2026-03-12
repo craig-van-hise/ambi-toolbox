@@ -43,6 +43,7 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 - **PRP #128**: AmbiLevel Tool Integration (Completed)
 - **PRP #129**: Ambix2BW64 Integration (Completed)
 - **PRP #130**: Architectural De-Godding & Modularization (Completed)
+- **PRP #151**: Geometric Symmetry & Window Alignment (Completed)
 - **Phase: Maintenance**: Active
 
 ## 4. Directory Structure (Architecture)
@@ -114,6 +115,10 @@ The **AmbiToolbox** has been successfully re-architected into a unified **Electr
 -   **`PRPs/`**: Project Rollout Proposals and historical logs.
 
 ## 5. Recent Logic Changes
+
+- **Geometric Symmetry & Layout Hardening (PRP #151)**:
+    - **Sidebar Alignment**: Enforced pixel-perfect symmetry by initializing both `leftWidth` and `rightWidth` to 220px via a shared constant in `App.tsx`.
+    - **Window Geometry**: Updated the Electron `BrowserWindow` default dimensions to 1050x660 and established strict safety bounds (900x600) to prevent UI collision in the 3-column architecture.
 - **Ambix2BW64 Tool Integration (PRP #129)**:
     - **Standalone Binary Provisioning**: Packaged the `ear-utils` Python library into an `arm64` macOS executable using PyInstaller, eliminating the need for a local Python environment for ADM conversion.
     - **ADM Metadata Injection**: Integrated EBU ADM Renderer logic to convert Ambisonic (AmbiX) PCM streams into BW64 containers with standard-compliant ADM metadata blocks.

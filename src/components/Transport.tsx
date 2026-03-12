@@ -153,16 +153,19 @@ export const Transport: React.FC<TransportProps> = ({
         };
     }, [dragging, loopIn, loopOut, duration, setLoopPoints]);
 
-    const handlePlayClick = () => {
+    const handleMasterPlay = () => {
         if (isRebuilding) return;
-        // If the transport has no initialized stream, but we have a selected file in the UI...
+        // If the transport is empty, but we have a selected file in the UI...
         if (!currentFile && activeFile) {
-            // Cold-boot the stream and force playback
-            setCurrentFile(activeFile.path, true);
-        } else {
-            // Otherwise, behave normally
-            togglePlayPause();
+            // Safely extract the path (handling both object and string shapes)
+            const targetPath = typeof activeFile === 'string' ? activeFile : activeFile.path;
+            if (targetPath) {
+                setCurrentFile(targetPath, true); // Cold-boot and play
+                return;
+            }
         }
+        // Otherwise, behave normally (pause if playing, play if paused)
+        togglePlayPause();
     };
 
     return (
@@ -270,7 +273,7 @@ export const Transport: React.FC<TransportProps> = ({
                     </button>
 
                     <button
-                        onClick={handlePlayClick}
+                        onClick={handleMasterPlay}
                         className={`w-11 h-9 flex items-center justify-center rounded-md transition-all active:scale-95 shadow-md ${isRebuilding
                             ? 'bg-amber-900/30 text-amber-500 cursor-not-allowed'
                             : isPlaying

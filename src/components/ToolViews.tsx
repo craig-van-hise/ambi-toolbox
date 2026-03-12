@@ -229,8 +229,8 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#121214]">
       <div className="flex-1 overflow-y-auto p-8">
         <header className="mb-8">
-          <h2 className={`text-3xl font-bold mb-2 ${tool.colorClass}`}>{tool.label}</h2>
-          <p className="text-gray-400 text-lg font-light">{tool.description}</p>
+          <h2 className={`text-2xl font-bold mb-2 ${tool.colorClass}`}>{tool.label}</h2>
+          <p className="text-gray-400 text-base font-light">{tool.description}</p>
         </header>
 
         <div className="max-w-4xl mx-auto flex flex-col gap-8">

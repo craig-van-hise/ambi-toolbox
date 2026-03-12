@@ -15,7 +15,7 @@ class PrimeBuffer extends Transform {
     private chunks: Buffer[] = [];
     private totalSize = 0;
     private primed = false;
-    private primeThreshold = 48 * 1024; // 48KB (~1.5s of 256kbps Opus)
+    private primeThreshold = 4 * 1024; // 4KB (near-zero startup delay)
 
     _transform(chunk: any, encoding: BufferEncoding, callback: Function) {
         const bufferChunk = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding);
@@ -182,7 +182,7 @@ export function startStreamServer(port: number = 45455) {
             }
 
             res.writeHead(200, {
-                'Content-Type': 'audio/ogg',
+                'Content-Type': 'audio/wav',
                 'Transfer-Encoding': 'chunked',
                 'Cache-Control': 'no-cache',
                 'Connection': 'keep-alive',
@@ -191,7 +191,11 @@ export function startStreamServer(port: number = 45455) {
             });
 
             try {
-                const [decoder, obr, encoder] = createObrPipeline(filePath, channels, profile, start);
+                const yaw = parseFloat(url.searchParams.get('yaw') || '0');
+                const pitch = parseFloat(url.searchParams.get('pitch') || '0');
+                const roll = parseFloat(url.searchParams.get('roll') || '0');
+
+                const [decoder, rotator, obr, encoder] = createObrPipeline(filePath, channels, profile, start, { yaw, pitch, roll });
                 if (!encoder.stdout) throw new Error("Encoder stdout is null");
 
                 const httpBuffer = new PassThrough({ highWaterMark: 1024 * 1024 * 10 });
@@ -204,6 +208,7 @@ export function startStreamServer(port: number = 45455) {
                     primeBuffer.destroy();
                     httpBuffer.destroy();
                     decoder.kill('SIGKILL');
+                    rotator.kill('SIGKILL');
                     obr.kill('SIGKILL');
                     encoder.kill('SIGKILL');
                 });
