@@ -33,12 +33,20 @@ export enum BitrateOption {
   TechMax = '256000',
 }
 
-export enum HrtfProfile {
-  Neumann = 'Neumann_KU100_48k.sofa',
-  Kemar = 'MIT_KEMAR_Normal.sofa',
-  H3 = 'H3_48K_24bit_256tap_FIR_SOFA.sofa',
-  Custom = 'CUSTOM',
+export type BuiltInHrtfProfile = 'neumann' | 'kemar' | 'h3';
+
+export interface HrtfSelection {
+  type: BuiltInHrtfProfile | 'custom';
+  customPath?: string; // Only populated if type === 'custom'
 }
+
+export enum HrtfProfile {
+  Neumann = 'neumann',
+  Kemar = 'kemar',
+  H3 = 'h3',
+  Custom = 'custom',
+}
+
 
 export enum AmbisonicOrder {
   Third = '3rd Order (16 Channels)',
@@ -67,7 +75,7 @@ export interface ElectronAPI {
   readChunk: (filePath: string, offset: number, length: number) => Promise<ArrayBuffer>;
   processAmbiRotate: (filePaths: string[], rotation: { yaw: number, pitch: number, roll: number }) => Promise<any>;
   convertBitrate: (filePaths: string[], bitrate: string, format: 'opus' | 'iamf', settings?: any) => Promise<any>;
-  convertAmbix2Bin: (filePaths: string[], hrtfProfile: string, settings?: any) => Promise<any>;
+  convertAmbix2Bin: (filePaths: string[], hrtfSelection: HrtfSelection, settings?: any) => Promise<any>;
   convertAmbiSwap: (filePaths: string[], direction: string, settings?: any) => Promise<any>;
   convertAmbix2Caf: (filePaths: string[], layout?: string, bitDepth?: string, settings?: any) => Promise<any>;
   convertAmbiOrder: (filePaths: string[], targetOrder: string, settings?: any) => Promise<any>;

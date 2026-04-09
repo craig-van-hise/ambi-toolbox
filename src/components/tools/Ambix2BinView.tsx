@@ -18,9 +18,13 @@ export const Ambix2BinView: React.FC<Ambix2BinViewProps> = ({ tool }) => {
 
     const handleProfileChange = async (val: HrtfProfile) => {
         if (val === HrtfProfile.Custom) {
-            const result = await (window as any).electronAPI.selectSofaFile();
-            if (result && !result.canceled) {
-                const path = result.filePaths[0];
+            const filePaths = await window.electronAPI.selectFiles({
+                properties: ['openFile'],
+                filters: [{ name: 'SOFA Files', extensions: ['sofa'] }]
+            });
+            
+            if (filePaths && filePaths.length > 0) {
+                const path = filePaths[0];
                 setCustomSofaPath(path);
                 setProfile(val);
                 updateSettings({

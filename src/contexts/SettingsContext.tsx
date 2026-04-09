@@ -30,6 +30,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
             if (saved) {
                 const parsed = JSON.parse(saved);
+
+                // Sanitize legacy Ambix2Bin settings
+                if (parsed.toolSettings && parsed.toolSettings.ambix2bin) {
+                    const currentProfile = parsed.toolSettings.ambix2bin.hrtfProfile;
+                    if (typeof currentProfile === 'string' && currentProfile.includes('.sofa')) {
+                        console.warn('[SettingsContext] Migrating legacy HRTF profile string to ID format.');
+                        parsed.toolSettings.ambix2bin.hrtfProfile = 'neumann'; // Default to ID
+                    }
+                }
                 const merged = {
                     ...defaultSettings,
                     ...parsed,

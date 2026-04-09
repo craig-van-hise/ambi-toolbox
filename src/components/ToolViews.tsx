@@ -158,7 +158,14 @@ export const ToolView: React.FC<ToolViewProps> = ({ tool }) => {
           result = await window.electronAPI.convertAmbix2Apac(filePaths, options.bitrate, backendSettings);
           break;
         case ToolId.Ambix2Bin:
-          result = await window.electronAPI.convertAmbix2Bin(filePaths, options.hrtfProfile, backendSettings);
+          result = await window.electronAPI.convertAmbix2Bin(
+            filePaths,
+            { 
+              type: options.hrtfProfile || 'neumann', 
+              customPath: options.hrtfProfile === 'custom' ? options.customSofaPath : undefined 
+            },
+            backendSettings
+          );
           break;
         case ToolId.AmbiSwap:
           result = await window.electronAPI.convertAmbiSwap(filePaths, options.direction, backendSettings);

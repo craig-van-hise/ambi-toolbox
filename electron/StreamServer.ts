@@ -110,10 +110,14 @@ export function startStreamServer(port: number = 45455) {
             const render = url.searchParams.get('render');
 
             if (binaural && !sofaPath && hrtfProfile) {
-                if (hrtfProfile.includes('Neumann')) {
-                    sofaPath = getSofaAssetPath('Neumann_KU100_48k.sofa');
-                } else if (hrtfProfile.includes('KEMAR')) {
-                    sofaPath = getSofaAssetPath('MIT_KEMAR_Normal.sofa');
+                const hrtfFileMap: Record<string, string> = {
+                    'neumann': 'Neumann_KU100_48k.sofa',
+                    'kemar': 'MIT_KEMAR_Normal.sofa',
+                    'h3': 'H3_48K_24bit_256tap_FIR_SOFA.sofa'
+                };
+                const filename = hrtfFileMap[hrtfProfile];
+                if (filename) {
+                    sofaPath = getSofaAssetPath(filename);
                 }
             }
 

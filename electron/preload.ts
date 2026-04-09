@@ -52,8 +52,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   convertBitrate: (filePaths: string[], bitrate: string, format: 'opus' | 'iamf', settings?: any) =>
     ipcRenderer.invoke('run-task', format === 'iamf' ? 'ambix2iamf' : 'ambix2opus', { files: filePaths, bitrate, settings }),
 
-  convertAmbix2Bin: (filePaths: string[], hrtfProfile: string, settings?: any) =>
-    ipcRenderer.invoke('run-task', 'ambix2bin', { files: filePaths, hrtfProfile, settings }),
+  convertAmbix2Bin: (filePaths: string[], hrtfSelection: any, settings?: any) =>
+    ipcRenderer.invoke('run-task', 'ambix2bin', { files: filePaths, hrtfSelection, settings }),
 
   convertAmbiSwap: (filePaths: string[], direction: string, settings?: any) =>
     ipcRenderer.invoke('run-task', 'ambiswap', { files: filePaths, direction, settings }),

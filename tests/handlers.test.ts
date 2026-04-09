@@ -118,7 +118,7 @@ describe('Backend Handlers', () => {
         it('should spawn python script with correct args for Neumann profile', async () => {
             await handleAmbix2Bin(mockEvent, {
                 files: ['/test/input.wav'],
-                hrtfProfile: 'Generic (Neumann KU100)'
+                hrtfSelection: { type: 'neumann' }
             });
 
             expect(spawnMock).toHaveBeenCalledTimes(1);
@@ -127,7 +127,27 @@ describe('Backend Handlers', () => {
             const args = call[1];
 
             expect(cmd).toBe('python3');
-            expect(args[1]).toBe('--input');
+            expect(args).toContain('--input');
+            // Check that the resolved path contains the expected filename
+            expect(args).toContain('/test/input.wav');
+            const hrtfArg = args[args.indexOf('--sofa') + 1];
+            expect(hrtfArg).toContain('Neumann_KU100_48k.sofa');
+        });
+
+        it('should throw error if custom SOFA file is missing', async () => {
+            const fs = await import('node:fs');
+            // We need to mock existsSync to return false for the custom path
+            // Since it's mocked to return true by default, we force false here
+            vi.spyOn(fs, 'existsSync').mockReturnValueOnce(true) // files[0] check if any
+                .mockReturnValueOnce(false); // customPath check
+
+            const result = await handleAmbix2Bin(mockEvent, {
+                files: ['/test/input.wav'],
+                hrtfSelection: { type: 'custom', customPath: '/non/existent.sofa' }
+            });
+
+            expect(result.success).toBe(false);
+            expect(result.error).toContain('Custom SOFA file not found');
         });
     });
 

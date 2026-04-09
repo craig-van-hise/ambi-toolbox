@@ -1,7 +1,7 @@
 import { IpcMainInvokeEvent, app } from '../shim';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
-import { determineOutputPath } from './common';
+import { determineOutputPath, getSofaAssetPath } from './common';
 import fs from 'node:fs';
 
 // Helper to get script path
@@ -12,43 +12,45 @@ function getScriptPath(scriptName: string): string {
     return path.join(process.cwd(), 'electron', 'handlers', 'scripts', scriptName);
 }
 
-// Helper to get asset path
-function getSofaPath(filename: string): string {
-    if (app.isPackaged) {
-        return path.join(process.resourcesPath, 'hrtf', filename);
-    }
-    return path.join(process.cwd(), 'assets', 'hrtf', filename);
-}
+
 
 export async function handleAmbix2Bin(event: IpcMainInvokeEvent, options: {
     files: string[];
-    hrtfProfile: string; // "Generic (Neumann KU100)", "Generic (KEMAR)", or custom path
+    hrtfSelection: { type: string; customPath?: string };
     settings?: { outputDir?: string; autoCreateFolder?: boolean };
 }): Promise<{ success: boolean; error?: string; data?: any }> {
-    const { files, hrtfProfile, settings } = options;
+    const { files, hrtfSelection, settings } = options;
 
     try {
         if (!files || files.length === 0) throw new Error("No files provided");
 
         // 1. Determine SOFA Path (Once for all files)
         let sofaPath = '';
-        console.log(`[Ambix2Bin] Profile requested: ${hrtfProfile}`);
+        console.log(`[Ambix2Bin] Selection requested: ${JSON.stringify(hrtfSelection)}`);
 
-        if (hrtfProfile === 'Generic (Neumann KU100)') {
-            sofaPath = getSofaPath('Neumann_KU100_48k.sofa');
-        } else if (hrtfProfile === 'Generic (KEMAR)') {
-            sofaPath = getSofaPath('MIT_KEMAR_Normal.sofa');
-        } else { // Assume hrtfProfile is the custom path
-            if (fs.existsSync(hrtfProfile)) {
-                sofaPath = hrtfProfile;
+        const hrtfFileMap: Record<string, string> = {
+            'neumann': 'Neumann_KU100_48k.sofa',
+            'kemar': 'MIT_KEMAR_Normal.sofa',
+            'h3': 'H3_48K_24bit_256tap_FIR_SOFA.sofa'
+        };
+
+        if (hrtfSelection.type === 'custom') {
+            if (hrtfSelection.customPath && fs.existsSync(hrtfSelection.customPath)) {
+                sofaPath = hrtfSelection.customPath;
             } else {
-                throw new Error(`Custom SOFA file not found at: ${hrtfProfile}`);
+                throw new Error(`Custom SOFA file not found at: ${hrtfSelection.customPath}`);
+            }
+        } else {
+            const filename = hrtfFileMap[hrtfSelection.type];
+            if (!filename) throw new Error(`Unknown HRTF profile ID: ${hrtfSelection.type}`);
+            
+            sofaPath = getSofaAssetPath(filename);
+            
+            if (!fs.existsSync(sofaPath)) {
+                throw new Error(`Built-in SOFA file not found at: ${sofaPath}`);
             }
         }
 
-        if (!fs.existsSync(sofaPath)) {
-            throw new Error(`SOFA file not found at: ${sofaPath}`);
-        }
 
         const scriptPath = getScriptPath('saf_wrapper.py');
         const results = [];
