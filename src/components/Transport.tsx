@@ -264,7 +264,8 @@ export const Transport: React.FC<TransportProps> = ({
 
                     <button
                         onClick={stop}
-                        className="w-9 h-9 flex items-center justify-center bg-[#27272a] hover:bg-[#3f3f46] text-gray-400 hover:text-white rounded-md transition-all active:scale-95"
+                        disabled={isRebuilding}
+                        className={`w-9 h-9 flex items-center justify-center bg-[#27272a] hover:bg-[#3f3f46] text-gray-400 hover:text-white rounded-md transition-all active:scale-95 ${isRebuilding ? 'opacity-50 cursor-not-allowed' : ''}`}
                         title="Stop"
                     >
                         <div className="w-5 h-5">
@@ -274,6 +275,7 @@ export const Transport: React.FC<TransportProps> = ({
 
                     <button
                         onClick={handleMasterPlay}
+                        disabled={isRebuilding}
                         className={`w-11 h-9 flex items-center justify-center rounded-md transition-all active:scale-95 shadow-md ${isRebuilding
                             ? 'bg-amber-900/30 text-amber-500 cursor-not-allowed'
                             : isPlaying

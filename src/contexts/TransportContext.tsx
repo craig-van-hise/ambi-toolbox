@@ -28,11 +28,12 @@ const TransportContext = createContext<TransportContextType | undefined>(undefin
 
 export const TransportProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const {
-        audioRef,
+        audioInstance,
         isRebuilding,
         duration,
         channels,
         commitStream,
+        cleanupAudio,
         probeFile
     } = useAudioEngine();
 
@@ -47,14 +48,46 @@ export const TransportProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     const stateRef = useRef({ isPlaying, isLooping, loopIn, loopOut, streamOffset, isRebuilding });
 
+    const stop = useCallback(() => {
+        setIsPlaying(false);
+        setCurrentTime(0);
+        setStreamOffset(0);
+        cleanupAudio();
+    }, [cleanupAudio]);
+
+    const commitSeekInternal = (time: number, resume: boolean) => {
+        if (!currentFile) {
+            console.warn('[Transport] commitSeekInternal: no currentFile, seek aborted.');
+            return;
+        }
+        setStreamOffset(time);
+        setCurrentTime(time);
+        commitStream(currentFile, channels, time, Date.now());
+        if (resume) setIsPlaying(true);
+    };
+
+    const play = () => {
+        if (isRebuilding || !currentFile) return;
+
+        if (!audioInstance || !audioInstance.src || audioInstance.src === 'about:blank') {
+            // Re-commit stream with fresh cache-buster if it was purged by stop/EOF
+            commitStream(currentFile, channels, currentTime, Date.now());
+        }
+        setIsPlaying(true);
+    };
+
+    const pause = () => setIsPlaying(false);
+
     useEffect(() => {
         stateRef.current = { isPlaying, isLooping, loopIn, loopOut, streamOffset, isRebuilding };
     }, [isPlaying, isLooping, loopIn, loopOut, streamOffset, isRebuilding]);
 
     // Handle Audio Events
     useEffect(() => {
-        const audio = audioRef.current;
+        const audio = audioInstance;
         if (!audio) return;
+
+        console.log('[Transport] Attaching listeners to new audio instance');
 
         const onTimeUpdate = () => {
             if (stateRef.current.isRebuilding) return;
@@ -70,35 +103,42 @@ export const TransportProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
         const onEnded = () => {
             if (!stateRef.current.isLooping) {
-                setIsPlaying(false);
-                setCurrentTime(0);
+                stop();
             }
         };
 
         const onPlay = () => setIsPlaying(true);
         const onPause = () => setIsPlaying(false);
+        const onError = (e: any) => {
+            console.error('[Transport] Audio Element Error:', audio.error || e);
+            // Fatal error: cleanup and reset
+            stop();
+        };
 
         audio.addEventListener('timeupdate', onTimeUpdate);
         audio.addEventListener('ended', onEnded);
         audio.addEventListener('play', onPlay);
         audio.addEventListener('pause', onPause);
+        audio.addEventListener('error', onError);
 
         return () => {
+            console.log('[Transport] Detaching listeners from old audio instance');
             audio.removeEventListener('timeupdate', onTimeUpdate);
             audio.removeEventListener('ended', onEnded);
             audio.removeEventListener('play', onPlay);
             audio.removeEventListener('pause', onPause);
+            audio.removeEventListener('error', onError);
         };
-    }, [audioRef]);
+    }, [audioInstance, stop]);
 
     // Volume Sync
     useEffect(() => {
-        if (audioRef.current) audioRef.current.volume = volume;
-    }, [volume, audioRef]);
+        if (audioInstance) audioInstance.volume = volume;
+    }, [volume, audioInstance]);
 
     // Play/Pause Sync
     useEffect(() => {
-        const audio = audioRef.current;
+        const audio = audioInstance;
         // Ensure we don't try to play an empty source
         if (!audio || !audio.src || audio.src === 'about:blank') return;
 
@@ -106,44 +146,26 @@ export const TransportProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         // Wait for the canplay event to clear the isRebuilding lock.
         if (isPlaying && !isRebuilding && audio.paused) {
             audio.play().catch(e => {
-                if (e.name !== 'AbortError') console.error('[Transport] Play failed:', e);
+                if (e.name !== 'AbortError') {
+                    console.error('[Transport] Play failed:', e);
+                    // If it's a source error, trigger stop to clean up
+                    if (e.name === 'NotSupportedError' || e.message.includes('supported sources')) {
+                        stop();
+                    }
+                }
             });
         } else if (!isPlaying && !audio.paused) {
             audio.pause();
         }
-    }, [isPlaying, isRebuilding, audioRef]);
-
-    const commitSeekInternal = (time: number, resume: boolean) => {
-        if (!currentFile) {
-            console.warn('[Transport] commitSeekInternal: no currentFile, seek aborted.');
-            return;
-        }
-        setStreamOffset(time);
-        setCurrentTime(time);
-        commitStream(currentFile, channels, time, Date.now());
-        if (resume) setIsPlaying(true);
-    };
-
-    const play = () => {
-        if (!isRebuilding && currentFile && audioRef.current?.src && audioRef.current.src !== 'about:blank') {
-            setIsPlaying(true);
-        }
-    };
-    const pause = () => setIsPlaying(false);
-    const stop = () => {
-        setIsPlaying(false);
-        setCurrentTime(0);
-        setStreamOffset(0);
-        if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.src = 'about:blank';
-            audioRef.current.currentTime = 0;
-        }
-    };
+    }, [isPlaying, isRebuilding, audioInstance, stop]);
 
     const togglePlayPause = () => {
         if (isRebuilding) return;
-        if (!currentFile || !audioRef.current?.src || audioRef.current.src === 'about:blank') return;
+        if (!currentFile || !audioInstance?.src || audioInstance.src === 'about:blank') {
+            // If stopped, but we have a file, trigger play which handles commit
+            if (currentFile) play();
+            return;
+        }
         setIsPlaying(prev => !prev);
     };
     const toggleLoop = () => setIsLooping(prev => !prev);
@@ -164,10 +186,8 @@ export const TransportProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             return;
         }
 
-        if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.src = 'about:blank';
-            audioRef.current.currentTime = 0;
+        if (audioInstance) {
+            cleanupAudio();
         }
 
         setCurrentFileState(file);
@@ -183,7 +203,7 @@ export const TransportProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             commitStream(file, c, 0, Date.now());
             if (shouldPlay) setIsPlaying(true);
         }
-    }, [currentFile, audioRef, probeFile, commitStream, channels]);
+    }, [currentFile, audioInstance, probeFile, commitStream, cleanupAudio, channels]);
 
     return (
         <TransportContext.Provider value={{

@@ -97,6 +97,10 @@ function createTransportSM(initialState: Partial<TransportState> = {}) {
         isFailsafeTriggered: () => failsafeTriggered,
         seek,
         commitSeek,
+        stop: () => {
+            state = { ...state, isPlaying: false, currentTime: 0 };
+            // Simulate audio.src = ''
+        },
         simulateNativeUnlock,
         advanceTimerBy,
     };
@@ -213,6 +217,15 @@ describe('PRP #105 — Transport State Machine V3', () => {
             expect(sm.getState().isRebuilding).toBe(false);
 
             vi.useRealTimers();
+        });
+    });
+
+    describe('PRP #158: Transport Hardening', () => {
+        it('should nullify state correctly on stop()', () => {
+            const sm = createTransportSM({ isPlaying: true, currentTime: 10.0 });
+            sm.stop();
+            expect(sm.getState().isPlaying).toBe(false);
+            expect(sm.getState().currentTime).toBe(0);
         });
     });
 });

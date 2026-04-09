@@ -6,6 +6,22 @@ import { PassThrough, Transform } from 'stream';
 import { getFfmpegPath, getSofaAssetPath, probeAudio } from './handlers/common';
 import { createObrPipeline } from './handlers/ObrHandler';
 import { prepareStreamTarget } from './handlers/IngestionRouter';
+import { ChildProcess } from 'child_process';
+
+const activeStreams = new Map<string, ChildProcess[]>();
+
+function killActiveStream(id: string) {
+    const processes = activeStreams.get(id);
+    if (processes) {
+        console.log(`[StreamServer] Hard-killing active stream: ${id}`);
+        processes.forEach(p => {
+            try {
+                if (!p.killed) p.kill('SIGKILL');
+            } catch (e) { }
+        });
+        activeStreams.delete(id);
+    }
+}
 
 /**
  * PrimeBuffer
@@ -152,15 +168,23 @@ export function startStreamServer(port: number = 45455) {
             const httpBuffer = new PassThrough({ highWaterMark: 1024 * 1024 * 10 });
             const primeBuffer = new PrimeBuffer();
 
+            // Track this stream of one process
+            const streamId = `legacy-${filePath}`;
+            killActiveStream(streamId);
+            activeStreams.set(streamId, [ffmpeg]);
+
             ffmpeg.stdout.pipe(primeBuffer).pipe(httpBuffer).pipe(res);
 
             req.on('close', () => {
+                killActiveStream(streamId);
                 primeBuffer.destroy();
                 httpBuffer.destroy();
-                ffmpeg.kill();
             });
 
-            ffmpeg.on('close', () => { if (!res.writableEnded) res.end(); });
+            ffmpeg.on('close', () => { 
+                if (!res.writableEnded) res.end();
+                activeStreams.delete(streamId);
+            });
             return;
 
         } else if (isObrStream) {
@@ -198,22 +222,23 @@ export function startStreamServer(port: number = 45455) {
                 const [decoder, rotator, obr, encoder] = createObrPipeline(filePath, channels, profile, start, { yaw, pitch, roll });
                 if (!encoder.stdout) throw new Error("Encoder stdout is null");
 
+                const streamId = `obr-${filePath}`;
+                killActiveStream(streamId);
+                activeStreams.set(streamId, [decoder, rotator, obr, encoder]);
+
                 const httpBuffer = new PassThrough({ highWaterMark: 1024 * 1024 * 10 });
                 const primeBuffer = new PrimeBuffer();
 
                 encoder.stdout.pipe(primeBuffer).pipe(httpBuffer).pipe(res);
 
                 req.on('close', () => {
-                    try { if (encoder.stdout) encoder.stdout.unpipe(); } catch (e) { }
+                    killActiveStream(streamId);
                     primeBuffer.destroy();
                     httpBuffer.destroy();
-                    decoder.kill('SIGKILL');
-                    rotator.kill('SIGKILL');
-                    obr.kill('SIGKILL');
-                    encoder.kill('SIGKILL');
                 });
 
                 encoder.on('close', (code) => {
+                    activeStreams.delete(streamId);
                     if (!res.writableEnded) {
                         if (code !== 0 && code !== null) res.destroy();
                         else res.end();

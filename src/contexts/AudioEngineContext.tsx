@@ -9,6 +9,7 @@ interface AudioEngineContextType {
     customSofaPath: string | null;
     duration: number;
     channels: number;
+    audioInstance: HTMLAudioElement | null;
 
     // Actions
     toggleHeadphones: () => void;
@@ -16,7 +17,8 @@ interface AudioEngineContextType {
     setCustomSofaPath: (path: string | null) => void;
 
     // Internal use for Transport
-    audioRef: React.RefObject<HTMLAudioElement>;
+    audioRef: React.RefObject<HTMLAudioElement | null>;
+    cleanupAudio: () => void;
     commitStream: (file: string, channels: number, start: number, nonce: number) => void;
     probeFile: (file: string) => Promise<{ duration: number, channels: number }>;
 }
@@ -33,7 +35,13 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const [duration, setDuration] = useState(0);
     const [channels, setChannels] = useState(0);
 
-    const audioRef = useRef<HTMLAudioElement>(new Audio());
+    const [audioInstance, setAudioInstance] = useState<HTMLAudioElement | null>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    // Sync ref for immediate access, while allowing state-based reactivity for consumers
+    useEffect(() => {
+        audioRef.current = audioInstance;
+    }, [audioInstance]);
     const rebuildTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const playbackIntentRef = useRef(false);
 
@@ -54,11 +62,9 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({ c
         setIsRebuilding(false);
     };
 
-    const enterRebuildLock = (wasPlaying: boolean) => {
+    const enterRebuildLock = (audio: HTMLAudioElement, wasPlaying: boolean) => {
         if (rebuildTimeoutRef.current) clearTimeout(rebuildTimeoutRef.current);
         setIsRebuilding(true);
-
-        const audio = audioRef.current;
         const unlockEvent = wasPlaying ? 'playing' : 'canplay';
 
         const onUnlock = () => {
@@ -98,17 +104,25 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
     };
 
-    const commitStream = (file: string, ch: number, start: number, nonce: number) => {
-        const audio = audioRef.current;
-        if (!audio || !file || ch === 0) return;
-
-        const wasPlaying = !audio.paused;
-        if (wasPlaying) {
-            playbackIntentRef.current = true;
+    const cleanupAudio = () => {
+        if (audioRef.current) {
+            const audio = audioRef.current;
             audio.pause();
+            audio.removeAttribute('src');
+            audio.load();
+            setAudioInstance(null);
+        }
+    };
+
+    const commitStream = (file: string, ch: number, start: number, nonce: number) => {
+        if (!file || ch === 0) return;
+
+        let wasPlaying = false;
+        if (audioRef.current) {
+            wasPlaying = !audioRef.current.paused;
+            cleanupAudio();
         }
 
-        enterRebuildLock(wasPlaying);
 
         const params = new URLSearchParams();
         params.append('file', file);
@@ -134,11 +148,15 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({ c
         const endpoint = (isHeadphonesOn && ch >= 4) ? 'obr-stream' : 'stream';
         const newSrc = `http://127.0.0.1:45455/${endpoint}?${params.toString()}`;
 
-        console.log(`[AudioEngine] Committing Stream: ${newSrc}`);
-        audio.src = newSrc;
-        audio.load();
+        console.log(`[AudioEngine] Committing Stream (New Instance): ${newSrc}`);
+        
+        const audio = new Audio(newSrc);
+        setAudioInstance(audio);
+        
+        // Pass the new instance to the rebuild lock handler
+        enterRebuildLock(audio, wasPlaying || playbackIntentRef.current);
 
-        if (playbackIntentRef.current) {
+        if (wasPlaying || playbackIntentRef.current) {
             audio.play().catch(e => {
                 if (e.name !== 'AbortError') console.error('[AudioEngine] Play blocked:', e);
             });
@@ -187,6 +205,8 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({ c
             setHrtfProfile,
             setCustomSofaPath,
             audioRef,
+            audioInstance,
+            cleanupAudio,
             commitStream,
             probeFile
         }}>
