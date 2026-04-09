@@ -1,8 +1,16 @@
 import { app } from '../shim';
 import path from 'path';
 import fs from 'fs';
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto'; // Add this import
 import { FfWrapper } from '../utils/FfWrapper';
+
+// Add deterministic hash function
+function getHash(filePath: string): string {
+    const stats = fs.statSync(filePath);
+    return crypto.createHash('md5')
+        .update(`${filePath}-${stats.size}-${stats.mtimeMs}`)
+        .digest('hex');
+}
 
 /**
  * Generates a stereo MP3 proxy for waveform visualization.
@@ -10,33 +18,32 @@ import { FfWrapper } from '../utils/FfWrapper';
  */
 // PRP #61: Return Buffer for Frontend Diagnostic
 export async function generateProxy(inputPath: string): Promise<Buffer> {
-    const tempDir = app.getPath('temp');
-    const proxyId = uuidv4();
-    const outputPath = path.join(tempDir, `ambitrim_proxy_${proxyId}.wav`);
-
     // VALIDATION: Fixes potential Code 8 by ensuring path exists and is a string
     if (!inputPath || typeof inputPath !== 'string') {
         throw new Error(`[AmbiTrim] Invalid input path provided: ${inputPath}`);
     }
 
+    const tempDir = app.getPath('temp');
+    const proxyId = getHash(inputPath); // Replace UUID with deterministic hash
+    const outputPath = path.join(tempDir, `ambitrim_proxy_${proxyId}.wav`);
+
+    // Check Cache: Bypass FFmpeg if proxy already exists
+    if (fs.existsSync(outputPath)) {
+        console.log(`[AmbiTrim Proxy]: Cache hit for: ${path.basename(inputPath)}`);
+        return fs.readFileSync(outputPath);
+    }
+
     // PRP #145: Migration to PCM WAV for universal compatibility
-    // Uses Mid-Side decoding for high-order Ambisonics visualization.
-    // Ensure only the filter output is mapped to avoid Code 8 conflict.
     const args = [
         '-y',
         '-i', inputPath,
-
-        // THE FIX: Manual Matrix Decode (W+Y / W-Y)
         '-filter_complex', '[0:a:0]pan=stereo|c0=0.5*c0+0.5*c1|c1=0.5*c0-0.5*c1[out]',
         '-map', '[out]',
-
-        // STANDARD FORMATTING (PCM WAV)
         '-ar', '44100',          
         '-c:a', 'pcm_s16le',    
         '-map_metadata', '-1',   
         outputPath
     ];
-
 
     try {
         await FfWrapper.run({
@@ -54,6 +61,7 @@ export async function generateProxy(inputPath: string): Promise<Buffer> {
         throw err;
     }
 }
+
 
 /**
  * Executes a lossless trim on the original file.

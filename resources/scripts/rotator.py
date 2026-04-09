@@ -20,7 +20,11 @@ import os
 import argparse
 import numpy as np
 from scipy.spatial.transform import Rotation
-from scipy.special import sph_harm
+try:
+    from scipy.special import sph_harm
+except ImportError:
+    # Support for Scipy 1.15+ where sph_harm was renamed/moved
+    from scipy.special import sph_harm_y as sph_harm
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Spherical Harmonic Rotation (Real ACN/SN3D)

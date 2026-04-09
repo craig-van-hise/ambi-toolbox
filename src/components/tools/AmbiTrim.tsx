@@ -319,13 +319,21 @@ export const AmbiTrim = React.forwardRef<AmbiTrimHandle, AmbiTrimProps>(({ tool:
         };
     }, [proxyPath]);
 
+    // Track the last processed path to prevent duplicate executions
+    const lastProcessedPath = useRef<string | null>(null);
+
     // PRP #141: Auto-generate proxy when activeFile changes
     useEffect(() => {
-        if (!activeFile) {
+        if (!activeFile?.path) {
             setProxyPath(null);
             setStatusMsg(null);
+            lastProcessedPath.current = null;
             return;
         }
+
+        // Guard: Only run if the path has actually changed
+        if (activeFile.path === lastProcessedPath.current) return;
+        lastProcessedPath.current = activeFile.path;
 
         const generateProxy = async () => {
             setStatusMsg(null);
@@ -333,8 +341,6 @@ export const AmbiTrim = React.forwardRef<AmbiTrimHandle, AmbiTrimProps>(({ tool:
 
             try {
                 const path = activeFile.path;
-                if (!path) throw new Error("File has no path");
-
                 // Call Backend
                 const rawData = await window.electronAPI.trim.generateProxy(path) as any;
                 const isUint8 = rawData instanceof Uint8Array;
@@ -348,6 +354,7 @@ export const AmbiTrim = React.forwardRef<AmbiTrimHandle, AmbiTrimProps>(({ tool:
             } catch (err: any) {
                 console.error("Proxy Gen Error:", err);
                 setStatusMsg("Error: " + err.message);
+                lastProcessedPath.current = null; // Reset on error so it can be retried
             } finally {
                 setIsGeneratingProxy(false);
             }
@@ -360,7 +367,8 @@ export const AmbiTrim = React.forwardRef<AmbiTrimHandle, AmbiTrimProps>(({ tool:
                 URL.revokeObjectURL(proxyPath);
             }
         };
-    }, [activeFile, proxyPath]);
+    }, [activeFile]); // STRICTLY depend on activeFile only
+
 
     // PRP #148: Phase 1 - Mirror Transport Play/Pause for smooth 60fps internal rendering
     useEffect(() => {

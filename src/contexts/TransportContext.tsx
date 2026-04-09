@@ -99,16 +99,19 @@ export const TransportProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     // Play/Pause Sync
     useEffect(() => {
         const audio = audioRef.current;
-        if (!audio || !audio.src) return;
+        // Ensure we don't try to play an empty source
+        if (!audio || !audio.src || audio.src === 'about:blank') return;
 
-        if (isPlaying && audio.paused) {
+        // If we want to play, BUT the engine is rebuilding, do nothing. 
+        // Wait for the canplay event to clear the isRebuilding lock.
+        if (isPlaying && !isRebuilding && audio.paused) {
             audio.play().catch(e => {
                 if (e.name !== 'AbortError') console.error('[Transport] Play failed:', e);
             });
         } else if (!isPlaying && !audio.paused) {
             audio.pause();
         }
-    }, [isPlaying, audioRef]);
+    }, [isPlaying, isRebuilding, audioRef]);
 
     const commitSeekInternal = (time: number, resume: boolean) => {
         if (!currentFile) {
